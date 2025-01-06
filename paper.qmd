@@ -1,0 +1,31 @@
+---
+title: "Extracting sunbeams from cucumbers: Reproducibility as a necessity for the future of archaeological science"
+format: html
+bibliography: references.bib
+---
+
+```{=html}
+<!-- 
+
+authoritative, agenda-setting or hypothesis-setting papers, rather than descriptive compilations of the literature.
+
+have the vision and authority to guide the next generation of archaeological science research
+
+cross-ref Vaiglova 2025 this issue
+
+-->
+```
+
+## Introduction
+
+In their paper celebrating the 40th anniversary of this journal Torrence et al [-@torrenceFortyYearsStill2015] noted that reproducibility was an issue important to the reputation and sustainability of the discipline, and necessary for archaeological science to behave like a science. As part of the celebration of the 50th anniversary, and of Torrence's leadership of the journal, my contribution revisits these topics of archaeology's status as a science, this journal's place in the landscape of archaeological science, and how the journal has responded to a growing recognition of the importance of reproducibility. I first present bibliometric evidence of the position of archaeology as a whole, and this journal in particular, in the hierarchy of the sciences. Next I report on the journal's progress in supporting reproducible research, and my work doing a new kind of peer review for JAS, one that evaluates the computational reproducibilty of the research submitted for publication.
+
+The question of archaeology's status as a science usually comes up in the context of what the discipline should or should not be. One of the first landmarks in tackling this question is the debate published by *Antiquity* between classical archaeologist Jacquetta Hawkes and palaeoanthropologist Glynn Isaac. @hawkesProperStudyMankind1968, advocating a humanistic archaeology, was concerned that scientific approaches to archaeology were causing researchers to be "swamped by a vast accumulation of insignificant, disparate facts, like a terrible tide of mud, quite beyond the capacity of any man to contain and mould into historical form". More optimistic about the integration of science and archaeology, @isaacWhitherArchaeology1971 counters that "New levels of precision in presenting data and in interpreting them can surely lead to briefer and more interesting technical reports as well as providing the basis for more lively literary portrayals of what happened in prehistory. Expanding on Isaac's perspective, @binford1962archaeology argued that archaeology should operate as a science after the model proposed by philosopher Carl Hempel, which prescribed hypothesis-driven approaches, leading to generalizable laws of human behavior. Counter-arguments came from numerous directions, notably @hodder1985postprocessual who rejected the quest for generalisations and instead argued that archaeology should be subjective and reflective, focussed on symbolic and relational meanings of material culture and the historical particularity of past human cultures. These debates, and the many more similar ones summarised by @martinon-torresArchaeologicalTheoriesArchaeological2013, have become a genre in archaeological writing that can be characterised as mostly based on personal observations, microscopic dissections of a handful of cherry-picked case studies of good or bad practice, and discussion of various philosophers and sociologists.
+
+What has been missing from these debates is a macroscopic observation of what the majority of archaeologists are actually doing, and an objective comparison to a broad spectrum of relatively harder and softer disciplines.
+
+Computational reproducibilty has become central to archaeology's status a science, especially as the definition and practice of science shifts over time. Computers have become an essential field and laboratory instrument for almost all of us, so we should document how we change our data as it flows through silicon just as carefully as we document the operating parameters of a mass spectrometer or other laboratory instrument. In making the case for reproducibilty as a core value in archaeological science
+
+In recent years the Journal of Archaeological Science has been one of a number of archaeology journals that introduced an unusual new kind of peer review, one that evaluates the computational reproducibilty of the research submitted for publication. This journal was among the first of these and is currently by far the most active in conducting these reviews. In this article I reflect on how this new kind of review came about, why it is important for the future of archaeological science, and offer suggestions for prospective authors based on my experience as a reproducibilty reviewer for this journal on how we can ensure archaeological science remains worthy of the name.
+
+My motivation is the view that It is customary in significant round-number anniversary
