@@ -8,16 +8,15 @@ items_df <- read_rds("data/wos-data-df.rds")
 
 items_df %>% 
   filter(!is.na(year)) %>% 
-  ggplot(aes(year,
+  ggplot(aes(1,
              log(authors_n))) +
   geom_boxplot(colour = "red", 
                size = 1)  +
   scale_y_continuous(limits = c(0, 5)) +
-  scale_x_continuous(labels = NULL,
-                     name = NULL) +
+  scale_x_continuous(labels = NULL) +
   theme_minimal() +
-  theme(panel.grid  = element_blank()) +
-  coord_equal(ratio = 6)
+  ylab("N. of authors (ln)") +
+  xlab("Collaborator group size")
 
 ggsave("figures/box_num_authors.svg")
 

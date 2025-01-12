@@ -27,7 +27,7 @@ items_df %>%
   geom_boxplot() +
   geom_jitter(alpha = 0.01) +
   theme_minimal() +
-  ylab("Number of pages (ln)")
+  ylab("Number of pages (ln)") 
 
 ggsave("figures/box_num_pages_over_time.png")
 
