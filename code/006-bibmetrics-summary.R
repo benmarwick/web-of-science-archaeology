@@ -32,11 +32,16 @@ over_time_long <-
   mutate(variable = case_when(
     variable == "log_authors_n" ~ "N. of authors (ln)",
     variable == "log_pages_n"   ~ "N. of pages (ln)",
-    variable == "prices_index"  ~ "Price's index",
-    variable == "shannon"  ~ "Shannon div. of sources",
+    variable == "prices_index"  ~ "Recency of references",
+    variable == "shannon"  ~ "Diversity of references",
     variable == "sqrt_refs_n"  ~ "N. of refs (sqrt)",
     variable == "relative_title_length"  ~ "Relative title length (ln)"
-  ))
+  )) %>% 
+  filter(!is.na(variable)) %>% 
+  filter(!is.nan(value)) %>% 
+  filter(!is.na(value)) %>% 
+  filter(value != "NaN") %>% 
+  mutate(value = parse_number(value))
 
 # compute beta estimates so we can colour lines to indicate more or
 # less scientific
@@ -48,12 +53,12 @@ over_time_long_models <-
   unnest(model) %>% 
   filter(term == 'year') %>% 
   mutate(becoming_more_scientific = case_when(
-    variable == "N. of authors (ln)" & estimate > 0 ~ "TRUE",
-    variable == "N. of pages (ln)"   & estimate < 0 ~ "TRUE",
-    variable == "N. of refs (sqrt)"  & estimate < 0 ~ "TRUE",
-    variable == "Price's index"     & estimate > 0 ~ "TRUE",
-    variable == " Relative title length (ln)"     & estimate > 0 ~ "TRUE",
-    variable == "Shannon div. of sources"     & estimate < 0 ~ "TRUE",
+    variable == "N. of authors (ln)"         & estimate > 0 ~ "TRUE",
+    variable == "N. of pages (ln)"           & estimate < 0 ~ "TRUE",
+    variable == "N. of refs (sqrt)"          & estimate < 0 ~ "TRUE",
+    variable == "Recency of references"      & estimate > 0 ~ "TRUE",
+    variable == "Relative title length (ln)" & estimate > 0 ~ "TRUE",
+    variable == "Diversity of references"    & estimate < 0 ~ "TRUE",
     TRUE ~ "FALSE"
   )) 
 
@@ -66,13 +71,14 @@ ggplot(over_time_long_colour,
        aes(year, 
            value,
            colour = becoming_more_scientific)) +
-  geom_point(alpha = 0.005) +
+  geom_point(alpha = 0.5) +
   geom_smooth(method = "lm", 
-              size = 3) +
+              size = 3,
+              colour = "#7570b3") +
   facet_wrap( ~ variable,
               scales = "free_y") +
-  theme_minimal(base_size = 12) +
-  scale_color_manual(values = c("red", "green")) +
+  theme_bw(base_size = 12) +
+  scale_color_manual(values = c("#d95f02", "#1b9e77" )) +
   guides(colour = "none") +
   ylab("")
 

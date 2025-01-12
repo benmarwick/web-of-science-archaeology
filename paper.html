@@ -20,6 +20,40 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 /* CSS for citations */
 div.csl-bib-body { }
 div.csl-entry {
@@ -94,21 +128,570 @@ cross-ref Vaiglova 2025 this issue
 <section id="introduction" class="level2">
 <h2 class="anchored" data-anchor-id="introduction">Introduction</h2>
 <p>In their paper celebrating the 40th anniversary of this journal Torrence et al <span class="citation" data-cites="torrenceFortyYearsStill2015">(<a href="#ref-torrenceFortyYearsStill2015" role="doc-biblioref">2015</a>)</span> noted that reproducibility was an issue important to the reputation and sustainability of the discipline, and necessary for archaeological science to behave like a science. As part of the celebration of the 50th anniversary, and of Torrence’s leadership of the journal, my contribution revisits these topics of archaeology’s status as a science, this journal’s place in the landscape of archaeological science, and how the journal has responded to a growing recognition of the importance of reproducibility. I first present bibliometric evidence of the position of archaeology as a whole, and this journal in particular, in the hierarchy of the sciences. Next I report on the journal’s progress in supporting reproducible research, and my work doing a new kind of peer review for JAS, one that evaluates the computational reproducibilty of the research submitted for publication.</p>
-<p>The question of archaeology’s status as a science usually comes up in the context of what the discipline should or should not be. One of the first landmarks in tackling this question is the debate published by <em>Antiquity</em> between classical archaeologist Jacquetta Hawkes and palaeoanthropologist Glynn Isaac. <span class="citation" data-cites="hawkesProperStudyMankind1968">Hawkes (<a href="#ref-hawkesProperStudyMankind1968" role="doc-biblioref">1968</a>)</span>, advocating a humanistic archaeology, was concerned that scientific approaches to archaeology were causing researchers to be “swamped by a vast accumulation of insignificant, disparate facts, like a terrible tide of mud, quite beyond the capacity of any man to contain and mould into historical form”. More optimistic about the integration of science and archaeology, <span class="citation" data-cites="isaacWhitherArchaeology1971">Isaac (<a href="#ref-isaacWhitherArchaeology1971" role="doc-biblioref">1971</a>)</span> counters that “New levels of precision in presenting data and in interpreting them can surely lead to briefer and more interesting technical reports as well as providing the basis for more lively literary portrayals of what happened in prehistory. Expanding on Isaac’s perspective, <span class="citation" data-cites="binford1962archaeology">Binford (<a href="#ref-binford1962archaeology" role="doc-biblioref">1962</a>)</span> argued that archaeology should operate as a science after the model proposed by philosopher Carl Hempel, which prescribed hypothesis-driven approaches, leading to generalizable laws of human behavior. Counter-arguments came from numerous directions, notably <span class="citation" data-cites="hodder1985postprocessual">Hodder (<a href="#ref-hodder1985postprocessual" role="doc-biblioref">1985</a>)</span> who rejected the quest for generalisations and instead argued that archaeology should be subjective and reflective, focussed on symbolic and relational meanings of material culture and the historical particularity of past human cultures.</p>
-<p>later resurfaced in an exchange between David Killick and Paul Goldberg <span class="citation" data-cites="killick2009quiet">(<a href="#ref-killick2009quiet" role="doc-biblioref">2009</a>)</span>, Geoffry Clark <span class="citation" data-cites="clark2010should">(<a href="#ref-clark2010should" role="doc-biblioref">2010</a>)</span> and Michael Shott <span class="citation" data-cites="shott2010crises">(<a href="#ref-shott2010crises" role="doc-biblioref">2010</a>)</span>, with Killick and Goldberg identifying archaeology as a science and calling for US universities to shift their emphasis in training archaeologists away from anthropological theory and towards more field and laboratory skills in relevant basic sciences. Shott accepts that theory might be overdone in US graduate programs, but rejects a reorientation to the physical sciences, instead claiming that archaeology needs more of its own unique kinds of theories (site formation theories, theories of long term cultural change, and theories of material culture change). Clark disputes the claim that archaeology is a science because of a lack of overarching conceptual framework, and that anthropology, while divided and incoherent, is the best source of questions, problems, and contextual information for making sense of archaeological data.</p>
-<p>Such debates</p>
-<p>Computational reproducibilty has become central to archaeology’s status a science, especially as the definition and practice of science shifts over time. Computers have become an essential field and laboratory instrument for almost all of us, so we should document how we change our data as it flows through silicon just as carefully as we document the operating parameters of a mass spectrometer or other laboratory instrument. In making the case for reproducibilty as a core value in archaeological science</p>
-<p>In recent years the Journal of Archaeological Science has been one of a number of archaeology journals that introduced an unusual new kind of peer review, one that evaluates the computational reproducibilty of the research submitted for publication. This journal was among the first of these and is currently by far the most active in conducting these reviews. In this article I reflect on how this new kind of review came about, why it is important for the future of archaeological science, and offer suggestions for prospective authors based on my experience as a reproducibilty reviewer for this journal on how we can ensure archaeological science remains worthy of the name.</p>
-<p>My motivation is the view that It is customary in significant round-number anniversary</p>
+<p>The question of archaeology’s status as a science usually comes up in the context of what the discipline should or should not be. One of the first landmarks in tackling this question is the debate published by <em>Antiquity</em> between classical archaeologist Jacquetta Hawkes and palaeoanthropologist Glynn Isaac. <span class="citation" data-cites="hawkesProperStudyMankind1968">Hawkes (<a href="#ref-hawkesProperStudyMankind1968" role="doc-biblioref">1968</a>)</span>, advocating a humanistic archaeology, was concerned that scientific approaches to archaeology were causing researchers to be “swamped by a vast accumulation of insignificant, disparate facts, like a terrible tide of mud, quite beyond the capacity of any man to contain and mould into historical form”. More optimistic about the integration of science and archaeology, <span class="citation" data-cites="isaacWhitherArchaeology1971">Isaac (<a href="#ref-isaacWhitherArchaeology1971" role="doc-biblioref">1971</a>)</span> counters that “New levels of precision in presenting data and in interpreting them can surely lead to briefer and more interesting technical reports as well as providing the basis for more lively literary portrayals of what happened in prehistory. Expanding on Isaac’s perspective, <span class="citation" data-cites="binford1962archaeology">Binford (<a href="#ref-binford1962archaeology" role="doc-biblioref">1962</a>)</span> argued that archaeology should operate as a science after the model proposed by philosopher Carl Hempel, which prescribed hypothesis-driven approaches, leading to generalizable laws of human behavior. Counter-arguments came from numerous directions, notably <span class="citation" data-cites="hodder1985postprocessual">Hodder (<a href="#ref-hodder1985postprocessual" role="doc-biblioref">1985</a>)</span> who rejected the quest for generalisations and instead argued that archaeology should be subjective and reflective, focussed on symbolic and relational meanings of material culture and the historical particularity of past human cultures. These debates, and the many more similar ones summarised by <span class="citation" data-cites="martinon-torresArchaeologicalTheoriesArchaeological2013">Martinón-Torres and Killick (<a href="#ref-martinon-torresArchaeologicalTheoriesArchaeological2013" role="doc-biblioref">2013</a>)</span>, have become a genre in archaeological writing that can be characterized as mostly based on personal observations, microscopic dissections of a handful of cherry-picked case studies of good or bad practice, and discussion of various philosophers and sociologists.</p>
+<p>What has been missing from these debates is a macroscopic observation of what the majority of archaeologists are actually doing, and an empirical comparison to a broad spectrum of relatively harder and softer disciplines. At the ‘hard’ end of the spectrum (e.g.&nbsp;physics and chemistry), scholars more typically share a large set of established set of theories, facts, and methods, facilitating fairly rapid agreement on the validity and significance of new results. At the ‘soft’ end of the spectrum (e.g.&nbsp;economics and psychology), the set of theories, facts, and methods on which there is widespread consensus is smaller, and agreement is slower and less frequently reached about the significance of new findings and the continuing relevance of previous work. Hardness and softness is a controversial distinction, in part because it is often used to imply a rank order of disciplines that encodes legitimacy, productivity, perceived value to society, and worthiness of funding <span class="citation" data-cites="DifferentAgenda2012 coleHierarchySciences1983">(<a href="#ref-DifferentAgenda2012" role="doc-biblioref">Editors 2012</a>; <a href="#ref-coleHierarchySciences1983" role="doc-biblioref">Cole 1983</a>)</span>. However, independent of these value judgments, empirical analysis of scholarly articles does indicate a spectrum of variation in practice linked to differing degrees of consensus in a discipline, for example in approaches to data visualisation <span class="citation" data-cites="clevelandGraphsScientificPublications1984 smithScientificGraphsHierarchy2000">(<a href="#ref-clevelandGraphsScientificPublications1984" role="doc-biblioref">Cleveland 1984</a>; <a href="#ref-smithScientificGraphsHierarchy2000" role="doc-biblioref">Smith et al. 2000</a>)</span>. Similarly, quantitative analysis of the frequency of positive results (ie. full or partial support for a research hypothesis) in publications is significantly correlated with hardness, consistent with a model where researchers in harder fields more readily accept any result their research produces, while those in softer fields have more freedom to choose which theories and hypotheses to test and how to interpret results <span class="citation" data-cites="PositiveResultsIncrease">(<a href="#ref-PositiveResultsIncrease" role="doc-biblioref"><span>“<span>“</span>Positive<span>”</span> Results Increase down the Hierarchy of the Sciences | PLOS ONE,”</span> n.d.</a>)</span>. The hard-soft spectrum is also evident in surveys of how researchers view their own work relative to those in other fields <span class="citation" data-cites="biglanCharacteristicsSubjectMatter1973">(<a href="#ref-biglanCharacteristicsSubjectMatter1973" role="doc-biblioref">Biglan 1973</a>)</span>.</p>
+</section>
+<section id="methods-and-materials" class="level2">
+<h2 class="anchored" data-anchor-id="methods-and-materials">Methods and materials</h2>
+<p>To objectively quantify the relative hardness or softness of archaeology, as an evaluation of its status as a science, and the place of this journal in context of other archaeology journals, I take a bibliometric approach. This approach is based on <span class="citation" data-cites="fanelliBibliometricEvidenceHierarchy2013">Fanelli and Glänzel (<a href="#ref-fanelliBibliometricEvidenceHierarchy2013" role="doc-biblioref">2013</a>)</span>, who examined the hardness and softness of 12 disciplines using scholarly publication parameters. <span class="citation" data-cites="fanelliBibliometricEvidenceHierarchy2013">Fanelli and Glänzel (<a href="#ref-fanelliBibliometricEvidenceHierarchy2013" role="doc-biblioref">2013</a>)</span> found a spectrum of statistically significant variation in bibliometric variables from the physical to the social sciences, with papers tending at the softer end of the spectrum tending to have fewer co-authors, use less substantive titles, have longer texts, cite older literature, and have a higher diversity of sources. In <span class="citation" data-cites="fanelliBibliometricEvidenceHierarchy2013">Fanelli and Glänzel (<a href="#ref-fanelliBibliometricEvidenceHierarchy2013" role="doc-biblioref">2013</a>)</span>’s analysis harder sciences include Space Science, Physics, Chemistry, less hard sciences include social sciences include Psychiatry/Psychology, Economics, Business and General Social Sciences, and the Humanities define the soft end of the spectrum. Following <span class="citation" data-cites="fanelliBibliometricEvidenceHierarchy2013">Fanelli and Glänzel (<a href="#ref-fanelliBibliometricEvidenceHierarchy2013" role="doc-biblioref">2013</a>)</span>, I quantify the number of authors, length of article, relative title length, age of references, and diversity of references for a large sample of peer-reviewed journal articles.</p>
+<p>These parameters are useful because of how they signify consensus in a research community. A larger number of authors on a paper reflects collaboration of people working together on a common goal. Collaborators have specialized roles, each of whom has the ability to study a part of the problem with high accuracy and detail, with harder fields having larger groups of collaborators<span class="citation" data-cites="zuckerman1972age">(<a href="#ref-zuckerman1972age" role="doc-biblioref">Zuckerman and Merton 1972</a>)</span>. Reflecting this collaboration group size, harder disciplines tend to have higher average numbers of authors on papers. Article length has an inverse correlation with field hardness. In low-consensus, or softer, fields, papers must be longer to present justification, nuance and contextualization of results. The number of substantive and informative words in an article’s title tends to be positively correlated with article length in harder disciplines <span class="citation" data-cites="yitzhakiRelationTitleLength2002 yitzhakiVariationInformativityTitles1997">(<a href="#ref-yitzhakiRelationTitleLength2002" role="doc-biblioref">Moshe Yitzhaki 2002</a>; <a href="#ref-yitzhakiVariationInformativityTitles1997" role="doc-biblioref">M. Yitzhaki 1997</a>)</span>, reflecting a focus on empiricism and efficiency that is characteristic of high-consensus disciplines. While <span class="citation" data-cites="yitzhakiRelationTitleLength2002">Moshe Yitzhaki (<a href="#ref-yitzhakiRelationTitleLength2002" role="doc-biblioref">2002</a>)</span> removed stop-words (e.g.&nbsp;prepositions, articles, conjunctions, etc.) to calculate article length, in order to generate results for comparison with <span class="citation" data-cites="fanelliBibliometricEvidenceHierarchy2013">Fanelli and Glänzel (<a href="#ref-fanelliBibliometricEvidenceHierarchy2013" role="doc-biblioref">2013</a>)</span> I follow his method of dividing the total word count of the article title by the total number of pages of the article to compute relative title length.</p>
+<p>The age of works cited has long been used as a measure of a field’s hardness <span class="citation" data-cites="moed1998new bornerAtlasScience2010">(<a href="#ref-moed1998new" role="doc-biblioref">Moed, Van Leeuwen, and Reedijk 1998</a>; <a href="#ref-bornerAtlasScience2010" role="doc-biblioref">Börner 2010</a>)</span>, based on the assumption that harder fields assimilate new results more rapidly that softer fields <span class="citation" data-cites="price1970citation">(<a href="#ref-price1970citation" role="doc-biblioref">Price 1970</a>)</span>. I calculated a recency of references index for each article (also known as the Price index), which is the proportion of all cited works that were published in the five years preceding the paper. The diversity of references</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
+✔ dplyr     1.1.4     ✔ readr     2.1.5
+✔ forcats   1.0.0     ✔ stringr   1.5.1
+✔ ggplot2   3.5.1     ✔ tibble    3.2.1
+✔ lubridate 1.9.3     ✔ tidyr     1.3.1
+✔ purrr     1.0.2     
+── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+✖ dplyr::filter() masks stats::filter()
+✖ dplyr::lag()    masks stats::lag()
+ℹ Use the conflicted package (&lt;http://conflicted.r-lib.org/&gt;) to force all conflicts to become errors</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>items_df <span class="ot">&lt;-</span> <span class="fu">read_rds</span>(<span class="st">"data/wos-data-df.rds"</span>)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>n_articles <span class="ot">&lt;-</span> <span class="fu">nrow</span>(items_df)</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>year_max <span class="ot">&lt;-</span> <span class="fu">max</span>(items_df<span class="sc">$</span>year)</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>year_min <span class="ot">&lt;-</span> <span class="fu">min</span>(items_df<span class="sc">$</span>year)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>I sampled 9697 papers published during 1975-2025. This sample was collected from Clarivate’s Web of Science database by first selecting the Web of Science category ‘Archaeology’ and the Document type ‘article’ (n = 28,871). To focus on journals of broad relevance to most archaeologists, and that are representative of substantial communities of practice, I then filtered the results to keep only articles published in the top-ranking 25 journals according to their h-indices as reported by Clarivate’s Journal Citation Indicator. Finally I excluded journals with less than 100 articles in the database.</p>
+<p>The entire R code <span class="citation" data-cites="rcoreteamLanguageEnvironmentStatistical2024">(<a href="#ref-rcoreteamLanguageEnvironmentStatistical2024" role="doc-biblioref">R Core Team 2024</a>)</span> used for all the analysis and visualizations contained in this paper is included in the Supplementary Online Materials at https://doi.org/xxx/xxx/xxx to enable re-use of materials and improve reproducibility and transparency <span class="citation" data-cites="marwickComputationalReproducibilityArchaeological2017">(<a href="#ref-marwickComputationalReproducibilityArchaeological2017" role="doc-biblioref">Marwick 2017</a>)</span>. All the figures, tables, and statistical test results presented here can be independently reproduced with the code and data in this compendium <span class="citation" data-cites="doi:10.1080/00031305.2017.1375986">(<a href="#ref-doi:10.1080/00031305.2017.1375986" role="doc-biblioref">Marwick, Boettiger, and Mullen 2018</a>)</span>. The R code is released under the MIT license, the data as CC-0, and figures as CC-BY, to enable maximum re-use.</p>
+</section>
+<section id="results" class="level2">
+<h2 class="anchored" data-anchor-id="results">Results</h2>
+<section id="how-does-archaeology-compare-to-other-fields" class="level3">
+<h3 class="anchored" data-anchor-id="how-does-archaeology-compare-to-other-fields">How does archaeology compare to other fields?</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggrepel)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Number of authors ------------------</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>boxlplot_n_authors <span class="ot">&lt;-</span> </span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>items_df <span class="sc">%&gt;%</span> </span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(year)) <span class="sc">%&gt;%</span> </span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="dv">1</span>,</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>             <span class="fu">log</span>(authors_n))) <span class="sc">+</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>(</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>               <span class="at">size =</span> <span class="dv">1</span>)  <span class="sc">+</span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>  <span class="co"># median for physics, from Fanelli &amp; Glänzel Fig 2</span></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="fl">1.4</span>,</span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>             <span class="at">colour =</span> <span class="st">"grey70"</span>) <span class="sc">+</span></span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text_repel</span>(<span class="at">data =</span> <span class="fu">tibble</span>(<span class="at">x =</span> <span class="dv">1</span>, </span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>                                <span class="at">y =</span> <span class="fl">1.4</span>,</span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>                                <span class="at">label =</span> <span class="st">"p"</span>),</span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>                  <span class="fu">aes</span>(x, y, <span class="at">label =</span> label),</span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>                  <span class="at">bg.colour =</span> <span class="st">"white"</span>, </span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>                  <span class="at">bg.r =</span> .<span class="dv">2</span>, </span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>                  <span class="at">force =</span> <span class="dv">0</span>) <span class="sc">+</span></span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>  <span class="co"># median for soc sci, from Fanelli &amp; Glänzel Fig 2</span></span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="fl">0.8</span>,</span>
+<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a>             <span class="at">colour =</span> <span class="st">"grey70"</span>) <span class="sc">+</span></span>
+<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text_repel</span>(<span class="at">data =</span> <span class="fu">tibble</span>(<span class="at">x =</span> <span class="dv">1</span>, </span>
+<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a>                                <span class="at">y =</span> <span class="fl">0.8</span>,</span>
+<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a>                                <span class="at">label =</span> <span class="st">"s"</span>),</span>
+<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a>                  <span class="fu">aes</span>(x, y, <span class="at">label =</span> label),</span>
+<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a>                  <span class="at">bg.colour =</span> <span class="st">"white"</span>, </span>
+<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a>                  <span class="at">bg.r =</span> .<span class="dv">2</span>, </span>
+<span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a>                  <span class="at">force =</span> <span class="dv">0</span>) <span class="sc">+</span></span>
+<span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a>    <span class="co"># median for humanities, from Fanelli &amp; Glänzel Fig 2</span></span>
+<span id="cb4-32"><a href="#cb4-32" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="fl">0.0</span>,</span>
+<span id="cb4-33"><a href="#cb4-33" aria-hidden="true" tabindex="-1"></a>             <span class="at">colour =</span> <span class="st">"grey70"</span>) <span class="sc">+</span></span>
+<span id="cb4-34"><a href="#cb4-34" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text_repel</span>(<span class="at">data =</span> <span class="fu">tibble</span>(<span class="at">x =</span> <span class="dv">1</span>, </span>
+<span id="cb4-35"><a href="#cb4-35" aria-hidden="true" tabindex="-1"></a>                                <span class="at">y =</span> <span class="fl">0.0</span>,</span>
+<span id="cb4-36"><a href="#cb4-36" aria-hidden="true" tabindex="-1"></a>                                <span class="at">label =</span> <span class="st">"h"</span>),</span>
+<span id="cb4-37"><a href="#cb4-37" aria-hidden="true" tabindex="-1"></a>                  <span class="fu">aes</span>(x, y, <span class="at">label =</span> label),</span>
+<span id="cb4-38"><a href="#cb4-38" aria-hidden="true" tabindex="-1"></a>                  <span class="at">bg.colour =</span> <span class="st">"white"</span>, </span>
+<span id="cb4-39"><a href="#cb4-39" aria-hidden="true" tabindex="-1"></a>                  <span class="at">bg.r =</span> .<span class="dv">2</span>, </span>
+<span id="cb4-40"><a href="#cb4-40" aria-hidden="true" tabindex="-1"></a>                  <span class="at">force =</span> <span class="dv">0</span>) <span class="sc">+</span></span>
+<span id="cb4-41"><a href="#cb4-41" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">5</span>)) <span class="sc">+</span></span>
+<span id="cb4-42"><a href="#cb4-42" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">labels =</span> <span class="cn">NULL</span>) <span class="sc">+</span></span>
+<span id="cb4-43"><a href="#cb4-43" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span> </span>
+<span id="cb4-44"><a href="#cb4-44" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">panel.grid  =</span> <span class="fu">element_blank</span>()) <span class="sc">+</span></span>
+<span id="cb4-45"><a href="#cb4-45" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">"N. of authors (ln)"</span>) <span class="sc">+</span></span>
+<span id="cb4-46"><a href="#cb4-46" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">"Collaborator group size"</span>) </span>
+<span id="cb4-47"><a href="#cb4-47" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-48"><a href="#cb4-48" aria-hidden="true" tabindex="-1"></a><span class="co"># Relative title length  ----------------</span></span>
+<span id="cb4-49"><a href="#cb4-49" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-50"><a href="#cb4-50" aria-hidden="true" tabindex="-1"></a>items_df_title <span class="ot">&lt;-</span> </span>
+<span id="cb4-51"><a href="#cb4-51" aria-hidden="true" tabindex="-1"></a>  items_df <span class="sc">%&gt;%</span> </span>
+<span id="cb4-52"><a href="#cb4-52" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(pages_n)) <span class="sc">%&gt;%</span>  </span>
+<span id="cb4-53"><a href="#cb4-53" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(title_n)) <span class="sc">%&gt;%</span> </span>
+<span id="cb4-54"><a href="#cb4-54" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">relative_title_length =</span> <span class="fu">log</span>(title_n <span class="sc">/</span> pages_n))</span>
+<span id="cb4-55"><a href="#cb4-55" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-56"><a href="#cb4-56" aria-hidden="true" tabindex="-1"></a>boxlplot_rel_title_length <span class="ot">&lt;-</span> </span>
+<span id="cb4-57"><a href="#cb4-57" aria-hidden="true" tabindex="-1"></a>items_df_title <span class="sc">%&gt;%</span> </span>
+<span id="cb4-58"><a href="#cb4-58" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(year)) <span class="sc">%&gt;%</span> </span>
+<span id="cb4-59"><a href="#cb4-59" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="dv">1</span>,</span>
+<span id="cb4-60"><a href="#cb4-60" aria-hidden="true" tabindex="-1"></a>             relative_title_length)) <span class="sc">+</span></span>
+<span id="cb4-61"><a href="#cb4-61" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>(</span>
+<span id="cb4-62"><a href="#cb4-62" aria-hidden="true" tabindex="-1"></a>               <span class="at">size =</span> <span class="dv">1</span>)  <span class="sc">+</span></span>
+<span id="cb4-63"><a href="#cb4-63" aria-hidden="true" tabindex="-1"></a>  <span class="co"># median for physics, from Fanelli &amp; Glänzel Fig 2</span></span>
+<span id="cb4-64"><a href="#cb4-64" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="fl">0.8</span>,</span>
+<span id="cb4-65"><a href="#cb4-65" aria-hidden="true" tabindex="-1"></a>             <span class="at">colour =</span> <span class="st">"grey70"</span>) <span class="sc">+</span></span>
+<span id="cb4-66"><a href="#cb4-66" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text_repel</span>(<span class="at">data =</span> <span class="fu">tibble</span>(<span class="at">x =</span> <span class="dv">1</span>, </span>
+<span id="cb4-67"><a href="#cb4-67" aria-hidden="true" tabindex="-1"></a>                                <span class="at">y =</span> <span class="fl">0.8</span>,</span>
+<span id="cb4-68"><a href="#cb4-68" aria-hidden="true" tabindex="-1"></a>                                <span class="at">label =</span> <span class="st">"p"</span>),</span>
+<span id="cb4-69"><a href="#cb4-69" aria-hidden="true" tabindex="-1"></a>                  <span class="fu">aes</span>(x, y, <span class="at">label =</span> label),</span>
+<span id="cb4-70"><a href="#cb4-70" aria-hidden="true" tabindex="-1"></a>                  <span class="at">bg.colour =</span> <span class="st">"white"</span>, </span>
+<span id="cb4-71"><a href="#cb4-71" aria-hidden="true" tabindex="-1"></a>                  <span class="at">bg.r =</span> .<span class="dv">2</span>, </span>
+<span id="cb4-72"><a href="#cb4-72" aria-hidden="true" tabindex="-1"></a>                  <span class="at">force =</span> <span class="dv">0</span>) <span class="sc">+</span></span>
+<span id="cb4-73"><a href="#cb4-73" aria-hidden="true" tabindex="-1"></a>  <span class="co"># median for soc sci, from Fanelli &amp; Glänzel Fig 2</span></span>
+<span id="cb4-74"><a href="#cb4-74" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="fl">0.0</span>,</span>
+<span id="cb4-75"><a href="#cb4-75" aria-hidden="true" tabindex="-1"></a>             <span class="at">colour =</span> <span class="st">"grey70"</span>) <span class="sc">+</span></span>
+<span id="cb4-76"><a href="#cb4-76" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text_repel</span>(<span class="at">data =</span> <span class="fu">tibble</span>(<span class="at">x =</span> <span class="dv">1</span>, </span>
+<span id="cb4-77"><a href="#cb4-77" aria-hidden="true" tabindex="-1"></a>                                <span class="at">y =</span> <span class="fl">0.0</span>,</span>
+<span id="cb4-78"><a href="#cb4-78" aria-hidden="true" tabindex="-1"></a>                                <span class="at">label =</span> <span class="st">"s"</span>),</span>
+<span id="cb4-79"><a href="#cb4-79" aria-hidden="true" tabindex="-1"></a>                  <span class="fu">aes</span>(x, y, <span class="at">label =</span> label),</span>
+<span id="cb4-80"><a href="#cb4-80" aria-hidden="true" tabindex="-1"></a>                  <span class="at">bg.colour =</span> <span class="st">"white"</span>, </span>
+<span id="cb4-81"><a href="#cb4-81" aria-hidden="true" tabindex="-1"></a>                  <span class="at">bg.r =</span> .<span class="dv">2</span>, </span>
+<span id="cb4-82"><a href="#cb4-82" aria-hidden="true" tabindex="-1"></a>                  <span class="at">force =</span> <span class="dv">0</span>) <span class="sc">+</span></span>
+<span id="cb4-83"><a href="#cb4-83" aria-hidden="true" tabindex="-1"></a>    <span class="co"># median for humanities, from Fanelli &amp; Glänzel Fig 2</span></span>
+<span id="cb4-84"><a href="#cb4-84" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="sc">-</span><span class="fl">0.2</span>,</span>
+<span id="cb4-85"><a href="#cb4-85" aria-hidden="true" tabindex="-1"></a>             <span class="at">colour =</span> <span class="st">"grey70"</span>) <span class="sc">+</span></span>
+<span id="cb4-86"><a href="#cb4-86" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text_repel</span>(<span class="at">data =</span> <span class="fu">tibble</span>(<span class="at">x =</span> <span class="dv">1</span>, </span>
+<span id="cb4-87"><a href="#cb4-87" aria-hidden="true" tabindex="-1"></a>                                <span class="at">y =</span> <span class="sc">-</span><span class="fl">0.2</span>,</span>
+<span id="cb4-88"><a href="#cb4-88" aria-hidden="true" tabindex="-1"></a>                                <span class="at">label =</span> <span class="st">"h"</span>),</span>
+<span id="cb4-89"><a href="#cb4-89" aria-hidden="true" tabindex="-1"></a>                  <span class="fu">aes</span>(x, y, <span class="at">label =</span> label),</span>
+<span id="cb4-90"><a href="#cb4-90" aria-hidden="true" tabindex="-1"></a>                  <span class="at">bg.colour =</span> <span class="st">"white"</span>, </span>
+<span id="cb4-91"><a href="#cb4-91" aria-hidden="true" tabindex="-1"></a>                  <span class="at">bg.r =</span> .<span class="dv">2</span>, </span>
+<span id="cb4-92"><a href="#cb4-92" aria-hidden="true" tabindex="-1"></a>                  <span class="at">force =</span> <span class="dv">0</span>) <span class="sc">+</span></span>
+<span id="cb4-93"><a href="#cb4-93" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb4-94"><a href="#cb4-94" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">limits =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="fl">4.5</span>, <span class="dv">3</span>),</span>
+<span id="cb4-95"><a href="#cb4-95" aria-hidden="true" tabindex="-1"></a>                     <span class="at">breaks =</span>  <span class="fu">seq</span>(<span class="sc">-</span><span class="dv">5</span>, <span class="dv">5</span>, <span class="dv">1</span>),</span>
+<span id="cb4-96"><a href="#cb4-96" aria-hidden="true" tabindex="-1"></a>                     <span class="at">labels =</span> <span class="fu">seq</span>(<span class="sc">-</span><span class="dv">5</span>, <span class="dv">5</span>, <span class="dv">1</span>)) <span class="sc">+</span></span>
+<span id="cb4-97"><a href="#cb4-97" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">labels =</span> <span class="cn">NULL</span>) <span class="sc">+</span></span>
+<span id="cb4-98"><a href="#cb4-98" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb4-99"><a href="#cb4-99" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">panel.grid  =</span> <span class="fu">element_blank</span>()) <span class="sc">+</span></span>
+<span id="cb4-100"><a href="#cb4-100" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">"Ratio of title length to article length (ln)"</span>) <span class="sc">+</span></span>
+<span id="cb4-101"><a href="#cb4-101" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">"Relative title length"</span>)</span>
+<span id="cb4-102"><a href="#cb4-102" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-103"><a href="#cb4-103" aria-hidden="true" tabindex="-1"></a><span class="co"># Number of pages ------------------</span></span>
+<span id="cb4-104"><a href="#cb4-104" aria-hidden="true" tabindex="-1"></a>boxlplot_n_pages <span class="ot">&lt;-</span> </span>
+<span id="cb4-105"><a href="#cb4-105" aria-hidden="true" tabindex="-1"></a>items_df <span class="sc">%&gt;%</span> </span>
+<span id="cb4-106"><a href="#cb4-106" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="dv">1</span>,</span>
+<span id="cb4-107"><a href="#cb4-107" aria-hidden="true" tabindex="-1"></a>             <span class="fu">log</span>(pages_n))) <span class="sc">+</span></span>
+<span id="cb4-108"><a href="#cb4-108" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>(</span>
+<span id="cb4-109"><a href="#cb4-109" aria-hidden="true" tabindex="-1"></a>               <span class="at">size =</span> <span class="dv">1</span>)  <span class="sc">+</span></span>
+<span id="cb4-110"><a href="#cb4-110" aria-hidden="true" tabindex="-1"></a>  <span class="co"># median for physics, from Fanelli &amp; Glänzel Fig 2</span></span>
+<span id="cb4-111"><a href="#cb4-111" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="fl">1.8</span>,</span>
+<span id="cb4-112"><a href="#cb4-112" aria-hidden="true" tabindex="-1"></a>             <span class="at">colour =</span> <span class="st">"grey70"</span>) <span class="sc">+</span></span>
+<span id="cb4-113"><a href="#cb4-113" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text_repel</span>(<span class="at">data =</span> <span class="fu">tibble</span>(<span class="at">x =</span> <span class="dv">1</span>, </span>
+<span id="cb4-114"><a href="#cb4-114" aria-hidden="true" tabindex="-1"></a>                                <span class="at">y =</span> <span class="fl">1.8</span>,</span>
+<span id="cb4-115"><a href="#cb4-115" aria-hidden="true" tabindex="-1"></a>                                <span class="at">label =</span> <span class="st">"p"</span>),</span>
+<span id="cb4-116"><a href="#cb4-116" aria-hidden="true" tabindex="-1"></a>                  <span class="fu">aes</span>(x, y, <span class="at">label =</span> label),</span>
+<span id="cb4-117"><a href="#cb4-117" aria-hidden="true" tabindex="-1"></a>                  <span class="at">bg.colour =</span> <span class="st">"white"</span>, </span>
+<span id="cb4-118"><a href="#cb4-118" aria-hidden="true" tabindex="-1"></a>                  <span class="at">bg.r =</span> .<span class="dv">2</span>, </span>
+<span id="cb4-119"><a href="#cb4-119" aria-hidden="true" tabindex="-1"></a>                  <span class="at">force =</span> <span class="dv">0</span>) <span class="sc">+</span></span>
+<span id="cb4-120"><a href="#cb4-120" aria-hidden="true" tabindex="-1"></a>  <span class="co"># median for soc sci, from Fanelli &amp; Glänzel Fig 2</span></span>
+<span id="cb4-121"><a href="#cb4-121" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="fl">2.5</span>,</span>
+<span id="cb4-122"><a href="#cb4-122" aria-hidden="true" tabindex="-1"></a>             <span class="at">colour =</span> <span class="st">"grey70"</span>) <span class="sc">+</span></span>
+<span id="cb4-123"><a href="#cb4-123" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text_repel</span>(<span class="at">data =</span> <span class="fu">tibble</span>(<span class="at">x =</span> <span class="dv">1</span>, </span>
+<span id="cb4-124"><a href="#cb4-124" aria-hidden="true" tabindex="-1"></a>                                <span class="at">y =</span> <span class="fl">2.5</span>,</span>
+<span id="cb4-125"><a href="#cb4-125" aria-hidden="true" tabindex="-1"></a>                                <span class="at">label =</span> <span class="st">"s"</span>),</span>
+<span id="cb4-126"><a href="#cb4-126" aria-hidden="true" tabindex="-1"></a>                  <span class="fu">aes</span>(x, y, <span class="at">label =</span> label),</span>
+<span id="cb4-127"><a href="#cb4-127" aria-hidden="true" tabindex="-1"></a>                  <span class="at">bg.colour =</span> <span class="st">"white"</span>, </span>
+<span id="cb4-128"><a href="#cb4-128" aria-hidden="true" tabindex="-1"></a>                  <span class="at">bg.r =</span> .<span class="dv">2</span>, </span>
+<span id="cb4-129"><a href="#cb4-129" aria-hidden="true" tabindex="-1"></a>                  <span class="at">force =</span> <span class="dv">0</span>) <span class="sc">+</span></span>
+<span id="cb4-130"><a href="#cb4-130" aria-hidden="true" tabindex="-1"></a>    <span class="co"># median for humanities, from Fanelli &amp; Glänzel Fig 2</span></span>
+<span id="cb4-131"><a href="#cb4-131" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="fl">2.8</span>,</span>
+<span id="cb4-132"><a href="#cb4-132" aria-hidden="true" tabindex="-1"></a>             <span class="at">colour =</span> <span class="st">"grey70"</span>) <span class="sc">+</span></span>
+<span id="cb4-133"><a href="#cb4-133" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text_repel</span>(<span class="at">data =</span> <span class="fu">tibble</span>(<span class="at">x =</span> <span class="dv">1</span>, </span>
+<span id="cb4-134"><a href="#cb4-134" aria-hidden="true" tabindex="-1"></a>                                <span class="at">y =</span> <span class="fl">2.8</span>,</span>
+<span id="cb4-135"><a href="#cb4-135" aria-hidden="true" tabindex="-1"></a>                                <span class="at">label =</span> <span class="st">"h"</span>),</span>
+<span id="cb4-136"><a href="#cb4-136" aria-hidden="true" tabindex="-1"></a>                  <span class="fu">aes</span>(x, y, <span class="at">label =</span> label),</span>
+<span id="cb4-137"><a href="#cb4-137" aria-hidden="true" tabindex="-1"></a>                  <span class="at">bg.colour =</span> <span class="st">"white"</span>, </span>
+<span id="cb4-138"><a href="#cb4-138" aria-hidden="true" tabindex="-1"></a>                  <span class="at">bg.r =</span> .<span class="dv">2</span>, </span>
+<span id="cb4-139"><a href="#cb4-139" aria-hidden="true" tabindex="-1"></a>                  <span class="at">force =</span> <span class="dv">0</span>) <span class="sc">+</span></span>
+<span id="cb4-140"><a href="#cb4-140" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_reverse</span>(<span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">5</span>, <span class="dv">0</span>)) <span class="sc">+</span></span>
+<span id="cb4-141"><a href="#cb4-141" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">labels =</span> <span class="cn">NULL</span>) <span class="sc">+</span></span>
+<span id="cb4-142"><a href="#cb4-142" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span> </span>
+<span id="cb4-143"><a href="#cb4-143" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">panel.grid  =</span> <span class="fu">element_blank</span>()) <span class="sc">+</span></span>
+<span id="cb4-144"><a href="#cb4-144" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">"N. of pages (ln)"</span>) <span class="sc">+</span></span>
+<span id="cb4-145"><a href="#cb4-145" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">"Article length"</span>)</span>
+<span id="cb4-146"><a href="#cb4-146" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-147"><a href="#cb4-147" aria-hidden="true" tabindex="-1"></a><span class="co"># Price's index - recency of references ------------------</span></span>
+<span id="cb4-148"><a href="#cb4-148" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(stringr)</span>
+<span id="cb4-149"><a href="#cb4-149" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-150"><a href="#cb4-150" aria-hidden="true" tabindex="-1"></a><span class="co"># output storage</span></span>
+<span id="cb4-151"><a href="#cb4-151" aria-hidden="true" tabindex="-1"></a>prices_index <span class="ot">&lt;-</span> <span class="fu">vector</span>(<span class="st">"list"</span>, <span class="at">length =</span> <span class="fu">nrow</span>(items_df))</span>
+<span id="cb4-152"><a href="#cb4-152" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-153"><a href="#cb4-153" aria-hidden="true" tabindex="-1"></a><span class="co"># loop, this takes a moment</span></span>
+<span id="cb4-154"><a href="#cb4-154" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(i <span class="cf">in</span> <span class="fu">seq_len</span>(<span class="fu">nrow</span>(items_df))){</span>
+<span id="cb4-155"><a href="#cb4-155" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb4-156"><a href="#cb4-156" aria-hidden="true" tabindex="-1"></a>  refs <span class="ot">&lt;-</span>  items_df<span class="sc">$</span>refs[i]</span>
+<span id="cb4-157"><a href="#cb4-157" aria-hidden="true" tabindex="-1"></a>  year <span class="ot">&lt;-</span>  items_df<span class="sc">$</span>year[i]</span>
+<span id="cb4-158"><a href="#cb4-158" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb4-159"><a href="#cb4-159" aria-hidden="true" tabindex="-1"></a>  ref_years <span class="ot">&lt;-</span> </span>
+<span id="cb4-160"><a href="#cb4-160" aria-hidden="true" tabindex="-1"></a>    <span class="fu">as.numeric</span>(<span class="fu">str_match</span>(<span class="fu">str_extract_all</span>(refs, <span class="st">", [0-9]{4}, "</span>)[[<span class="dv">1</span>]], <span class="st">"</span><span class="sc">\\</span><span class="st">d{4}"</span>))</span>
+<span id="cb4-161"><a href="#cb4-161" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb4-162"><a href="#cb4-162" aria-hidden="true" tabindex="-1"></a>  preceeding_five_years <span class="ot">&lt;-</span>  </span>
+<span id="cb4-163"><a href="#cb4-163" aria-hidden="true" tabindex="-1"></a>    <span class="fu">seq</span>(year <span class="sc">-</span> <span class="dv">5</span>, year, <span class="dv">1</span>)</span>
+<span id="cb4-164"><a href="#cb4-164" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb4-165"><a href="#cb4-165" aria-hidden="true" tabindex="-1"></a>  refs_n_in_preceeding_five_years <span class="ot">&lt;-</span> </span>
+<span id="cb4-166"><a href="#cb4-166" aria-hidden="true" tabindex="-1"></a>    ref_years[ref_years <span class="sc">%in%</span> preceeding_five_years]</span>
+<span id="cb4-167"><a href="#cb4-167" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb4-168"><a href="#cb4-168" aria-hidden="true" tabindex="-1"></a>  prices_index[[i]] <span class="ot">&lt;-</span> </span>
+<span id="cb4-169"><a href="#cb4-169" aria-hidden="true" tabindex="-1"></a>    <span class="fu">length</span>(refs_n_in_preceeding_five_years) <span class="sc">/</span> <span class="fu">length</span>(ref_years)</span>
+<span id="cb4-170"><a href="#cb4-170" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb4-171"><a href="#cb4-171" aria-hidden="true" tabindex="-1"></a>  <span class="co"># for debugging</span></span>
+<span id="cb4-172"><a href="#cb4-172" aria-hidden="true" tabindex="-1"></a>  <span class="co"># print(i)</span></span>
+<span id="cb4-173"><a href="#cb4-173" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb4-174"><a href="#cb4-174" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb4-175"><a href="#cb4-175" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-176"><a href="#cb4-176" aria-hidden="true" tabindex="-1"></a>prices_index <span class="ot">&lt;-</span> <span class="fu">flatten_dbl</span>(prices_index)</span>
+<span id="cb4-177"><a href="#cb4-177" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-178"><a href="#cb4-178" aria-hidden="true" tabindex="-1"></a><span class="co"># add to data frame</span></span>
+<span id="cb4-179"><a href="#cb4-179" aria-hidden="true" tabindex="-1"></a>items_df<span class="sc">$</span>prices_index <span class="ot">&lt;-</span>  prices_index</span>
+<span id="cb4-180"><a href="#cb4-180" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-181"><a href="#cb4-181" aria-hidden="true" tabindex="-1"></a><span class="co"># plot</span></span>
+<span id="cb4-182"><a href="#cb4-182" aria-hidden="true" tabindex="-1"></a>boxlplot_price_index <span class="ot">&lt;-</span> </span>
+<span id="cb4-183"><a href="#cb4-183" aria-hidden="true" tabindex="-1"></a>items_df <span class="sc">%&gt;%</span> </span>
+<span id="cb4-184"><a href="#cb4-184" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="dv">1</span>,</span>
+<span id="cb4-185"><a href="#cb4-185" aria-hidden="true" tabindex="-1"></a>             prices_index)) <span class="sc">+</span></span>
+<span id="cb4-186"><a href="#cb4-186" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>(</span>
+<span id="cb4-187"><a href="#cb4-187" aria-hidden="true" tabindex="-1"></a>               <span class="at">size =</span> <span class="dv">1</span>)  <span class="sc">+</span></span>
+<span id="cb4-188"><a href="#cb4-188" aria-hidden="true" tabindex="-1"></a>  <span class="co"># median for physics, from Fanelli &amp; Glänzel Fig 2</span></span>
+<span id="cb4-189"><a href="#cb4-189" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="fl">0.38</span>,</span>
+<span id="cb4-190"><a href="#cb4-190" aria-hidden="true" tabindex="-1"></a>             <span class="at">colour =</span> <span class="st">"grey70"</span>) <span class="sc">+</span></span>
+<span id="cb4-191"><a href="#cb4-191" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text_repel</span>(<span class="at">data =</span> <span class="fu">tibble</span>(<span class="at">x =</span> <span class="dv">1</span>, </span>
+<span id="cb4-192"><a href="#cb4-192" aria-hidden="true" tabindex="-1"></a>                                <span class="at">y =</span> <span class="fl">0.38</span>,</span>
+<span id="cb4-193"><a href="#cb4-193" aria-hidden="true" tabindex="-1"></a>                                <span class="at">label =</span> <span class="st">"p"</span>),</span>
+<span id="cb4-194"><a href="#cb4-194" aria-hidden="true" tabindex="-1"></a>                  <span class="fu">aes</span>(x, y, <span class="at">label =</span> label),</span>
+<span id="cb4-195"><a href="#cb4-195" aria-hidden="true" tabindex="-1"></a>                  <span class="at">bg.colour =</span> <span class="st">"white"</span>, </span>
+<span id="cb4-196"><a href="#cb4-196" aria-hidden="true" tabindex="-1"></a>                  <span class="at">bg.r =</span> .<span class="dv">2</span>, </span>
+<span id="cb4-197"><a href="#cb4-197" aria-hidden="true" tabindex="-1"></a>                  <span class="at">force =</span> <span class="dv">0</span>) <span class="sc">+</span></span>
+<span id="cb4-198"><a href="#cb4-198" aria-hidden="true" tabindex="-1"></a>  <span class="co"># median for soc sci, from Fanelli &amp; Glänzel Fig 2</span></span>
+<span id="cb4-199"><a href="#cb4-199" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="fl">0.29</span>,</span>
+<span id="cb4-200"><a href="#cb4-200" aria-hidden="true" tabindex="-1"></a>             <span class="at">colour =</span> <span class="st">"grey70"</span>) <span class="sc">+</span></span>
+<span id="cb4-201"><a href="#cb4-201" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text_repel</span>(<span class="at">data =</span> <span class="fu">tibble</span>(<span class="at">x =</span> <span class="dv">1</span>, </span>
+<span id="cb4-202"><a href="#cb4-202" aria-hidden="true" tabindex="-1"></a>                                <span class="at">y =</span> <span class="fl">0.29</span>,</span>
+<span id="cb4-203"><a href="#cb4-203" aria-hidden="true" tabindex="-1"></a>                                <span class="at">label =</span> <span class="st">"s"</span>),</span>
+<span id="cb4-204"><a href="#cb4-204" aria-hidden="true" tabindex="-1"></a>                  <span class="fu">aes</span>(x, y, <span class="at">label =</span> label),</span>
+<span id="cb4-205"><a href="#cb4-205" aria-hidden="true" tabindex="-1"></a>                  <span class="at">bg.colour =</span> <span class="st">"white"</span>, </span>
+<span id="cb4-206"><a href="#cb4-206" aria-hidden="true" tabindex="-1"></a>                  <span class="at">bg.r =</span> .<span class="dv">2</span>, </span>
+<span id="cb4-207"><a href="#cb4-207" aria-hidden="true" tabindex="-1"></a>                  <span class="at">force =</span> <span class="dv">0</span>) <span class="sc">+</span></span>
+<span id="cb4-208"><a href="#cb4-208" aria-hidden="true" tabindex="-1"></a>    <span class="co"># median for humanities, from Fanelli &amp; Glänzel Fig 2</span></span>
+<span id="cb4-209"><a href="#cb4-209" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="fl">0.19</span>,</span>
+<span id="cb4-210"><a href="#cb4-210" aria-hidden="true" tabindex="-1"></a>             <span class="at">colour =</span> <span class="st">"grey70"</span>) <span class="sc">+</span></span>
+<span id="cb4-211"><a href="#cb4-211" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text_repel</span>(<span class="at">data =</span> <span class="fu">tibble</span>(<span class="at">x =</span> <span class="dv">1</span>, </span>
+<span id="cb4-212"><a href="#cb4-212" aria-hidden="true" tabindex="-1"></a>                                <span class="at">y =</span> <span class="fl">0.19</span>,</span>
+<span id="cb4-213"><a href="#cb4-213" aria-hidden="true" tabindex="-1"></a>                                <span class="at">label =</span> <span class="st">"h"</span>),</span>
+<span id="cb4-214"><a href="#cb4-214" aria-hidden="true" tabindex="-1"></a>                  <span class="fu">aes</span>(x, y, <span class="at">label =</span> label),</span>
+<span id="cb4-215"><a href="#cb4-215" aria-hidden="true" tabindex="-1"></a>                  <span class="at">bg.colour =</span> <span class="st">"white"</span>, </span>
+<span id="cb4-216"><a href="#cb4-216" aria-hidden="true" tabindex="-1"></a>                  <span class="at">bg.r =</span> .<span class="dv">2</span>, </span>
+<span id="cb4-217"><a href="#cb4-217" aria-hidden="true" tabindex="-1"></a>                  <span class="at">force =</span> <span class="dv">0</span>) <span class="sc">+</span></span>
+<span id="cb4-218"><a href="#cb4-218" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span>)) <span class="sc">+</span></span>
+<span id="cb4-219"><a href="#cb4-219" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">labels =</span> <span class="cn">NULL</span>) <span class="sc">+</span></span>
+<span id="cb4-220"><a href="#cb4-220" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb4-221"><a href="#cb4-221" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">panel.grid  =</span> <span class="fu">element_blank</span>()) <span class="sc">+</span></span>
+<span id="cb4-222"><a href="#cb4-222" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">"Prop. refs in last 5 years"</span>) <span class="sc">+</span></span>
+<span id="cb4-223"><a href="#cb4-223" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">"Recency of references"</span>)</span>
+<span id="cb4-224"><a href="#cb4-224" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-225"><a href="#cb4-225" aria-hidden="true" tabindex="-1"></a><span class="co"># Shannon index - diversity of references ------------------</span></span>
+<span id="cb4-226"><a href="#cb4-226" aria-hidden="true" tabindex="-1"></a><span class="co"># journal name as species, article as habitat</span></span>
+<span id="cb4-227"><a href="#cb4-227" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-228"><a href="#cb4-228" aria-hidden="true" tabindex="-1"></a><span class="co"># simplify the refs, since they are a bit inconsistent, some of</span></span>
+<span id="cb4-229"><a href="#cb4-229" aria-hidden="true" tabindex="-1"></a><span class="co"># these steps take a few seconds</span></span>
+<span id="cb4-230"><a href="#cb4-230" aria-hidden="true" tabindex="-1"></a>ref_list1 <span class="ot">&lt;-</span> <span class="fu">map</span>(items_df<span class="sc">$</span>refs, <span class="sc">~</span><span class="fu">tolower</span>(.x))</span>
+<span id="cb4-231"><a href="#cb4-231" aria-hidden="true" tabindex="-1"></a>ref_list2 <span class="ot">&lt;-</span> <span class="fu">map</span>(ref_list1, <span class="sc">~</span><span class="fu">str_replace_all</span>(.x, <span class="st">"</span><span class="sc">\\</span><span class="st">.|,| "</span>, <span class="st">""</span>))</span>
+<span id="cb4-232"><a href="#cb4-232" aria-hidden="true" tabindex="-1"></a>ref_list3 <span class="ot">&lt;-</span> <span class="fu">map</span>(ref_list2, <span class="sc">~</span><span class="fu">str_split</span>(.x, <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>))</span>
+<span id="cb4-233"><a href="#cb4-233" aria-hidden="true" tabindex="-1"></a>ref_list4 <span class="ot">&lt;-</span> <span class="fu">map</span>(ref_list3, <span class="sc">~</span><span class="fu">data_frame</span>(<span class="at">x =</span> .x))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: `data_frame()` was deprecated in tibble 1.1.0.
+ℹ Please use `tibble()` instead.</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>ref_list5 <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(ref_list4, <span class="at">.id =</span> <span class="st">"id"</span>) </span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>ref_list6 <span class="ot">&lt;-</span> <span class="fu">unnest</span>(ref_list5)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: `cols` is now required when using `unnest()`.
+ℹ Please use `cols = c(x)`.</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># get the journal names out of the refs</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>ref_list7 <span class="ot">&lt;-</span> </span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  ref_list6 <span class="sc">%&gt;%</span> </span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">journal_name =</span> <span class="fu">gsub</span>(<span class="st">"</span><span class="sc">\\</span><span class="st">-"</span>, <span class="st">""</span>, x)) <span class="sc">%&gt;%</span> </span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">journal_name =</span> <span class="fu">gsub</span>(<span class="st">"</span><span class="sc">\\</span><span class="st">:"</span>, <span class="st">""</span>, journal_name)) <span class="sc">%&gt;%</span> </span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">journal_name =</span> <span class="fu">gsub</span>(<span class="st">"^[a-z'</span><span class="sc">\\</span><span class="st">(</span><span class="sc">\\</span><span class="st">)</span><span class="sc">\\</span><span class="st">:]+[0-9]{4}"</span>, <span class="st">""</span>, journal_name)) <span class="sc">%&gt;%</span> </span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">journal_name =</span> <span class="fu">gsub</span>(<span class="st">"v[0-9]+.*"</span>, <span class="st">""</span>, journal_name)) <span class="sc">%&gt;%</span> </span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">journal_name =</span> <span class="fu">gsub</span>(<span class="st">"p[0-9]+$"</span>, <span class="st">""</span>, journal_name))</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a><span class="co"># prepare to compute shannon and join with other variables</span></span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>items_df<span class="sc">$</span>id <span class="ot">&lt;-</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(items_df)</span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a><span class="co"># tally of all referenced items</span></span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>all_cited_items <span class="ot">&lt;-</span> </span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>  ref_list7 <span class="sc">%&gt;%</span> </span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(x) <span class="sc">%&gt;%</span> </span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(x) <span class="sc">%&gt;%</span> </span>
+<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tally</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(n)) </span>
+<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a><span class="co"># get a list of the top journals</span></span>
+<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a>top_journals <span class="ot">&lt;-</span> </span>
+<span id="cb8-23"><a href="#cb8-23" aria-hidden="true" tabindex="-1"></a>  ref_list7 <span class="sc">%&gt;%</span> </span>
+<span id="cb8-24"><a href="#cb8-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(journal_name) <span class="sc">%&gt;%</span> </span>
+<span id="cb8-25"><a href="#cb8-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(journal_name) <span class="sc">%&gt;%</span> </span>
+<span id="cb8-26"><a href="#cb8-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tally</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb8-27"><a href="#cb8-27" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(n <span class="sc">&gt;</span> <span class="dv">50</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb8-28"><a href="#cb8-28" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(n)) </span>
+<span id="cb8-29"><a href="#cb8-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-30"><a href="#cb8-30" aria-hidden="true" tabindex="-1"></a><span class="co"># In the Shannon index, p_i is the proportion (n/N) of individuals of one particular species (journal) found (n) divided by the total number of individuals found (N), ln is the natural log, Σ is the sum of the calculations, and s is the number of species. </span></span>
+<span id="cb8-31"><a href="#cb8-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-32"><a href="#cb8-32" aria-hidden="true" tabindex="-1"></a><span class="co"># compute diversity of all citations for each article (habitat)</span></span>
+<span id="cb8-33"><a href="#cb8-33" aria-hidden="true" tabindex="-1"></a>shannon_per_item <span class="ot">&lt;-</span> </span>
+<span id="cb8-34"><a href="#cb8-34" aria-hidden="true" tabindex="-1"></a>  ref_list7 <span class="sc">%&gt;%</span> </span>
+<span id="cb8-35"><a href="#cb8-35" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(id, x) <span class="sc">%&gt;%</span> </span>
+<span id="cb8-36"><a href="#cb8-36" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tally</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb8-37"><a href="#cb8-37" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">n_in_article =</span> n) <span class="sc">%&gt;%</span> </span>
+<span id="cb8-38"><a href="#cb8-38" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span>n) <span class="sc">%&gt;%</span> </span>
+<span id="cb8-39"><a href="#cb8-39" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(all_cited_items) <span class="sc">%&gt;%</span> </span>
+<span id="cb8-40"><a href="#cb8-40" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">p_i =</span> n <span class="sc">/</span> <span class="fu">sum</span>(n, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb8-41"><a href="#cb8-41" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">p_i_ln =</span> <span class="fu">log</span>(p_i)) <span class="sc">%&gt;%</span> </span>
+<span id="cb8-42"><a href="#cb8-42" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(id) <span class="sc">%&gt;%</span> </span>
+<span id="cb8-43"><a href="#cb8-43" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">shannon =</span> <span class="sc">-</span><span class="fu">sum</span>(p_i <span class="sc">*</span> p_i_ln, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb8-44"><a href="#cb8-44" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">id =</span> <span class="fu">as.numeric</span>(id)) <span class="sc">%&gt;%</span> </span>
+<span id="cb8-45"><a href="#cb8-45" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(id)  <span class="sc">%&gt;%</span> </span>
+<span id="cb8-46"><a href="#cb8-46" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(items_df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Joining with `by = join_by(x)`
+Joining with `by = join_by(id)`</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># plot</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>boxlplot_shannon_index <span class="ot">&lt;-</span> </span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>shannon_per_item <span class="sc">%&gt;%</span> </span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(year)) <span class="sc">%&gt;%</span> </span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="dv">1</span>,</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>             shannon)) <span class="sc">+</span></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>(</span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>               <span class="at">size =</span> <span class="dv">1</span>)  <span class="sc">+</span></span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>  <span class="co"># median for physics, from Fanelli &amp; Glänzel Fig 2</span></span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="fl">2.6</span>,</span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>             <span class="at">colour =</span> <span class="st">"grey70"</span>) <span class="sc">+</span></span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text_repel</span>(<span class="at">data =</span> <span class="fu">tibble</span>(<span class="at">x =</span> <span class="dv">1</span>, </span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>                                <span class="at">y =</span> <span class="fl">2.6</span>,</span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>                                <span class="at">label =</span> <span class="st">"p"</span>),</span>
+<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a>                  <span class="fu">aes</span>(x, y, <span class="at">label =</span> label),</span>
+<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a>                  <span class="at">bg.colour =</span> <span class="st">"white"</span>, </span>
+<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a>                  <span class="at">bg.r =</span> .<span class="dv">2</span>, </span>
+<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a>                  <span class="at">force =</span> <span class="dv">0</span>) <span class="sc">+</span></span>
+<span id="cb10-19"><a href="#cb10-19" aria-hidden="true" tabindex="-1"></a>  <span class="co"># median for soc sci, from Fanelli &amp; Glänzel Fig 2</span></span>
+<span id="cb10-20"><a href="#cb10-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="fl">3.2</span>,</span>
+<span id="cb10-21"><a href="#cb10-21" aria-hidden="true" tabindex="-1"></a>             <span class="at">colour =</span> <span class="st">"grey70"</span>) <span class="sc">+</span></span>
+<span id="cb10-22"><a href="#cb10-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text_repel</span>(<span class="at">data =</span> <span class="fu">tibble</span>(<span class="at">x =</span> <span class="dv">1</span>, </span>
+<span id="cb10-23"><a href="#cb10-23" aria-hidden="true" tabindex="-1"></a>                                <span class="at">y =</span> <span class="fl">3.2</span>,</span>
+<span id="cb10-24"><a href="#cb10-24" aria-hidden="true" tabindex="-1"></a>                                <span class="at">label =</span> <span class="st">"s"</span>),</span>
+<span id="cb10-25"><a href="#cb10-25" aria-hidden="true" tabindex="-1"></a>                  <span class="fu">aes</span>(x, y, <span class="at">label =</span> label),</span>
+<span id="cb10-26"><a href="#cb10-26" aria-hidden="true" tabindex="-1"></a>                  <span class="at">bg.colour =</span> <span class="st">"white"</span>, </span>
+<span id="cb10-27"><a href="#cb10-27" aria-hidden="true" tabindex="-1"></a>                  <span class="at">bg.r =</span> .<span class="dv">2</span>, </span>
+<span id="cb10-28"><a href="#cb10-28" aria-hidden="true" tabindex="-1"></a>                  <span class="at">force =</span> <span class="dv">0</span>) <span class="sc">+</span></span>
+<span id="cb10-29"><a href="#cb10-29" aria-hidden="true" tabindex="-1"></a>    <span class="co"># median for humanities, from Fanelli &amp; Glänzel Fig 2</span></span>
+<span id="cb10-30"><a href="#cb10-30" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="fl">3.3</span>,</span>
+<span id="cb10-31"><a href="#cb10-31" aria-hidden="true" tabindex="-1"></a>             <span class="at">colour =</span> <span class="st">"grey70"</span>) <span class="sc">+</span></span>
+<span id="cb10-32"><a href="#cb10-32" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text_repel</span>(<span class="at">data =</span> <span class="fu">tibble</span>(<span class="at">x =</span> <span class="dv">1</span>, </span>
+<span id="cb10-33"><a href="#cb10-33" aria-hidden="true" tabindex="-1"></a>                                <span class="at">y =</span> <span class="fl">3.3</span>,</span>
+<span id="cb10-34"><a href="#cb10-34" aria-hidden="true" tabindex="-1"></a>                                <span class="at">label =</span> <span class="st">"h"</span>),</span>
+<span id="cb10-35"><a href="#cb10-35" aria-hidden="true" tabindex="-1"></a>                  <span class="fu">aes</span>(x, y, </span>
+<span id="cb10-36"><a href="#cb10-36" aria-hidden="true" tabindex="-1"></a>                      <span class="at">label =</span> label,</span>
+<span id="cb10-37"><a href="#cb10-37" aria-hidden="true" tabindex="-1"></a>                      <span class="at">segment.colour =</span> <span class="cn">NA</span>),</span>
+<span id="cb10-38"><a href="#cb10-38" aria-hidden="true" tabindex="-1"></a>                  <span class="at">bg.colour =</span> <span class="st">"white"</span>, </span>
+<span id="cb10-39"><a href="#cb10-39" aria-hidden="true" tabindex="-1"></a>                  <span class="at">bg.r =</span> .<span class="dv">2</span>, </span>
+<span id="cb10-40"><a href="#cb10-40" aria-hidden="true" tabindex="-1"></a>                  <span class="at">force =</span> <span class="dv">0</span>,</span>
+<span id="cb10-41"><a href="#cb10-41" aria-hidden="true" tabindex="-1"></a>                  <span class="at">nudge_x =</span> <span class="fl">0.05</span>) <span class="sc">+</span></span>
+<span id="cb10-42"><a href="#cb10-42" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_reverse</span>(<span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">6</span>, <span class="dv">0</span>)) <span class="sc">+</span></span>
+<span id="cb10-43"><a href="#cb10-43" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">labels =</span> <span class="cn">NULL</span>) <span class="sc">+</span></span>
+<span id="cb10-44"><a href="#cb10-44" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()  <span class="sc">+</span></span>
+<span id="cb10-45"><a href="#cb10-45" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">panel.grid  =</span> <span class="fu">element_blank</span>()) <span class="sc">+</span></span>
+<span id="cb10-46"><a href="#cb10-46" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">"Shannon Index"</span>) <span class="sc">+</span></span>
+<span id="cb10-47"><a href="#cb10-47" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">"Diversity of references"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(cowplot)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>
+Attaching package: 'cowplot'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following object is masked from 'package:lubridate':
+
+    stamp</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_grid</span>(boxlplot_n_authors, </span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>          boxlplot_rel_title_length,</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>          boxlplot_n_pages,</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>          boxlplot_price_index, </span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>          boxlplot_shannon_index,</span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>          <span class="at">nrow =</span> <span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: Removed 6 rows containing non-finite outside the scale range
+(`stat_boxplot()`).
+Removed 6 rows containing non-finite outside the scale range
+(`stat_boxplot()`).</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: Removed 38 rows containing non-finite outside the scale range
+(`stat_boxplot()`).</code></pre>
+</div>
+<div class="cell-output-display">
+<div id="fig-compare-other-fields" class="quarto-figure quarto-figure-center anchored" width="672">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-compare-other-fields-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="paper_files/figure-html/fig-compare-other-fields-1.png" class="img-fluid figure-img" width="672">
+</div>
+<figcaption class="figure quarto-float-caption quarto-float-fig" id="fig-compare-other-fields-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;1: Distributions of article characteristics hypothesised to reflect the level of consensus. The boxplot shows the distribution of values of archaeology articles. The thick black line in the middle of the boxplot is the median value, the box represents the inter-quartile range (the range between the 25th and 75th percentiles, where 50% of the data are located), and individual points represent outliers. The thin grey horizontal lines in each boxplot indicate the median values computed by Fanelli and Glanzel (2013), where p = physics, s = social sciences, h = humanities.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p><a href="#fig-compare-other-fields" class="quarto-xref">Figure&nbsp;1</a> shows the distribution of bibliometric variables for archaeology in context of data from other fields presented by <span class="citation" data-cites="fanelliBibliometricEvidenceHierarchy2013">Fanelli and Glänzel (<a href="#ref-fanelliBibliometricEvidenceHierarchy2013" role="doc-biblioref">2013</a>)</span>. The most striking indicator of archaeology as a hard science is the number of authors, where it is between the social sciences and physics. Archaeology is a close fit with the social sciences in relative title length. It is between the the social sciences and humanities in recency of references and diversity of references. The clearest indicator of archaeology as a soft science is article length where it is like the humanities. Overall archaeology does not sit squarely at either end of the hard-soft spectrum. It is generally not a harder science than the social sciences, with the exception of collaborator group sizes.</p>
+</section>
+<section id="how-has-the-hardness-of-archaeology-varied-over-time" class="level3">
+<h3 class="anchored" data-anchor-id="how-has-the-hardness-of-archaeology-varied-over-time">How has the hardness of archaeology varied over time?</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>over_time <span class="ot">&lt;-</span> </span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>  items_df <span class="sc">%&gt;%</span> </span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(items_df_title) <span class="sc">%&gt;%</span> </span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(shannon_per_item) <span class="sc">%&gt;%</span> </span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">log_authors_n =</span> <span class="fu">log</span>(authors_n),</span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>         <span class="at">log_pages_n =</span> <span class="fu">log</span>(pages_n),</span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>         <span class="at">sqrt_refs_n =</span> <span class="fu">sqrt</span>(refs_n),</span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>         <span class="at">journal_wrp =</span> <span class="fu">str_wrap</span>(journal, <span class="dv">30</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(year,</span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a>         log_authors_n,</span>
+<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a>         log_pages_n,</span>
+<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a>         prices_index, </span>
+<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a>         shannon,</span>
+<span id="cb17-14"><a href="#cb17-14" aria-hidden="true" tabindex="-1"></a>         sqrt_refs_n, </span>
+<span id="cb17-15"><a href="#cb17-15" aria-hidden="true" tabindex="-1"></a>         relative_title_length)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Joining with `by = join_by(authors, authors_n, title, title_n, journal,
+abstract, refs, refs_n, pages_n, year, doi)`
+Joining with `by = join_by(authors, authors_n, title, title_n, journal,
+abstract, refs, refs_n, pages_n, year, doi, prices_index, id)`
+Adding missing grouping variables: `authors`, `title`, `journal`</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>over_time_long <span class="ot">&lt;-</span> </span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>  over_time <span class="sc">%&gt;%</span> </span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span>journal) <span class="sc">%&gt;%</span> </span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">gather</span>(variable, </span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>         value,</span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>         <span class="sc">-</span>year) <span class="sc">%&gt;%</span> </span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(value <span class="sc">!=</span> <span class="sc">-</span><span class="cn">Inf</span>,</span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a>         value <span class="sc">!=</span>  <span class="cn">Inf</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">variable =</span> <span class="fu">case_when</span>(</span>
+<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a>    variable <span class="sc">==</span> <span class="st">"log_authors_n"</span> <span class="sc">~</span> <span class="st">"N. of authors (ln)"</span>,</span>
+<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a>    variable <span class="sc">==</span> <span class="st">"log_pages_n"</span>   <span class="sc">~</span> <span class="st">"N. of pages (ln)"</span>,</span>
+<span id="cb19-13"><a href="#cb19-13" aria-hidden="true" tabindex="-1"></a>    variable <span class="sc">==</span> <span class="st">"prices_index"</span>  <span class="sc">~</span> <span class="st">"Recency of references"</span>,</span>
+<span id="cb19-14"><a href="#cb19-14" aria-hidden="true" tabindex="-1"></a>    variable <span class="sc">==</span> <span class="st">"shannon"</span>  <span class="sc">~</span> <span class="st">"Diversity of references"</span>,</span>
+<span id="cb19-15"><a href="#cb19-15" aria-hidden="true" tabindex="-1"></a>    variable <span class="sc">==</span> <span class="st">"sqrt_refs_n"</span>  <span class="sc">~</span> <span class="st">"N. of refs (sqrt)"</span>,</span>
+<span id="cb19-16"><a href="#cb19-16" aria-hidden="true" tabindex="-1"></a>    variable <span class="sc">==</span> <span class="st">"relative_title_length"</span>  <span class="sc">~</span> <span class="st">"Relative title length (ln)"</span></span>
+<span id="cb19-17"><a href="#cb19-17" aria-hidden="true" tabindex="-1"></a>  )) <span class="sc">%&gt;%</span> </span>
+<span id="cb19-18"><a href="#cb19-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(variable)) <span class="sc">%&gt;%</span> </span>
+<span id="cb19-19"><a href="#cb19-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.nan</span>(value)) <span class="sc">%&gt;%</span> </span>
+<span id="cb19-20"><a href="#cb19-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(value)) <span class="sc">%&gt;%</span> </span>
+<span id="cb19-21"><a href="#cb19-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(value <span class="sc">!=</span> <span class="st">"NaN"</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb19-22"><a href="#cb19-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">value =</span> <span class="fu">parse_number</span>(value))</span>
+<span id="cb19-23"><a href="#cb19-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-24"><a href="#cb19-24" aria-hidden="true" tabindex="-1"></a><span class="co"># compute beta estimates so we can colour lines to indicate more or</span></span>
+<span id="cb19-25"><a href="#cb19-25" aria-hidden="true" tabindex="-1"></a><span class="co"># less scientific</span></span>
+<span id="cb19-26"><a href="#cb19-26" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(broom)</span>
+<span id="cb19-27"><a href="#cb19-27" aria-hidden="true" tabindex="-1"></a>over_time_long_models <span class="ot">&lt;-</span> </span>
+<span id="cb19-28"><a href="#cb19-28" aria-hidden="true" tabindex="-1"></a>  over_time_long <span class="sc">%&gt;%</span> </span>
+<span id="cb19-29"><a href="#cb19-29" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_nest</span>(variable) <span class="sc">%&gt;%</span> </span>
+<span id="cb19-30"><a href="#cb19-30" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">model =</span> <span class="fu">map</span>(data, <span class="sc">~</span><span class="fu">tidy</span>(<span class="fu">lm</span>(value <span class="sc">~</span> year, <span class="at">data =</span> .)))) <span class="sc">%&gt;%</span> </span>
+<span id="cb19-31"><a href="#cb19-31" aria-hidden="true" tabindex="-1"></a>  <span class="fu">unnest</span>(model) <span class="sc">%&gt;%</span> </span>
+<span id="cb19-32"><a href="#cb19-32" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(term <span class="sc">==</span> <span class="st">'year'</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb19-33"><a href="#cb19-33" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">becoming_more_scientific =</span> <span class="fu">case_when</span>(</span>
+<span id="cb19-34"><a href="#cb19-34" aria-hidden="true" tabindex="-1"></a>    variable <span class="sc">==</span> <span class="st">"N. of authors (ln)"</span>         <span class="sc">&amp;</span> estimate <span class="sc">&gt;</span> <span class="dv">0</span> <span class="sc">~</span> <span class="st">"TRUE"</span>,</span>
+<span id="cb19-35"><a href="#cb19-35" aria-hidden="true" tabindex="-1"></a>    variable <span class="sc">==</span> <span class="st">"N. of pages (ln)"</span>           <span class="sc">&amp;</span> estimate <span class="sc">&lt;</span> <span class="dv">0</span> <span class="sc">~</span> <span class="st">"TRUE"</span>,</span>
+<span id="cb19-36"><a href="#cb19-36" aria-hidden="true" tabindex="-1"></a>    variable <span class="sc">==</span> <span class="st">"N. of refs (sqrt)"</span>          <span class="sc">&amp;</span> estimate <span class="sc">&lt;</span> <span class="dv">0</span> <span class="sc">~</span> <span class="st">"TRUE"</span>,</span>
+<span id="cb19-37"><a href="#cb19-37" aria-hidden="true" tabindex="-1"></a>    variable <span class="sc">==</span> <span class="st">"Recency of references"</span>      <span class="sc">&amp;</span> estimate <span class="sc">&gt;</span> <span class="dv">0</span> <span class="sc">~</span> <span class="st">"TRUE"</span>,</span>
+<span id="cb19-38"><a href="#cb19-38" aria-hidden="true" tabindex="-1"></a>    variable <span class="sc">==</span> <span class="st">"Relative title length (ln)"</span> <span class="sc">&amp;</span> estimate <span class="sc">&gt;</span> <span class="dv">0</span> <span class="sc">~</span> <span class="st">"TRUE"</span>,</span>
+<span id="cb19-39"><a href="#cb19-39" aria-hidden="true" tabindex="-1"></a>    variable <span class="sc">==</span> <span class="st">"Diversity of references"</span>    <span class="sc">&amp;</span> estimate <span class="sc">&lt;</span> <span class="dv">0</span> <span class="sc">~</span> <span class="st">"TRUE"</span>,</span>
+<span id="cb19-40"><a href="#cb19-40" aria-hidden="true" tabindex="-1"></a>    <span class="cn">TRUE</span> <span class="sc">~</span> <span class="st">"FALSE"</span></span>
+<span id="cb19-41"><a href="#cb19-41" aria-hidden="true" tabindex="-1"></a>  )) </span>
+<span id="cb19-42"><a href="#cb19-42" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-43"><a href="#cb19-43" aria-hidden="true" tabindex="-1"></a><span class="co"># join with data</span></span>
+<span id="cb19-44"><a href="#cb19-44" aria-hidden="true" tabindex="-1"></a>over_time_long_colour <span class="ot">&lt;-</span> </span>
+<span id="cb19-45"><a href="#cb19-45" aria-hidden="true" tabindex="-1"></a>  over_time_long <span class="sc">%&gt;%</span> </span>
+<span id="cb19-46"><a href="#cb19-46" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(over_time_long_models)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Joining with `by = join_by(variable)`</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(over_time_long_colour,</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>       <span class="fu">aes</span>(year, </span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>           value,</span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>           <span class="at">colour =</span> becoming_more_scientific)) <span class="sc">+</span></span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">alpha =</span> <span class="fl">0.5</span>) <span class="sc">+</span></span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">method =</span> <span class="st">"lm"</span>, </span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>              <span class="at">size =</span> <span class="dv">3</span>,</span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>              <span class="at">colour =</span> <span class="st">"#7570b3"</span>) <span class="sc">+</span></span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>( <span class="sc">~</span> variable,</span>
+<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a>              <span class="at">scales =</span> <span class="st">"free_y"</span>) <span class="sc">+</span></span>
+<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>(<span class="at">base_size =</span> <span class="dv">12</span>) <span class="sc">+</span></span>
+<span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">"#d95f02"</span>, <span class="st">"#1b9e77"</span> )) <span class="sc">+</span></span>
+<span id="cb21-13"><a href="#cb21-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">guides</span>(<span class="at">colour =</span> <span class="st">"none"</span>) <span class="sc">+</span></span>
+<span id="cb21-14"><a href="#cb21-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">""</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: Using `size` aesthetic for lines was deprecated in ggplot2 3.4.0.
+ℹ Please use `linewidth` instead.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>`geom_smooth()` using formula = 'y ~ x'</code></pre>
+</div>
+<div class="cell-output-display">
+<div id="fig-change-over-time" class="quarto-figure quarto-figure-center anchored" width="672">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-change-over-time-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="paper_files/figure-html/fig-change-over-time-1.png" class="img-fluid figure-img" width="672">
+</div>
+<figcaption class="figure quarto-float-caption quarto-float-fig" id="fig-change-over-time-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;2: xxx
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="how-do-archaeology-journals-vary-in-hardness" class="level3">
+
+<!-- n an ideal science, scholars share a common background of established theories, facts and methods. This allows them to agree (usually after debate and further evidence) on the validity and significance of a new research finding, making it the basis for further theorizing and research. Harder sciences are hypothesised to come closer to this ideal. Moving towards “softer” fields, this consensus becomes less likely to be reached, the common background shrinks and fractures, and so data become less able to “speak for themselves” [\[](https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0066938#pone.0066938-Fanelli1)
+
+Computational reproducibilty has become central to archaeology's status a science, especially as the definition and practice of science shifts over time. Computers have become an essential field and laboratory instrument for almost all of us, so we should document how we change our data as it flows through silicon just as carefully as we document the operating parameters of a mass spectrometer or other laboratory instrument. In making the case for reproducibilty as a core value in archaeological science
+
+In recent years the Journal of Archaeological Science has been one of a number of archaeology journals that introduced an unusual new kind of peer review, one that evaluates the computational reproducibilty of the research submitted for publication. This journal was among the first of these and is currently by far the most active in conducting these reviews. In this article I reflect on how this new kind of review came about, why it is important for the future of archaeological science, and offer suggestions for prospective authors based on my experience as a reproducibilty reviewer for this journal on how we can ensure archaeological science remains worthy of the name.
+
+My motivation is the view that It is customary in significant round-number anniversary -->
 
 </section>
+</section>
 
-<div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" role="doc-bibliography"><h2 class="anchored quarto-appendix-heading">References</h2><div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list">
+<div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" role="doc-bibliography"><h2 class="anchored quarto-appendix-heading">How do archaeology journals vary in hardness?</h2><div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list">
+<div id="ref-biglanCharacteristicsSubjectMatter1973" class="csl-entry" role="listitem">
+Biglan, Anthony. 1973. <span>“The Characteristics of Subject Matter in Different Academic Areas.”</span> <em>Journal of Applied Psychology</em> 57 (3): 195–203. <a href="https://doi.org/10.1037/h0034701">https://doi.org/10.1037/h0034701</a>.
+</div>
 <div id="ref-binford1962archaeology" class="csl-entry" role="listitem">
 Binford, Lewis R. 1962. <span>“Archaeology as Anthropology.”</span> <em>American Antiquity</em> 28 (2): 217–25.
 </div>
-<div id="ref-clark2010should" class="csl-entry" role="listitem">
-Clark, Geoffrey A. 2010. <span>“Should One Size Fit All?: Some Observations on Killick &amp; Goldberg.”</span> <em>The SAA Archaeological Record</em> 10 (1): 39–42.
+<div id="ref-bornerAtlasScience2010" class="csl-entry" role="listitem">
+Börner, Katy. 2010. <em>Atlas of Science</em>. The MIT Press. <a href="https://mitpress.mit.edu/9780262014458/atlas-of-science/">https://mitpress.mit.edu/9780262014458/atlas-of-science/</a>.
+</div>
+<div id="ref-clevelandGraphsScientificPublications1984" class="csl-entry" role="listitem">
+Cleveland, William S. 1984. <span>“Graphs in Scientific Publications.”</span> <em>The American Statistician</em> 38 (4): 261–69.
+</div>
+<div id="ref-coleHierarchySciences1983" class="csl-entry" role="listitem">
+Cole, Stephen. 1983. <span>“The Hierarchy of the Sciences?”</span> <em>American Journal of Sociology</em> 89 (1): 111–39. <a href="https://doi.org/10.1086/227835">https://doi.org/10.1086/227835</a>.
+</div>
+<div id="ref-DifferentAgenda2012" class="csl-entry" role="listitem">
+Editors. 2012. <span>“A Different Agenda.”</span> <em>Nature</em> 487 (7407): 271–71. <a href="https://doi.org/10.1038/487271a">https://doi.org/10.1038/487271a</a>.
+</div>
+<div id="ref-fanelliBibliometricEvidenceHierarchy2013" class="csl-entry" role="listitem">
+Fanelli, Daniele, and Wolfgang Glänzel. 2013. <span>“Bibliometric Evidence for a Hierarchy of the Sciences.”</span> <em>PLOS ONE</em> 8 (6): e66938. <a href="https://doi.org/10.1371/journal.pone.0066938">https://doi.org/10.1371/journal.pone.0066938</a>.
 </div>
 <div id="ref-hawkesProperStudyMankind1968" class="csl-entry" role="listitem">
 Hawkes, Jacquetta. 1968. <span>“The Proper Study of Mankind.”</span> <em>Antiquity</em> 42 (168): 255–62. <a href="https://doi.org/10.1017/S0003598X00034451">https://doi.org/10.1017/S0003598X00034451</a>.
@@ -119,14 +702,41 @@ Hodder, Ian. 1985. <span>“Postprocessual Archaeology.”</span> <em>Advances i
 <div id="ref-isaacWhitherArchaeology1971" class="csl-entry" role="listitem">
 Isaac, Glynn LL. 1971. <span>“Whither Archaeology?”</span> <em>Antiquity</em> 45 (178): 123–29. <a href="https://doi.org/10.1017/S0003598X00069283">https://doi.org/10.1017/S0003598X00069283</a>.
 </div>
-<div id="ref-killick2009quiet" class="csl-entry" role="listitem">
-Killick, David, and Paul Goldberg. 2009. <span>“A Quiet Crisis in American Archaeology.”</span> <em>The SAA Archaeological Record</em> 9 (1): 6–10.
+<div id="ref-martinon-torresArchaeologicalTheoriesArchaeological2013" class="csl-entry" role="listitem">
+Martinón-Torres, Marcos, and David Killick. 2013. <span>“Archaeological Theories and Archaeological Sciences.”</span> <a href="http://www.oxfordhandbooks.com/view/10.1093/oxfordhb/9780199567942.001.0001/oxfordhb-9780199567942-e-004">http://www.oxfordhandbooks.com/view/10.1093/oxfordhb/9780199567942.001.0001/oxfordhb-9780199567942-e-004</a>.
 </div>
-<div id="ref-shott2010crises" class="csl-entry" role="listitem">
-Shott, Michael. 2010. <span>“Crises and Solutions in American Archaeology.”</span> <em>SAA Archaeological Record</em> 10 (1): 37–38.
+<div id="ref-marwickComputationalReproducibilityArchaeological2017" class="csl-entry" role="listitem">
+Marwick, Ben. 2017. <span>“Computational Reproducibility in Archaeological Research: Basic Principles and a Case Study of Their Implementation.”</span> <em>Journal of Archaeological Method and Theory</em> 24 (2): 424450. <a href="https://doi.org/10.1007/s10816-015-9272-9">https://doi.org/10.1007/s10816-015-9272-9</a>.
+</div>
+<div id="ref-doi:10.1080/00031305.2017.1375986" class="csl-entry" role="listitem">
+Marwick, Ben, Carl Boettiger, and Lincoln Mullen. 2018. <span>“Packaging Data Analytical Work Reproducibly Using r (and Friends).”</span> <em>The American Statistician</em> 72 (1): 80–88. <a href="https://doi.org/10.1080/00031305.2017.1375986">https://doi.org/10.1080/00031305.2017.1375986</a>.
+</div>
+<div id="ref-moed1998new" class="csl-entry" role="listitem">
+Moed, Henk F, Th N Van Leeuwen, and Jan Reedijk. 1998. <span>“A New Classification System to Describe the Ageing of Scientific Journals and Their Impact Factors.”</span> <em>Journal of Documentation</em> 54 (4): 387–419.
+</div>
+<div id="ref-PositiveResultsIncrease" class="csl-entry" role="listitem">
+<span>“<span>“</span>Positive<span>”</span> Results Increase down the Hierarchy of the Sciences | PLOS ONE.”</span> n.d. <a href="https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0010068#pone.0010068-Biglan1">https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0010068#pone.0010068-Biglan1</a>.
+</div>
+<div id="ref-price1970citation" class="csl-entry" role="listitem">
+Price, DJS. 1970. <span>“Citation Measures of Hard Science, Technology and Nonscience.”</span> <em>Communication Among Scientists and Engineers</em>, 3–22.
+</div>
+<div id="ref-rcoreteamLanguageEnvironmentStatistical2024" class="csl-entry" role="listitem">
+R Core Team. 2024. <em>R: A Language and Environment for Statistical Computing</em>. Vienna, Austria: R Foundation for Statistical Computing. http://www.R-project.org/.
+</div>
+<div id="ref-smithScientificGraphsHierarchy2000" class="csl-entry" role="listitem">
+Smith, Laurence D., Lisa A. Best, D. Alan Stubbs, John Johnston, and Andrea Bastiani Archibald. 2000. <span>“Scientific Graphs and the Hierarchy of the Sciences:: A Latourian Survey of Inscription Practices.”</span> <em>Social Studies of Science</em> 30 (1): 73–94. <a href="https://doi.org/10.1177/030631200030001003">https://doi.org/10.1177/030631200030001003</a>.
 </div>
 <div id="ref-torrenceFortyYearsStill2015" class="csl-entry" role="listitem">
 Torrence, Robin, Marcos Martinón-Torres, and Th. Rehren. 2015. <span>“Forty Years and Still Growing: <span><em>Journal of Archaeological Science</em></span> Looks to the Future.”</span> <em>Journal of Archaeological Science</em>, Scoping the future of archaeological science: Papers in honour of richard klein, 56 (April): 1–8. <a href="https://doi.org/10.1016/j.jas.2015.03.001">https://doi.org/10.1016/j.jas.2015.03.001</a>.
+</div>
+<div id="ref-yitzhakiVariationInformativityTitles1997" class="csl-entry" role="listitem">
+Yitzhaki, M. 1997. <span>“Variation in Informativity of Titles of Research Papers in Selected Humanities Journals: A Comparative Study.”</span> <em>Scientometrics</em> 38 (2): 219–29. <a href="https://doi.org/10.1007/BF02457410">https://doi.org/10.1007/BF02457410</a>.
+</div>
+<div id="ref-yitzhakiRelationTitleLength2002" class="csl-entry" role="listitem">
+Yitzhaki, Moshe. 2002. <span>“Relation of the Title Length of a Journal Article to the Length of the Article.”</span> <em>Scientometrics</em> 54 (3): 435–47. <a href="https://doi.org/10.1023/A:1016038617639">https://doi.org/10.1023/A:1016038617639</a>.
+</div>
+<div id="ref-zuckerman1972age" class="csl-entry" role="listitem">
+Zuckerman, Harriet, and Robert K Merton. 1972. <span>“Age, Aging, and Age Structure in Science.”</span> <em>Higher Education</em> 4 (2): 1–4.
 </div>
 </div></section></div></main>
 <!-- /main column -->

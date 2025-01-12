@@ -2,9 +2,12 @@
 title: "Extracting sunbeams from cucumbers: Reproducibility as a necessity for the future of archaeological science"
 format: html
 bibliography: references.bib
+execute: 
+  echo: false
+  warning: false
 ---
 
-
+```{=html}
 <!-- 
 
 authoritative, agenda-setting or hypothesis-setting papers, rather than descriptive compilations of the literature.
@@ -14,7 +17,7 @@ have the vision and authority to guide the next generation of archaeological sci
 cross-ref Vaiglova 2025 this issue
 
 -->
-
+```
 
 ## Introduction
 
@@ -26,7 +29,11 @@ What has been missing from these debates is a macroscopic observation of what th
 
 ## Methods and materials
 
-To objectively quantify the relative hardness or softness of archaeology, as an evaluation of its status as a science, and the place of this journal in context of other archaeology journals, I take a bibliometric approach. This approach is based on @fanelliBibliometricEvidenceHierarchy2013, who examined the hardness and softness of 12 disciplines using parameters of scholarly publications. Following @fanelliBibliometricEvidenceHierarchy2013, I quantify the number of authors, length of article, relative title length, number of cited references, age of references, and diversity of references for a large sample of peer-reviewed journal articles. These parameters are useful because of how they signify consensus in a research community. A larger number of authors on a paper reflects collaboration of people working together on a common goal. Collaborators have specialized roles, each of whom has the ability to study a part of the problem with high accuracy and detail, with harder fields having larger groups of collaborators[@zuckerman1972age]. Reflecting this collaboration group size, harder disciplines tend to have higher average numbers of authors on papers. Article length has an inverse correlation with field hardness. In low-consensus, or softer, fields, papers must be longer to present justification, nuance and contextualization of results. I used page numbers to measure article length. Similarly, the number of cited references will typically be higher in low-consensus disciplines where relatively fewer claims are taken for granted and thus many claims need citations for support, relative to harder fields [@skilton2006comparative]. The age of works cited has long been used as a measure of a field's hardness [@moed1998new; @bornerAtlasScience2010], based on the assumption that harder fields assimilate new results more rapidly that softer fields [@price1970citation]. I calculated the Price index for each article, which is the proportion of all cited works that were published in the five years preceding the paper.
+To objectively quantify the relative hardness or softness of archaeology, as an evaluation of its status as a science, and the place of this journal in context of other archaeology journals, I take a bibliometric approach. This approach is based on @fanelliBibliometricEvidenceHierarchy2013, who examined the hardness and softness of 12 disciplines using scholarly publication parameters. @fanelliBibliometricEvidenceHierarchy2013 found a spectrum of statistically significant variation in bibliometric variables from the physical to the social sciences, with papers tending at the softer end of the spectrum tending to have fewer co-authors, use less substantive titles, have longer texts, cite older literature, and have a higher diversity of sources. In @fanelliBibliometricEvidenceHierarchy2013's analysis harder sciences include Space Science, Physics, Chemistry, less hard sciences include social sciences include Psychiatry/Psychology, Economics, Business and General Social Sciences, and the Humanities define the soft end of the spectrum. Following @fanelliBibliometricEvidenceHierarchy2013, I quantify the number of authors, length of article, relative title length, age of references, and diversity of references for a large sample of peer-reviewed journal articles.
+
+These parameters are useful because of how they signify consensus in a research community. A larger number of authors on a paper reflects collaboration of people working together on a common goal. Collaborators have specialized roles, each of whom has the ability to study a part of the problem with high accuracy and detail, with harder fields having larger groups of collaborators[@zuckerman1972age]. Reflecting this collaboration group size, harder disciplines tend to have higher average numbers of authors on papers. Article length has an inverse correlation with field hardness. In low-consensus, or softer, fields, papers must be longer to present justification, nuance and contextualization of results. The number of substantive and informative words in an article's title tends to be positively correlated with article length in harder disciplines [@yitzhakiRelationTitleLength2002; @yitzhakiVariationInformativityTitles1997], reflecting a focus on empiricism and efficiency that is characteristic of high-consensus disciplines. While @yitzhakiRelationTitleLength2002 removed stop-words (e.g. prepositions, articles, conjunctions, etc.) to calculate article length, in order to generate results for comparison with @fanelliBibliometricEvidenceHierarchy2013 I follow his method of dividing the total word count of the article title by the total number of pages of the article to compute relative title length. 
+
+The age of works cited has long been used as a measure of a field's hardness [@moed1998new; @bornerAtlasScience2010], based on the assumption that harder fields assimilate new results more rapidly that softer fields [@price1970citation]. I calculated a recency of references index for each article (also known as the Price index), which is the proportion of all cited works that were published in the five years preceding the paper. The diversity of references
 
 ```{r}
 library(tidyverse)
@@ -49,12 +56,13 @@ The entire R code [@rcoreteamLanguageEnvironmentStatistical2024] used for all th
 ```{r}
 library(ggrepel)
 
+# Number of authors ------------------
 boxlplot_n_authors <- 
 items_df %>% 
   filter(!is.na(year)) %>% 
   ggplot(aes(1,
              log(authors_n))) +
-  geom_boxplot(colour = "red", 
+  geom_boxplot(
                size = 1)  +
   # median for physics, from Fanelli & Glänzel Fig 2
   geom_hline(yintercept = 1.4,
@@ -93,14 +101,69 @@ items_df %>%
   ylab("N. of authors (ln)") +
   xlab("Collaborator group size") 
 
+# Relative title length  ----------------
 
+items_df_title <- 
+  items_df %>% 
+  filter(!is.na(pages_n)) %>%  
+  filter(!is.na(title_n)) %>% 
+  mutate(relative_title_length = log(title_n / pages_n))
+
+boxlplot_rel_title_length <- 
+items_df_title %>% 
+  filter(!is.na(year)) %>% 
+  ggplot(aes(1,
+             relative_title_length)) +
+  geom_boxplot(
+               size = 1)  +
+  # median for physics, from Fanelli & Glänzel Fig 2
+  geom_hline(yintercept = 0.8,
+             colour = "grey70") +
+  geom_text_repel(data = tibble(x = 1, 
+                                y = 0.8,
+                                label = "p"),
+                  aes(x, y, label = label),
+                  bg.colour = "white", 
+                  bg.r = .2, 
+                  force = 0) +
+  # median for soc sci, from Fanelli & Glänzel Fig 2
+  geom_hline(yintercept = 0.0,
+             colour = "grey70") +
+  geom_text_repel(data = tibble(x = 1, 
+                                y = 0.0,
+                                label = "s"),
+                  aes(x, y, label = label),
+                  bg.colour = "white", 
+                  bg.r = .2, 
+                  force = 0) +
+    # median for humanities, from Fanelli & Glänzel Fig 2
+  geom_hline(yintercept = -0.2,
+             colour = "grey70") +
+  geom_text_repel(data = tibble(x = 1, 
+                                y = -0.2,
+                                label = "h"),
+                  aes(x, y, label = label),
+                  bg.colour = "white", 
+                  bg.r = .2, 
+                  force = 0) +
+  
+  scale_y_continuous(limits = c(-4.5, 3),
+                     breaks =  seq(-5, 5, 1),
+                     labels = seq(-5, 5, 1)) +
+  scale_x_continuous(labels = NULL) +
+  theme_minimal() +
+  theme(panel.grid  = element_blank()) +
+  ylab("Ratio of title length to article length (ln)") +
+  xlab("Relative title length")
+
+# Number of pages ------------------
 boxlplot_n_pages <- 
 items_df %>% 
   ggplot(aes(1,
              log(pages_n))) +
-  geom_boxplot(colour = "red", 
+  geom_boxplot(
                size = 1)  +
-   # median for physics, from Fanelli & Glänzel Fig 2
+  # median for physics, from Fanelli & Glänzel Fig 2
   geom_hline(yintercept = 1.8,
              colour = "grey70") +
   geom_text_repel(data = tibble(x = 1, 
@@ -130,30 +193,310 @@ items_df %>%
                   bg.colour = "white", 
                   bg.r = .2, 
                   force = 0) +
-  scale_y_continuous(limits = c(0, 5)) +
+  scale_y_reverse(limits = c(5, 0)) +
   scale_x_continuous(labels = NULL) +
   theme_minimal() + 
   theme(panel.grid  = element_blank()) +
   ylab("N. of pages (ln)") +
   xlab("Article length")
 
+# Price's index - recency of references ------------------
+library(stringr)
+
+# output storage
+prices_index <- vector("list", length = nrow(items_df))
+
+# loop, this takes a moment
+for(i in seq_len(nrow(items_df))){
+  
+  refs <-  items_df$refs[i]
+  year <-  items_df$year[i]
+  
+  ref_years <- 
+    as.numeric(str_match(str_extract_all(refs, ", [0-9]{4}, ")[[1]], "\\d{4}"))
+  
+  preceeding_five_years <-  
+    seq(year - 5, year, 1)
+  
+  refs_n_in_preceeding_five_years <- 
+    ref_years[ref_years %in% preceeding_five_years]
+  
+  prices_index[[i]] <- 
+    length(refs_n_in_preceeding_five_years) / length(ref_years)
+  
+  # for debugging
+  # print(i)
+  
+}
+
+prices_index <- flatten_dbl(prices_index)
+
+# add to data frame
+items_df$prices_index <-  prices_index
+
+# plot
+boxlplot_price_index <- 
+items_df %>% 
+  ggplot(aes(1,
+             prices_index)) +
+  geom_boxplot(
+               size = 1)  +
+  # median for physics, from Fanelli & Glänzel Fig 2
+  geom_hline(yintercept = 0.38,
+             colour = "grey70") +
+  geom_text_repel(data = tibble(x = 1, 
+                                y = 0.38,
+                                label = "p"),
+                  aes(x, y, label = label),
+                  bg.colour = "white", 
+                  bg.r = .2, 
+                  force = 0) +
+  # median for soc sci, from Fanelli & Glänzel Fig 2
+  geom_hline(yintercept = 0.29,
+             colour = "grey70") +
+  geom_text_repel(data = tibble(x = 1, 
+                                y = 0.29,
+                                label = "s"),
+                  aes(x, y, label = label),
+                  bg.colour = "white", 
+                  bg.r = .2, 
+                  force = 0) +
+    # median for humanities, from Fanelli & Glänzel Fig 2
+  geom_hline(yintercept = 0.19,
+             colour = "grey70") +
+  geom_text_repel(data = tibble(x = 1, 
+                                y = 0.19,
+                                label = "h"),
+                  aes(x, y, label = label),
+                  bg.colour = "white", 
+                  bg.r = .2, 
+                  force = 0) +
+  scale_y_continuous(limits = c(0, 1)) +
+  scale_x_continuous(labels = NULL) +
+  theme_minimal() +
+  theme(panel.grid  = element_blank()) +
+  ylab("Prop. refs in last 5 years") +
+  xlab("Recency of references")
+
+# Shannon index - diversity of references ------------------
+# journal name as species, article as habitat
+
+# simplify the refs, since they are a bit inconsistent, some of
+# these steps take a few seconds
+ref_list1 <- map(items_df$refs, ~tolower(.x))
+ref_list2 <- map(ref_list1, ~str_replace_all(.x, "\\.|,| ", ""))
+ref_list3 <- map(ref_list2, ~str_split(.x, "\n"))
+ref_list4 <- map(ref_list3, ~data_frame(x = .x))
+ref_list5 <- bind_rows(ref_list4, .id = "id") 
+ref_list6 <- unnest(ref_list5)
+
+# get the journal names out of the refs
+ref_list7 <- 
+  ref_list6 %>% 
+  mutate(journal_name = gsub("\\-", "", x)) %>% 
+  mutate(journal_name = gsub("\\:", "", journal_name)) %>% 
+  mutate(journal_name = gsub("^[a-z'\\(\\)\\:]+[0-9]{4}", "", journal_name)) %>% 
+  mutate(journal_name = gsub("v[0-9]+.*", "", journal_name)) %>% 
+  mutate(journal_name = gsub("p[0-9]+$", "", journal_name))
+
+# prepare to compute shannon and join with other variables
+items_df$id <- 1:nrow(items_df)
+
+# tally of all referenced items
+all_cited_items <- 
+  ref_list7 %>% 
+  select(x) %>% 
+  group_by(x) %>% 
+  tally() %>% 
+  arrange(desc(n)) 
+
+# get a list of the top journals
+top_journals <- 
+  ref_list7 %>% 
+  select(journal_name) %>% 
+  group_by(journal_name) %>% 
+  tally() %>% 
+  filter(n > 50) %>% 
+  arrange(desc(n)) 
+
+# In the Shannon index, p_i is the proportion (n/N) of individuals of one particular species (journal) found (n) divided by the total number of individuals found (N), ln is the natural log, Σ is the sum of the calculations, and s is the number of species. 
+
+# compute diversity of all citations for each article (habitat)
+shannon_per_item <- 
+  ref_list7 %>% 
+  group_by(id, x) %>% 
+  tally() %>% 
+  mutate(n_in_article = n) %>% 
+  select(-n) %>% 
+  left_join(all_cited_items) %>% 
+  mutate(p_i = n / sum(n, na.rm = TRUE)) %>% 
+  mutate(p_i_ln = log(p_i)) %>% 
+  group_by(id) %>% 
+  summarise(shannon = -sum(p_i * p_i_ln, na.rm = TRUE)) %>% 
+  mutate(id = as.numeric(id)) %>% 
+  arrange(id)  %>% 
+  left_join(items_df)
+
+# plot
+boxlplot_shannon_index <- 
+shannon_per_item %>% 
+  filter(!is.na(year)) %>% 
+  ggplot(aes(1,
+             shannon)) +
+  geom_boxplot(
+               size = 1)  +
+  # median for physics, from Fanelli & Glänzel Fig 2
+  geom_hline(yintercept = 2.6,
+             colour = "grey70") +
+  geom_text_repel(data = tibble(x = 1, 
+                                y = 2.6,
+                                label = "p"),
+                  aes(x, y, label = label),
+                  bg.colour = "white", 
+                  bg.r = .2, 
+                  force = 0) +
+  # median for soc sci, from Fanelli & Glänzel Fig 2
+  geom_hline(yintercept = 3.2,
+             colour = "grey70") +
+  geom_text_repel(data = tibble(x = 1, 
+                                y = 3.2,
+                                label = "s"),
+                  aes(x, y, label = label),
+                  bg.colour = "white", 
+                  bg.r = .2, 
+                  force = 0) +
+    # median for humanities, from Fanelli & Glänzel Fig 2
+  geom_hline(yintercept = 3.3,
+             colour = "grey70") +
+  geom_text_repel(data = tibble(x = 1, 
+                                y = 3.3,
+                                label = "h"),
+                  aes(x, y, 
+                      label = label,
+                      segment.colour = NA),
+                  bg.colour = "white", 
+                  bg.r = .2, 
+                  force = 0,
+                  nudge_x = 0.05) +
+  scale_y_reverse(limits = c(6, 0)) +
+  scale_x_continuous(labels = NULL) +
+  theme_minimal()  +
+  theme(panel.grid  = element_blank()) +
+  ylab("Shannon Index") +
+  xlab("Diversity of references")
+```
+
+```{r}
+#| label: fig-compare-other-fields
+#| fig-cap: Distributions of article characteristics hypothesised to reflect the level of consensus. The boxplot shows the distribution of values of archaeology articles. The thick black line in the middle of the boxplot is the median value, the box represents the inter-quartile range (the range between the 25th and 75th percentiles, where 50% of the data are located), and individual points represent outliers. The thin grey horizontal lines in each boxplot indicate the median values computed by Fanelli and Glanzel (2013), where p = physics, s = social sciences, h = humanities. 
+
 library(cowplot)
 
 plot_grid(boxlplot_n_authors, 
-          boxlplot_n_pages)
+          boxlplot_rel_title_length,
+          boxlplot_n_pages,
+          boxlplot_price_index, 
+          boxlplot_shannon_index,
+          nrow = 2)
 ```
 
-
+@fig-compare-other-fields shows the distribution of bibliometric variables for archaeology in context of data from other fields presented by @fanelliBibliometricEvidenceHierarchy2013. The most striking indicator of archaeology as a hard science is the number of authors, where it is between the social sciences and physics. Archaeology is a close fit with the social sciences in relative title length. It is between the the social sciences and humanities in recency of references and diversity of references. The clearest indicator of archaeology as a soft science is article length where it is like the humanities. Overall archaeology does not sit squarely at either end of the hard-soft spectrum. It is generally not a harder science than the social sciences, with the exception of collaborator group sizes.
 
 ### How has the hardness of archaeology varied over time?
+
+```{r}
+
+over_time <- 
+  items_df %>% 
+  left_join(items_df_title) %>% 
+  left_join(shannon_per_item) %>% 
+  mutate(log_authors_n = log(authors_n),
+         log_pages_n = log(pages_n),
+         sqrt_refs_n = sqrt(refs_n),
+         journal_wrp = str_wrap(journal, 30)) %>% 
+  select(year,
+         log_authors_n,
+         log_pages_n,
+         prices_index, 
+         shannon,
+         sqrt_refs_n, 
+         relative_title_length)
+
+over_time_long <- 
+  over_time %>% 
+  ungroup() %>% 
+  select(-journal) %>% 
+  gather(variable, 
+         value,
+         -year) %>% 
+  filter(value != -Inf,
+         value !=  Inf) %>% 
+  mutate(variable = case_when(
+    variable == "log_authors_n" ~ "N. of authors (ln)",
+    variable == "log_pages_n"   ~ "N. of pages (ln)",
+    variable == "prices_index"  ~ "Recency of references",
+    variable == "shannon"  ~ "Diversity of references",
+    variable == "sqrt_refs_n"  ~ "N. of refs (sqrt)",
+    variable == "relative_title_length"  ~ "Relative title length (ln)"
+  )) %>% 
+  filter(!is.na(variable)) %>% 
+  filter(!is.nan(value)) %>% 
+  filter(!is.na(value)) %>% 
+  filter(value != "NaN") %>% 
+  mutate(value = parse_number(value))
+
+# compute beta estimates so we can colour lines to indicate more or
+# less scientific
+library(broom)
+over_time_long_models <- 
+  over_time_long %>% 
+  group_nest(variable) %>% 
+  mutate(model = map(data, ~tidy(lm(value ~ year, data = .)))) %>% 
+  unnest(model) %>% 
+  filter(term == 'year') %>% 
+  mutate(becoming_more_scientific = case_when(
+    variable == "N. of authors (ln)"         & estimate > 0 ~ "TRUE",
+    variable == "N. of pages (ln)"           & estimate < 0 ~ "TRUE",
+    variable == "N. of refs (sqrt)"          & estimate < 0 ~ "TRUE",
+    variable == "Recency of references"      & estimate > 0 ~ "TRUE",
+    variable == "Relative title length (ln)" & estimate > 0 ~ "TRUE",
+    variable == "Diversity of references"    & estimate < 0 ~ "TRUE",
+    TRUE ~ "FALSE"
+  )) 
+
+# join with data
+over_time_long_colour <- 
+  over_time_long %>% 
+  left_join(over_time_long_models)
+```
+
+```{r}
+#| label: fig-change-over-time
+#| fig-cap: Distribution of article characteristics for archaeology articles over time. Individual articles are shown by data points. The Ordinary Least Squares method was used to fit the straight lines summarising the relationships between the variables and the time series.     
+ggplot(over_time_long_colour,
+       aes(year, 
+           value,
+           colour = becoming_more_scientific)) +
+  geom_point(alpha = 0.5) +
+  geom_smooth(method = "lm", 
+              size = 3,
+              colour = "#7570b3") +
+  facet_wrap( ~ variable,
+              scales = "free_y") +
+  theme_bw(base_size = 12) +
+  scale_color_manual(values = c("#d95f02", "#1b9e77" )) +
+  guides(colour = "none") +
+  ylab("")
+```
+
+@fig-change-over-time shows how the bibliometric indicators of field hardness have changed of time for archaeology articles. By two measures, the number of authors and relative title length, archaeology has become increasingly harder over time. On the other hand, three metrics indicate that archaeology has become softer (diversity of references, article length and recently of references). 
 
 
 ### How do archaeology journals vary in hardness?
 
+## References
 
-
-
-
+## Acknowledgements
 
 ```{=html}
 <!-- n an ideal science, scholars share a common background of established theories, facts and methods. This allows them to agree (usually after debate and further evidence) on the validity and significance of a new research finding, making it the basis for further theorizing and research. Harder sciences are hypothesised to come closer to this ideal. Moving towards “softer” fields, this consensus becomes less likely to be reached, the common background shrinks and fractures, and so data become less able to “speak for themselves” [\[](https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0066938#pone.0066938-Fanelli1)
