@@ -218,50 +218,6 @@ items_df %>%
   ylab("N. of pages (ln)") +
   xlab("Article length")
 
-# Number of references ------------------
-boxlplot_n_refs <- 
-items_df %>% 
-  ggplot(aes(1,
-             sqrt(refs_n))) +
-  geom_boxplot(
-               size = 1)  +
-  # median for physics, from Fanelli & Glänzel Fig 2
-  geom_hline(yintercept = 6,
-             colour = "grey70") +
-  geom_text_repel(data = tibble(x = 1, 
-                                y = 6,
-                                label = "p"),
-                  aes(x, y, label = label),
-                  bg.colour = "white", 
-                  bg.r = .2, 
-                  force = 0) +
-  # median for soc sci, from Fanelli & Glänzel Fig 2
-  geom_hline(yintercept = 7,
-             colour = "grey70") +
-  geom_text_repel(data = tibble(x = 1, 
-                                y = 7,
-                                label = "s"),
-                  aes(x, y, label = label),
-                  bg.colour = "white", 
-                  bg.r = .2, 
-                  force = 0) +
-    # median for humanities, from Fanelli & Glänzel Fig 2
-  geom_hline(yintercept = 5,
-             colour = "grey70") +
-  geom_text_repel(data = tibble(x = 1, 
-                                y = 5,
-                                label = "h"),
-                  aes(x, y, label = label),
-                  bg.colour = "white", 
-                  bg.r = .2, 
-                  force = 0) +
-  scale_y_reverse(limits = c(20, 0)) +
-  scale_x_continuous(labels = NULL) +
-  theme_minimal() +
-  theme(panel.grid  = element_blank()) +
-  ylab("N. of refs (sqrt)") +
-  xlab("Number of references")
-
 # Price's index - age of references ------------------
 library(stringr)
 
@@ -457,7 +413,6 @@ library(cowplot)
 plot_grid(boxlplot_n_authors, 
           boxlplot_rel_title_length,
           boxlplot_n_pages,
-          boxlplot_n_refs,
           boxlplot_price_index, 
           boxlplot_shannon_index,
           nrow = 2)
@@ -475,7 +430,6 @@ over_time <-
   left_join(shannon_per_item) %>%  
   mutate(log_authors_n = log(authors_n), 
          log_pages_n = log(pages_n), 
-         sqrt_refs_n = sqrt(refs_n), 
          journal_wrp = str_wrap(journal, 30)) %>%  
   select(year, 
          log_authors_n, 
@@ -499,7 +453,6 @@ over_time_long <-
     variable == "log_pages_n"   ~ "N. of pages (ln)", 
     variable == "prices_index"  ~ "Recency of references", 
     variable == "shannon"  ~ "Diversity of references", 
-    variable == "sqrt_refs_n"  ~ "N. of refs (sqrt)", 
     variable == "relative_title_length"  ~ "Relative title length (ln)" 
   )) %>%  
   filter(!is.na(variable)) %>%  
@@ -542,7 +495,7 @@ over_time_long_colour <-
 
 library(ggpmisc)
 formula <-  y ~ x
- 
+
 ggplot(over_time_long_colour, 
        aes(year,  
            value, 
@@ -551,20 +504,21 @@ ggplot(over_time_long_colour,
   geom_smooth(method = "lm",  
               size = 3, 
               colour = "#7570b3") +
-  stat_poly_eq(use_label("R2", "R2.CI", "P"), 
-               formula = formula) +
   facet_wrap( ~ variable,
               scales = "free_y") + 
   theme_bw(base_size = 12) +
-  scale_color_manual(values = c("#d95f02", "#1b9e77" )) +
+  scale_color_manual(values = c("#d95f02",
+                                "#1b9e77" )) +
   guides(colour = "none") +
   ylab("") +
-  stat_poly_eq(use_label("R2", "R2.CI", "P"), 
-               formula = formula) 
+  stat_poly_eq(use_label("eq", "P"),
+               label.y = 0.95) +
+  stat_poly_eq(use_label("adj.R2", "R2.CI"),
+               label.y = 0.9) 
  
 ```
 
-@fig-change-over-time shows how the bibliometric indicators of field hardness have changed of time for archaeology articles. By two measures, the number of authors and relative title length, archaeology has become increasingly harder over time. On the other hand, three metrics indicate that archaeology has become softer (diversity of references, article length and recently of references). 
+@fig-change-over-time shows how the bibliometric indicators of field hardness have changed of time for archaeology articles. By two measures, the number of authors and relative title length, archaeology has become increasingly harder over time. On the other hand, three metrics indicate that archaeology has become softer (diversity of references, article length and recently of references). Although all the relationships are statistically significant, generally these temporal trends are very weak with low slope values, indicating very slow change over time. Similarly the r-squared values are very low, demonstrating that much of the variability in these metrics is independent of time. The  most striking change over time is in the increase in the number of authors, which has the highest r-squared value of these metrics. One interesting detail evident in @fig-change-over-time is the increase in the range of diversity of references after about 2010. This may be due to some broader changes in academic publishing around this time, such as moves to digital-first continuous publishing, new journals appearing (e.g. Archaeological and Anthropological Sciences in 2009 and Journal of Island & Coastal Archaeology in 2010), and non-archaeology journals becoming more relevant to archaeologists. For example, _PLOS ONE_ received its first impact factor in 2010 and in 2011 Nature's _Scientific Reports_ began publishing [@malashichev2017open].
 
 ### How do archaeology journals vary in hardness?
 
