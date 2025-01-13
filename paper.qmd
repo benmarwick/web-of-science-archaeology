@@ -3,8 +3,8 @@ title: "Extracting sunbeams from cucumbers: Reproducibility as a necessity for t
 format: html
 bibliography: references.bib
 execute: 
-  echo: false
-  warning: false
+    echo: false
+    warning: false
 ---
 
 ```{=html}
@@ -29,10 +29,10 @@ What has been missing from these debates is a macroscopic observation of what th
 
 ## Methods and materials
 
-To objectively quantify the relative hardness or softness of archaeology, as an evaluation of its status as a science, and the place of this journal in context of other archaeology journals, I take a bibliometric approach. This approach is based on @fanelliBibliometricEvidenceHierarchy2013, who examined the hardness and softness of 12 disciplines using scholarly publication parameters. @fanelliBibliometricEvidenceHierarchy2013 found a spectrum of statistically significant variation in bibliometric variables from the physical to the social sciences, with papers tending at the softer end of the spectrum tending to have fewer co-authors, use less substantive titles, have longer texts, cite older literature, and have a higher diversity of sources. In @fanelliBibliometricEvidenceHierarchy2013's analysis harder sciences include Space Science, Physics, Chemistry, less hard sciences include social sciences include Psychiatry/Psychology, Economics, Business and General Social Sciences, and the Humanities define the soft end of the spectrum. Following @fanelliBibliometricEvidenceHierarchy2013, I quantify the number of authors, length of article, relative title length, age of references, and diversity of references for a large sample of peer-reviewed journal articles.
+To objectively quantify the relative hardness or softness of archaeology, as an evaluation of its status as a science, and the place of this journal in context of other archaeology journals, I take a bibliometric approach. This approach is based on @fanelliBibliometricEvidenceHierarchy2013, who examined the hardness and softness of 12 disciplines using scholarly publication parameters. @fanelliBibliometricEvidenceHierarchy2013 found a spectrum of statistically significant variation in bibliometric variables from the physical to the social sciences, with papers tending at the softer end of the spectrum tending to have fewer co-authors, use less substantive titles, have longer texts, cite older literature, and have a higher diversity of sources. In @fanelliBibliometricEvidenceHierarchy2013's analysis harder sciences include Space Science, Physics, Chemistry, less hard sciences include social sciences include Psychiatry, Psychology, Economics, Business and General Social Sciences, and the Humanities define the soft end of the spectrum. Following @fanelliBibliometricEvidenceHierarchy2013, I quantify the number of authors, length of article, relative title length, age of references, and diversity of references for a large sample of peer-reviewed journal articles.
 
-These parameters are useful because of how they signify consensus in a research community. A larger number of authors on a paper reflects collaboration of people working together on a common goal. Collaborators have specialized roles, each of whom has the ability to study a part of the problem with high accuracy and detail, with harder fields having larger groups of collaborators[@zuckerman1972age]. Reflecting this collaboration group size, harder disciplines tend to have higher average numbers of authors on papers. Article length has an inverse correlation with field hardness. In low-consensus, or softer, fields, papers must be longer to present justification, nuance and contextualization of results. The number of substantive and informative words in an article's title tends to be positively correlated with article length in harder disciplines [@yitzhakiRelationTitleLength2002; @yitzhakiVariationInformativityTitles1997], reflecting a focus on empiricism and efficiency that is characteristic of high-consensus disciplines. While @yitzhakiRelationTitleLength2002 removed stop-words (e.g. prepositions, articles, conjunctions, etc.) to calculate article length, in order to generate results for comparison with @fanelliBibliometricEvidenceHierarchy2013 I follow his method of dividing the total word count of the article title by the total number of pages of the article to compute relative title length. 
-
+These parameters are useful because of how they signify consensus in a research community. A larger number of authors on a paper reflects collaboration of people working together on a common goal. Collaborators have specialized roles, each of whom has the ability to study a part of the problem with high accuracy and detail, with harder fields having larger groups of collaborators [@zuckerman1972age]. Reflecting this collaboration group size, harder disciplines tend to have higher average numbers of authors on papers. Article length has an inverse correlation with field hardness. In low-consensus, or softer, fields, papers must be longer to present justification, nuance and contextualization of results. The number of substantive and informative words in an article's title tends to be positively correlated with article length in harder disciplines [@yitzhakiRelationTitleLength2002; @yitzhakiVariationInformativityTitles1997], reflecting a focus on empiricism and efficiency that is characteristic of high-consensus disciplines. While @yitzhakiRelationTitleLength2002 removed stop-words (e.g. prepositions, articles, conjunctions, etc.) to calculate article length, in order to generate results for comparison with @fanelliBibliometricEvidenceHierarchy2013 I follow his method of dividing the total word count of the article title by the total number of pages of the article to compute relative title length. 
+ 
 The age of works cited has long been used as a measure of a field's hardness [@moed1998new; @bornerAtlasScience2010], based on the assumption that harder fields assimilate new results more rapidly that softer fields [@price1970citation]. I calculated a recency of references index for each article (also known as the Price index), which is the proportion of all cited works that were published in the five years preceding the paper. The diversity of references
 
 ```{r}
@@ -45,7 +45,7 @@ year_max <- max(items_df$year)
 year_min <- min(items_df$year)
 ```
 
-I sampled `r n_articles` papers published during `r year_min`-`r year_max`. This sample was collected from Clarivate's Web of Science database by first selecting the Web of Science category 'Archaeology' and the Document type 'article' (n = 28,871). To focus on journals of broad relevance to most archaeologists, and that are representative of substantial communities of practice, I then filtered the results to keep only articles published in the top-ranking 25 journals according to their h-indices as reported by Clarivate's Journal Citation Indicator. Finally I excluded journals with less than 100 articles in the database.
+While Fanelli and Glänzel (2013) analysed papers published in a single year (2012), I found only 303 papers for that same year, and 70.2691554% of papers in the sample published after that date. To make efficient use of the available data and ensure robust representation from different areas of archaeology, including those with lower frequencies of journal article publication, I analysed 9697 papers published during 1975-2025. This sample was collected from Clarivate’s Web of Science database by first selecting the Web of Science category ‘Archaeology’ and the Document type ‘article’ (n = 28,871). To focus on journals of broad relevance to most archaeologists, and that are representative of substantial communities of practice, I then filtered the results to keep only articles published in the top-ranking 25 journals according to their h-indices as reported by Clarivate’s Journal Citation Indicator. Finally I excluded journals with less than 100 articles in the database.
 
 The entire R code [@rcoreteamLanguageEnvironmentStatistical2024] used for all the analysis and visualizations contained in this paper is included in the Supplementary Online Materials at https://doi.org/xxx/xxx/xxx to enable re-use of materials and improve reproducibility and transparency [@marwickComputationalReproducibilityArchaeological2017]. All the figures, tables, and statistical test results presented here can be independently reproduced with the code and data in this compendium [@doi:10.1080/00031305.2017.1375986]. The R code is released under the MIT license, the data as CC-0, and figures as CC-BY, to enable maximum re-use.
 
@@ -200,7 +200,51 @@ items_df %>%
   ylab("N. of pages (ln)") +
   xlab("Article length")
 
-# Price's index - recency of references ------------------
+# Number of references ------------------
+boxlplot_n_refs <- 
+items_df %>% 
+  ggplot(aes(1,
+             sqrt(refs_n))) +
+  geom_boxplot(
+               size = 1)  +
+  # median for physics, from Fanelli & Glänzel Fig 2
+  geom_hline(yintercept = 6,
+             colour = "grey70") +
+  geom_text_repel(data = tibble(x = 1, 
+                                y = 6,
+                                label = "p"),
+                  aes(x, y, label = label),
+                  bg.colour = "white", 
+                  bg.r = .2, 
+                  force = 0) +
+  # median for soc sci, from Fanelli & Glänzel Fig 2
+  geom_hline(yintercept = 7,
+             colour = "grey70") +
+  geom_text_repel(data = tibble(x = 1, 
+                                y = 7,
+                                label = "s"),
+                  aes(x, y, label = label),
+                  bg.colour = "white", 
+                  bg.r = .2, 
+                  force = 0) +
+    # median for humanities, from Fanelli & Glänzel Fig 2
+  geom_hline(yintercept = 5,
+             colour = "grey70") +
+  geom_text_repel(data = tibble(x = 1, 
+                                y = 5,
+                                label = "h"),
+                  aes(x, y, label = label),
+                  bg.colour = "white", 
+                  bg.r = .2, 
+                  force = 0) +
+  scale_y_reverse(limits = c(20, 0)) +
+  scale_x_continuous(labels = NULL) +
+  theme_minimal() +
+  theme(panel.grid  = element_blank()) +
+  ylab("N. of refs (sqrt)") +
+  xlab("Number of references")
+
+# Price's index - age of references ------------------
 library(stringr)
 
 # output storage
@@ -395,71 +439,74 @@ library(cowplot)
 plot_grid(boxlplot_n_authors, 
           boxlplot_rel_title_length,
           boxlplot_n_pages,
+          boxlplot_n_refs,
           boxlplot_price_index, 
           boxlplot_shannon_index,
           nrow = 2)
 ```
 
-@fig-compare-other-fields shows the distribution of bibliometric variables for archaeology in context of data from other fields presented by @fanelliBibliometricEvidenceHierarchy2013. The most striking indicator of archaeology as a hard science is the number of authors, where it is between the social sciences and physics. Archaeology is a close fit with the social sciences in relative title length. It is between the the social sciences and humanities in recency of references and diversity of references. The clearest indicator of archaeology as a soft science is article length where it is like the humanities. Overall archaeology does not sit squarely at either end of the hard-soft spectrum. It is generally not a harder science than the social sciences, with the exception of collaborator group sizes.
+@fig-mpare-other-fields shows the distribution of bibliometric variables for archaeology in context of data from other fields presented by @fanelliBibliometricEvidenceHierarchy2013. The most striking indicator of archaeology as a hard science is the number of authors, where it is between the social sciences and physics. Archaeology is a close fit with the social sciences in relative title length. It is between the the social sciences and humanities in recency of references and diversity of references. The clearest indicator of archaeology as a soft science is article length where it is similar to the humanities. Overall archaeology does not sit squarely at either end of the hard-soft spectrum. It is generally not a harder science than the social sciences, with the exception of collaborator group sizes.
 
 ### How has the hardness of archaeology varied over time?
 
 ```{r}
 
-over_time <- 
-  items_df %>% 
-  left_join(items_df_title) %>% 
-  left_join(shannon_per_item) %>% 
-  mutate(log_authors_n = log(authors_n),
-         log_pages_n = log(pages_n),
-         sqrt_refs_n = sqrt(refs_n),
-         journal_wrp = str_wrap(journal, 30)) %>% 
-  select(year,
-         log_authors_n,
-         log_pages_n,
-         prices_index, 
-         shannon,
-         sqrt_refs_n, 
-         relative_title_length)
-
-over_time_long <- 
-  over_time %>% 
-  ungroup() %>% 
-  select(-journal) %>% 
-  gather(variable, 
-         value,
-         -year) %>% 
-  filter(value != -Inf,
-         value !=  Inf) %>% 
-  mutate(variable = case_when(
-    variable == "log_authors_n" ~ "N. of authors (ln)",
-    variable == "log_pages_n"   ~ "N. of pages (ln)",
-    variable == "prices_index"  ~ "Recency of references",
-    variable == "shannon"  ~ "Diversity of references",
-    variable == "sqrt_refs_n"  ~ "N. of refs (sqrt)",
-    variable == "relative_title_length"  ~ "Relative title length (ln)"
-  )) %>% 
-  filter(!is.na(variable)) %>% 
-  filter(!is.nan(value)) %>% 
-  filter(!is.na(value)) %>% 
-  filter(value != "NaN") %>% 
+over_time <-  
+  items_df %>%  
+  left_join(items_df_title) %>%  
+  left_join(shannon_per_item) %>%  
+  mutate(log_authors_n = log(authors_n), 
+         log_pages_n = log(pages_n), 
+         sqrt_refs_n = sqrt(refs_n), 
+         journal_wrp = str_wrap(journal, 30)) %>%  
+  select(year, 
+         log_authors_n, 
+         log_pages_n, 
+         prices_index,  
+         shannon, 
+         sqrt_refs_n,  
+         relative_title_length) 
+  
+over_time_long <-  
+  over_time %>%  
+  ungroup() %>%  
+  select(-journal) %>%  
+  gather(variable,  
+         value, 
+         -year) %>%  
+  filter(value != -Inf, 
+         value !=  Inf) %>%  
+  mutate(variable = case_when( 
+    variable == "log_authors_n" ~ "N. of authors (ln)", 
+    variable == "log_pages_n"   ~ "N. of pages (ln)", 
+    variable == "prices_index"  ~ "Recency of references", 
+    variable == "shannon"  ~ "Diversity of references", 
+    variable == "sqrt_refs_n"  ~ "N. of refs (sqrt)", 
+    variable == "relative_title_length"  ~ "Relative title length (ln)" 
+  )) %>%  
+  filter(!is.na(variable)) %>%  
+  filter(!is.nan(value)) %>%  
+  filter(!is.na(value)) %>%  
+  filter(value != "NaN") %>%  
   mutate(value = parse_number(value))
-
+ 
 # compute beta estimates so we can colour lines to indicate more or
-# less scientific
+# less hard
+
 library(broom)
+ 
 over_time_long_models <- 
-  over_time_long %>% 
-  group_nest(variable) %>% 
-  mutate(model = map(data, ~tidy(lm(value ~ year, data = .)))) %>% 
-  unnest(model) %>% 
-  filter(term == 'year') %>% 
-  mutate(becoming_more_scientific = case_when(
-    variable == "N. of authors (ln)"         & estimate > 0 ~ "TRUE",
-    variable == "N. of pages (ln)"           & estimate < 0 ~ "TRUE",
-    variable == "N. of refs (sqrt)"          & estimate < 0 ~ "TRUE",
-    variable == "Recency of references"      & estimate > 0 ~ "TRUE",
-    variable == "Relative title length (ln)" & estimate > 0 ~ "TRUE",
+  over_time_long %>%  
+  group_nest(variable) %>%  
+  mutate(model = map(data, ~tidy(lm(value ~ year, data = .)))) %>%  
+  unnest(model) %>%  
+  filter(term == 'year') %>%  
+  mutate(becoming_more_scientific = case_when( 
+    variable == "N. of authors (ln)"         & estimate > 0 ~ "TRUE", 
+    variable == "N. of pages (ln)"           & estimate < 0 ~ "TRUE", 
+    variable == "N. of refs (sqrt)"          & estimate < 0 ~ "TRUE", 
+    variable == "Recency of references"      & estimate > 0 ~ "TRUE", 
+    variable == "Relative title length (ln)" & estimate > 0 ~ "TRUE", 
     variable == "Diversity of references"    & estimate < 0 ~ "TRUE",
     TRUE ~ "FALSE"
   )) 
@@ -468,35 +515,42 @@ over_time_long_models <-
 over_time_long_colour <- 
   over_time_long %>% 
   left_join(over_time_long_models)
+ 
 ```
 
+ 
 ```{r}
 #| label: fig-change-over-time
-#| fig-cap: Distribution of article characteristics for archaeology articles over time. Individual articles are shown by data points. The Ordinary Least Squares method was used to fit the straight lines summarising the relationships between the variables and the time series.     
-ggplot(over_time_long_colour,
-       aes(year, 
-           value,
-           colour = becoming_more_scientific)) +
-  geom_point(alpha = 0.5) +
-  geom_smooth(method = "lm", 
-              size = 3,
+#| fig-cap: Distribution of article characteristics for archaeology articles over time. D ata points represent individual articles. The Ordinary Least Squares method was used to fit the straight lines summarising the relationships between the variables and the time series. 
+
+library(ggpmisc)
+formula <-  y ~ x
+ 
+ggplot(over_time_long_colour, 
+       aes(year,  
+           value, 
+           colour = becoming_more_scientific)) + 
+  geom_point(alpha = 0.5) + 
+  geom_smooth(method = "lm",  
+              size = 3, 
               colour = "#7570b3") +
+  stat_poly_eq(use_label("R2", "R2.CI", "P"), 
+               formula = formula) +
   facet_wrap( ~ variable,
-              scales = "free_y") +
+              scales = "free_y") + 
   theme_bw(base_size = 12) +
   scale_color_manual(values = c("#d95f02", "#1b9e77" )) +
   guides(colour = "none") +
-  ylab("")
+  ylab("") +
+  stat_poly_eq(use_label("R2", "R2.CI", "P"), 
+               formula = formula) 
+ 
 ```
 
+ 
 @fig-change-over-time shows how the bibliometric indicators of field hardness have changed of time for archaeology articles. By two measures, the number of authors and relative title length, archaeology has become increasingly harder over time. On the other hand, three metrics indicate that archaeology has become softer (diversity of references, article length and recently of references). 
 
-
 ### How do archaeology journals vary in hardness?
-
-## References
-
-## Acknowledgements
 
 ```{=html}
 <!-- n an ideal science, scholars share a common background of established theories, facts and methods. This allows them to agree (usually after debate and further evidence) on the validity and significance of a new research finding, making it the basis for further theorizing and research. Harder sciences are hypothesised to come closer to this ideal. Moving towards “softer” fields, this consensus becomes less likely to be reached, the common background shrinks and fractures, and so data become less able to “speak for themselves” [\[](https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0066938#pone.0066938-Fanelli1)
