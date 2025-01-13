@@ -143,7 +143,8 @@ items_df_title %>%
                   aes(x, y, label = label),
                   bg.colour = "white", 
                   bg.r = .2, 
-                  force = 0) +
+                  force = 0,
+                  nudge_x = 0.05) +
   # median for soc sci, from Fanelli & Glänzel Fig 2
   geom_hline(yintercept = 0.0,
              colour = "grey70") +
@@ -407,6 +408,7 @@ shannon_per_item %>%
 ```{r}
 #| label: fig-compare-other-fields
 #| fig-cap: Distributions of article characteristics hypothesised to reflect the level of consensus. The boxplot shows the distribution of values of archaeology articles. The thick black line in the middle of the boxplot is the median value, the box represents the inter-quartile range (the range between the 25th and 75th percentiles, where 50% of the data are located), and individual points represent outliers. The thin grey horizontal lines in each boxplot indicate the median values computed by Fanelli and Glanzel (2013), where p = physics, s = social sciences, h = humanities. 
+#| fig-height: 10
 
 library(cowplot)
 
@@ -436,7 +438,6 @@ over_time <-
          log_pages_n, 
          prices_index,  
          shannon, 
-         sqrt_refs_n,  
          relative_title_length) 
   
 over_time_long <-  
@@ -492,6 +493,7 @@ over_time_long_colour <-
 ```{r}
 #| label: fig-change-over-time
 #| fig-cap: Distribution of article characteristics for archaeology articles over time. D ata points represent individual articles. The Ordinary Least Squares method was used to fit the straight lines summarising the relationships between the variables and the time series. 
+#| fig-height: 10
 
 library(ggpmisc)
 formula <-  y ~ x
@@ -521,6 +523,120 @@ ggplot(over_time_long_colour,
 @fig-change-over-time shows how the bibliometric indicators of field hardness have changed of time for archaeology articles. By two measures, the number of authors and relative title length, archaeology has become increasingly harder over time. On the other hand, three metrics indicate that archaeology has become softer (diversity of references, article length and recently of references). Although all the relationships are statistically significant, generally these temporal trends are very weak with low slope values, indicating very slow change over time. Similarly the r-squared values are very low, demonstrating that much of the variability in these metrics is independent of time. The  most striking change over time is in the increase in the number of authors, which has the highest r-squared value of these metrics. One interesting detail evident in @fig-change-over-time is the increase in the range of diversity of references after about 2010. This may be due to some broader changes in academic publishing around this time, such as moves to digital-first continuous publishing, new journals appearing (e.g. Archaeological and Anthropological Sciences in 2009 and Journal of Island & Coastal Archaeology in 2010), and non-archaeology journals becoming more relevant to archaeologists. For example, _PLOS ONE_ received its first impact factor in 2010 and in 2011 Nature's _Scientific Reports_ began publishing [@malashichev2017open].
 
 ### How do archaeology journals vary in hardness?
+
+```{r}
+library(ggridges)
+
+journal_title_size <- 4
+
+plot_journals_authors <- 
+items_df %>% 
+  mutate(journal = str_wrap(journal, 20)) %>% 
+  ggplot(aes(y = reorder(journal,
+                     authors_n), 
+             x = log(authors_n),
+             fill =   after_stat(x),
+             height = after_stat(density))) +
+  geom_density_ridges_gradient(stat = "density",
+                               colour = "white") +
+  scale_fill_viridis_c() +
+  guides(fill = 'none') +
+  theme_minimal() +
+  theme(axis.text.y = element_text(size = journal_title_size)) +
+  ylab("") + 
+  xlab("Number of authors (ln)")
+
+plot_journals_article_length <- 
+items_df %>% 
+  mutate(journal = str_wrap(journal, 20)) %>% 
+  ggplot(aes(y = reorder(journal,
+                     -pages_n), 
+             x = log(pages_n),
+             fill =   after_stat(x),
+             height = after_stat(density))) +
+  geom_density_ridges_gradient(stat = "density",
+                               colour = "white") +
+  scale_fill_viridis_c() +
+  guides(fill = 'none') +
+  theme_minimal() +
+  theme(axis.text.y = element_text(size = journal_title_size)) +
+  xlab("Number of pages (ln)") +
+  ylab("")
+
+plot_journals_title_length <- 
+items_df_title %>% 
+  mutate(journal = str_wrap(journal, 20)) %>% 
+  ggplot(aes(y = reorder(journal,
+                     relative_title_length), 
+             x = relative_title_length,
+             fill =   after_stat(x),
+             height = after_stat(density))) +
+  geom_density_ridges_gradient(stat = "density",
+                               colour = "white") +
+  scale_fill_viridis_c() +
+  guides(fill = 'none') +
+  theme_minimal() +
+  theme(axis.text.y = element_text(size = journal_title_size)) +
+  ylab("") +
+  xlab("Relative title length (ln)")
+
+plot_journals_ref_recency <- 
+items_df %>% 
+  mutate(journal = str_wrap(journal, 20)) %>% 
+  group_by(journal) %>% 
+  ggplot(aes(y = reorder(journal,
+                     prices_index), 
+             x = prices_index,            
+             fill =   after_stat(x),
+             height = after_stat(density))) +
+  geom_density_ridges_gradient(stat = "density",
+                               colour = "white") +
+  scale_fill_viridis_c() +
+  guides(fill = 'none') +
+  theme_minimal() +
+  theme(axis.text.y = element_text(size = journal_title_size)) +
+  ylab("") +
+  xlab("Recency of references")
+
+plot_journals_ref_diversity <- 
+shannon_per_item %>%  
+  mutate(journal = str_wrap(journal, 20)) %>% 
+  group_by(journal) %>% 
+  ggplot(aes(y = reorder(journal,
+                     -shannon), 
+             x = shannon,
+             fill =   after_stat(x),
+             height = after_stat(density))) +
+  geom_density_ridges_gradient(stat = "density",
+                               colour = "white") +
+  scale_fill_viridis_c() +
+  guides(fill = 'none') +
+  theme_minimal() +
+  theme(axis.text.y = element_text(size = journal_title_size)) +
+  ylab("") +
+  xlab("Diversity of references")
+```
+
+```{r}
+#| label: fig-variation-by-journal
+#| fig-cap: Variation by journal
+#| fig-height: 10
+
+library(cowplot)
+
+plot_grid(plot_journals_authors, 
+          plot_journals_article_length,
+          plot_journals_title_length,
+          plot_journals_ref_recency, 
+          plot_journals_ref_diversity,
+          nrow = 2)
+```
+
+@fig-variation-by-journal shows
+
+
+
+
 
 ```{=html}
 <!-- n an ideal science, scholars share a common background of established theories, facts and methods. This allows them to agree (usually after debate and further evidence) on the validity and significance of a new research finding, making it the basis for further theorizing and research. Harder sciences are hypothesised to come closer to this ideal. Moving towards “softer” fields, this consensus becomes less likely to be reached, the common background shrinks and fractures, and so data become less able to “speak for themselves” [\[](https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0066938#pone.0066938-Fanelli1)
