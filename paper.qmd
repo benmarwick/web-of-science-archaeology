@@ -143,8 +143,7 @@ items_df_title %>%
                   aes(x, y, label = label),
                   bg.colour = "white", 
                   bg.r = .2, 
-                  force = 0,
-                  nudge_x = 0.05) +
+                  force = 0) +
   # median for soc sci, from Fanelli & Glänzel Fig 2
   geom_hline(yintercept = 0.0,
              colour = "grey70") +
@@ -164,7 +163,8 @@ items_df_title %>%
                   aes(x, y, label = label),
                   bg.colour = "white", 
                   bg.r = .2, 
-                  force = 0) +
+                  force = 0,
+                  nudge_x = 0.05) +
   
   scale_y_continuous(limits = c(-4.5, 3),
                      breaks =  seq(-5, 5, 1),
@@ -420,7 +420,7 @@ plot_grid(boxlplot_n_authors,
           nrow = 2)
 ```
 
-@fig-mpare-other-fields shows the distribution of bibliometric variables for archaeology in context of data from other fields presented by @fanelliBibliometricEvidenceHierarchy2013. The most striking indicator of archaeology as a hard science is the number of authors, where it is between the social sciences and physics. Archaeology is a close fit with the social sciences in relative title length. It is between the the social sciences and humanities in recency of references and diversity of references. The clearest indicator of archaeology as a soft science is article length where it is similar to the humanities. Overall archaeology does not sit squarely at either end of the hard-soft spectrum. It is generally not a harder science than the social sciences, with the exception of collaborator group sizes.
+@fig-compare-other-fields shows the distribution of bibliometric variables for archaeology in context of data from other fields presented by @fanelliBibliometricEvidenceHierarchy2013. The most striking indicator of archaeology as a hard science is the number of authors, where it is between the social sciences and physics. Archaeology is a close fit with the social sciences in relative title length. It is between the the social sciences and humanities in recency of references and diversity of references. The clearest indicator of archaeology as a soft science is article length where it is similar to the humanities. Overall archaeology does not sit squarely at either end of the hard-soft spectrum. It is generally not a harder science than the social sciences, with the exception of collaborator group sizes.
 
 ### How has the hardness of archaeology varied over time?
 
@@ -492,18 +492,45 @@ over_time_long_colour <-
 
 ```{r}
 #| label: fig-change-over-time
-#| fig-cap: Distribution of article characteristics for archaeology articles over time. D ata points represent individual articles. The Ordinary Least Squares method was used to fit the straight lines summarising the relationships between the variables and the time series. 
+#| fig-cap: Distribution of article characteristics for archaeology articles over time. Data points represent individual articles. The colour of the points indicates if the overall trend is toward softer (orange) or harder (green) Generalized Additive Models were computed to fit the lines summarising the relationships between the variables and the time series. 
 #| fig-height: 10
 
 library(ggpmisc)
+library(mgcv)
 formula <-  y ~ x
 
-ggplot(over_time_long_colour, 
+over_time_long_colour_gams <- 
+over_time_long_colour %>% 
+  nest(.by = variable) %>% 
+  mutate(mod_gam = lapply(data, 
+                          function(df) gam(year ~ s(value, bs = "cr"), 
+                                           data = df)))
+
+over_time_long_colour_gams_summary <- 
+over_time_long_colour %>% 
+  nest(.by = variable) %>% 
+  mutate(fit = map(data, ~mgcv::gam(year ~ s(value, bs = "cs"), data = .)),
+         results = map(fit, glance),
+         R.square = map_dbl(fit, ~ summary(.)$r.sq)) %>%
+  unnest(results) %>%
+  select(-data, -fit) %>% 
+  select(variable, adj.r.squared)
+
+over_time_long_colour_gams_summary_df <- 
+over_time_long_colour %>% 
+  left_join(over_time_long_colour_gams_summary)
+
+ggplot() + 
+  geom_point(data = over_time_long_colour_gams_summary_df, 
        aes(year,  
            value, 
-           colour = becoming_more_scientific)) + 
-  geom_point(alpha = 0.5) + 
-  geom_smooth(method = "lm",  
+           colour = becoming_more_scientific),
+       alpha = 0.5) + 
+  geom_smooth(data = over_time_long_colour_gams_summary_df,
+              aes(year, value),
+              method="gam", 
+              formula = y ~ s(x, bs = "cs"),
+              se = FALSE,  
               size = 3, 
               colour = "#7570b3") +
   facet_wrap( ~ variable,
@@ -513,10 +540,17 @@ ggplot(over_time_long_colour,
                                 "#1b9e77" )) +
   guides(colour = "none") +
   ylab("") +
-  stat_poly_eq(use_label("eq", "P"),
-               label.y = 0.95) +
-  stat_poly_eq(use_label("adj.R2", "R2.CI"),
-               label.y = 0.9) 
+  geom_text(data = over_time_long_colour_gams_summary_df %>% 
+              group_by(variable) %>% 
+              summarise(max_value = max(value),
+                        adj.r.squared = unique(adj.r.squared)),
+           aes(
+           x = 1980, 
+           y = max_value, 
+           label = paste("Pseudo R² = ", 
+                         signif(adj.r.squared, 
+                                digits = 3))),
+           hjust = 0, vjust = 1.5)
  
 ```
 
