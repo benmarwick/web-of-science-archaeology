@@ -2,6 +2,7 @@
 title: "Extracting sunbeams from cucumbers: Reproducibility as a necessity for the future of archaeological science"
 format: html
 bibliography: references.bib
+fig-dpi: 600
 execute: 
     echo: false
     warning: false
@@ -25,14 +26,14 @@ In their paper celebrating the 40th anniversary of this journal Torrence et al [
 
 The question of archaeology's status as a science usually comes up in the context of what the discipline should or should not be. One of the first landmarks in tackling this question is the debate published by *Antiquity* between classical archaeologist Jacquetta Hawkes and palaeoanthropologist Glynn Isaac. @hawkesProperStudyMankind1968, advocating a humanistic archaeology, was concerned that scientific approaches to archaeology were causing researchers to be "swamped by a vast accumulation of insignificant, disparate facts, like a terrible tide of mud, quite beyond the capacity of any man to contain and mould into historical form". More optimistic about the integration of science and archaeology, @isaacWhitherArchaeology1971 counters that "New levels of precision in presenting data and in interpreting them can surely lead to briefer and more interesting technical reports as well as providing the basis for more lively literary portrayals of what happened in prehistory. Expanding on Isaac's perspective, @binford1962archaeology argued that archaeology should operate as a science after the model proposed by philosopher Carl Hempel, which prescribed hypothesis-driven approaches, leading to generalizable laws of human behavior. Counter-arguments came from numerous directions, notably @hodder1985postprocessual who rejected the quest for generalisations and instead argued that archaeology should be subjective and reflective, focussed on symbolic and relational meanings of material culture and the historical particularity of past human cultures. These debates, and the many more similar ones summarised by @martinon-torresArchaeologicalTheoriesArchaeological2013, have become a genre in archaeological writing that can be characterized as mostly based on personal observations, microscopic dissections of a handful of cherry-picked case studies of good or bad practice, and discussion of various philosophers and sociologists.
 
-What has been missing from these debates is a macroscopic observation of what the majority of archaeologists are actually doing, and an empirical comparison to a broad spectrum of relatively harder and softer disciplines. At the 'hard' end of the spectrum (e.g. physics and chemistry), scholars more typically share a large set of established set of theories, facts, and methods, facilitating fairly rapid agreement on the validity and significance of new results. At the 'soft' end of the spectrum (e.g. economics and psychology), the set of theories, facts, and methods on which there is widespread consensus is smaller, and agreement is slower and less frequently reached about the significance of new findings and the continuing relevance of previous work. Hardness and softness is a controversial distinction, in part because it is often used to imply a rank order of disciplines that encodes legitimacy, productivity, perceived value to society, and worthiness of funding [@DifferentAgenda2012; @coleHierarchySciences1983]. However, independent of these value judgments, empirical analysis of scholarly articles does indicate a spectrum of variation in practice linked to differing degrees of consensus in a discipline, for example in approaches to data visualisation [@clevelandGraphsScientificPublications1984; @smithScientificGraphsHierarchy2000]. Similarly, quantitative analysis of the frequency of positive results (ie. full or partial support for a research hypothesis) in publications is significantly correlated with hardness, consistent with a model where researchers in harder fields more readily accept any result their research produces, while those in softer fields have more freedom to choose which theories and hypotheses to test and how to interpret results [@PositiveResultsIncrease]. The hard-soft spectrum is also evident in surveys of how researchers view their own work relative to those in other fields [@biglanCharacteristicsSubjectMatter1973].
+What has been missing from these debates is a macroscopic observation of what the majority of archaeologists are actually doing, and an empirical comparison to a broad spectrum of relatively harder and softer disciplines. At the 'hard' end of the spectrum (e.g. physics and chemistry), scholars more typically share a large set of established set of theories, facts, and methods, facilitating fairly rapid agreement on the validity and significance of new results. At the 'soft' end of the spectrum (e.g. economics and psychology), the set of theories, facts, and methods on which there is widespread consensus is smaller, and agreement is slower and less frequently reached about the significance of new findings and the continuing relevance of previous work. Hardness and softness is a controversial distinction, in part because it is often used to imply a rank order of disciplines that encodes legitimacy, productivity, perceived value to society, and worthiness of funding [@DifferentAgenda2012; @coleHierarchySciences1983]. However, independent of these value judgments, empirical analysis of scholarly articles does indicate a spectrum of variation in practice linked to differing degrees of consensus in a discipline, for example in approaches to data visualisation [@clevelandGraphsScientificPublications1984; @smithScientificGraphsHierarchy2000]. Similarly, quantitative analysis of the frequency of positive results (ie. full or partial support for a research hypothesis) in publications is significantly correlated with hardness, consistent with a model where researchers in harder fields more readily accept any result their research produces, while those in softer fields have more freedom to choose which theories and hypotheses to test and how to interpret results [@fanelliPositiveResultsIncrease2010]. The hard-soft spectrum is also evident in surveys of how researchers view their own work relative to those in other fields [@biglanCharacteristicsSubjectMatter1973].
 
 ## Methods and materials
 
 To objectively quantify the relative hardness or softness of archaeology, as an evaluation of its status as a science, and the place of this journal in context of other archaeology journals, I take a bibliometric approach. This approach is based on @fanelliBibliometricEvidenceHierarchy2013, who examined the hardness and softness of 12 disciplines using scholarly publication parameters. @fanelliBibliometricEvidenceHierarchy2013 found a spectrum of statistically significant variation in bibliometric variables from the physical to the social sciences, with papers tending at the softer end of the spectrum tending to have fewer co-authors, use less substantive titles, have longer texts, cite older literature, and have a higher diversity of sources. In @fanelliBibliometricEvidenceHierarchy2013's analysis harder sciences include Space Science, Physics, Chemistry, less hard sciences include social sciences include Psychiatry, Psychology, Economics, Business and General Social Sciences, and the Humanities define the soft end of the spectrum. Following @fanelliBibliometricEvidenceHierarchy2013, I quantify the number of authors, length of article, relative title length, age of references, and diversity of references for a large sample of peer-reviewed journal articles.
 
-These parameters are useful because of how they signify consensus in a research community. A larger number of authors on a paper reflects collaboration of people working together on a common goal. Collaborators have specialized roles, each of whom has the ability to study a part of the problem with high accuracy and detail, with harder fields having larger groups of collaborators [@zuckerman1972age]. Reflecting this collaboration group size, harder disciplines tend to have higher average numbers of authors on papers. Article length has an inverse correlation with field hardness. In low-consensus, or softer, fields, papers must be longer to present justification, nuance and contextualization of results. The number of substantive and informative words in an article's title tends to be positively correlated with article length in harder disciplines [@yitzhakiRelationTitleLength2002; @yitzhakiVariationInformativityTitles1997], reflecting a focus on empiricism and efficiency that is characteristic of high-consensus disciplines. While @yitzhakiRelationTitleLength2002 removed stop-words (e.g. prepositions, articles, conjunctions, etc.) to calculate article length, in order to generate results for comparison with @fanelliBibliometricEvidenceHierarchy2013 I follow his method of dividing the total word count of the article title by the total number of pages of the article to compute relative title length. 
- 
+These parameters are useful because of how they signify consensus in a research community. A larger number of authors on a paper reflects collaboration of people working together on a common goal. Collaborators have specialized roles, each of whom has the ability to study a part of the problem with high accuracy and detail, with harder fields having larger groups of collaborators [@zuckerman1972age]. Reflecting this collaboration group size, harder disciplines tend to have higher average numbers of authors on papers. Article length has an inverse correlation with field hardness. In low-consensus, or softer, fields, papers must be longer to present justification, nuance and contextualization of results. The number of substantive and informative words in an article's title tends to be positively correlated with article length in harder disciplines [@yitzhakiRelationTitleLength2002; @yitzhakiVariationInformativityTitles1997], reflecting a focus on empiricism and efficiency that is characteristic of high-consensus disciplines. While @yitzhakiRelationTitleLength2002 removed stop-words (e.g. prepositions, articles, conjunctions, etc.) to calculate article length, in order to generate results for comparison with @fanelliBibliometricEvidenceHierarchy2013 I follow his method of dividing the total word count of the article title by the total number of pages of the article to compute relative title length.
+
 The age of works cited has long been used as a measure of a field's hardness [@moed1998new; @bornerAtlasScience2010], based on the assumption that harder fields assimilate new results more rapidly that softer fields [@price1970citation]. I calculated a recency of references index for each article (also known as the Price index), which is the proportion of all cited works that were published in the five years preceding the paper. The diversity of references
 
 ```{r}
@@ -60,10 +61,11 @@ n_items_df_after_2012 <-
 # what proportion of archaeology articles published after 2012
 prop_pub_after2012 <-  n_items_df_after_2012  / n_articles
 
-
+# how many distinct journals?
+n_journals <- n_distinct(items_df$journal)
 ```
 
-While Fanelli and Glänzel (2013) analysed papers published in a single year (2012), I found only `r n_items_df_2012` papers for that same year, and `r round(prop_pub_after2012*100, 0)`% of papers in the sample published after that date. To make efficient use of the available data and ensure robust representation from different areas of archaeology, including those with lower frequencies of journal article publication, I analysed 9697 papers published during 1975-2025. This sample was collected from Clarivate’s Web of Science database by first selecting the Web of Science category ‘Archaeology’ and the Document type ‘article’ (n = 28,871). To focus on journals of broad relevance to most archaeologists, and that are representative of substantial communities of practice, I then filtered the results to keep only articles published in the top-ranking 25 journals according to their h-indices as reported by Clarivate’s Journal Citation Indicator. Finally I excluded journals with less than 100 articles in the database.
+While Fanelli and Glänzel (2013) analysed papers published in a single year (2012), I found only `r n_items_df_2012` papers for that same year, and `r round(prop_pub_after2012*100, 0)`% of papers in the sample published after that date. To make efficient use of the available data and ensure robust representation from different areas of archaeology, including those with lower frequencies of journal article publication, I analysed 9697 papers published during 1975-2025. This sample was collected from Clarivate’s Web of Science database by first selecting the Web of Science category ‘Archaeology’ and the Document type ‘article’ (n = 28,871). To focus on journals of broad relevance to most archaeologists, and that are representative of substantial communities of practice, I then filtered the results to keep only articles published in the top-ranking 25 journals according to their h-indices as reported by Clarivate’s Journal Citation Indicator. Finally I excluded journals with less than 100 articles in the database, resulting in `r n_journals` journals.
 
 The entire R code [@rcoreteamLanguageEnvironmentStatistical2024] used for all the analysis and visualizations contained in this paper is included in the Supplementary Online Materials at https://doi.org/xxx/xxx/xxx to enable re-use of materials and improve reproducibility and transparency [@marwickComputationalReproducibilityArchaeological2017]. All the figures, tables, and statistical test results presented here can be independently reproduced with the code and data in this compendium [@doi:10.1080/00031305.2017.1375986]. The R code is released under the MIT license, the data as CC-0, and figures as CC-BY, to enable maximum re-use.
 
@@ -407,8 +409,8 @@ shannon_per_item %>%
 
 ```{r}
 #| label: fig-compare-other-fields
-#| fig-cap: Distributions of article characteristics hypothesised to reflect the level of consensus. The boxplot shows the distribution of values of archaeology articles. The thick black line in the middle of the boxplot is the median value, the box represents the inter-quartile range (the range between the 25th and 75th percentiles, where 50% of the data are located), and individual points represent outliers. The thin grey horizontal lines in each boxplot indicate the median values computed by Fanelli and Glanzel (2013), where p = physics, s = social sciences, h = humanities. 
-#| fig-height: 10
+#| fig-cap: Distributions of article characteristics hypothesised to reflect the level of consensus. The boxplot shows the distribution of values of archaeology articles. The thick black line in the middle of the boxplot is the median value, the box represents the inter-quartile range (the range between the 25th and 75th percentiles, where 50% of the data are located), and individual points represent outliers. The thin grey horizontal lines in each boxplot indicate the median values computed by Fanelli and Glanzel (2013), where p = physics, s = social sciences, h = humanities. ln denotes the natural logarithm, or logarithm to the base e. 
+#| fig-height: 8
 
 library(cowplot)
 
@@ -430,6 +432,10 @@ over_time <-
   items_df %>%  
   left_join(items_df_title) %>%  
   left_join(shannon_per_item) %>%  
+      filter(relative_title_length != -Inf, 
+            relative_title_length !=  Inf,
+            prices_index != "NaN" 
+           ) %>% 
   mutate(log_authors_n = log(authors_n), 
          log_pages_n = log(pages_n), 
          journal_wrp = str_wrap(journal, 30)) %>%  
@@ -493,7 +499,7 @@ over_time_long_colour <-
 ```{r}
 #| label: fig-change-over-time
 #| fig-cap: Distribution of article characteristics for archaeology articles over time. Data points represent individual articles. The colour of the points indicates if the overall trend is toward softer (orange) or harder (green) Generalized Additive Models were computed to fit the lines summarising the relationships between the variables and the time series. 
-#| fig-height: 10
+#| fig-height: 6
 
 library(ggpmisc)
 library(mgcv)
@@ -554,21 +560,137 @@ ggplot() +
  
 ```
 
-@fig-change-over-time shows how the bibliometric indicators of field hardness have changed of time for archaeology articles. By two measures, the number of authors and relative title length, archaeology has become increasingly harder over time. On the other hand, three metrics indicate that archaeology has become softer (diversity of references, article length and recently of references). Although all the relationships are statistically significant, generally these temporal trends are very weak with low slope values, indicating very slow change over time. Similarly the r-squared values are very low, demonstrating that much of the variability in these metrics is independent of time. The  most striking change over time is in the increase in the number of authors, which has the highest r-squared value of these metrics. One interesting detail evident in @fig-change-over-time is the increase in the range of diversity of references after about 2010. This may be due to some broader changes in academic publishing around this time, such as moves to digital-first continuous publishing, new journals appearing (e.g. Archaeological and Anthropological Sciences in 2009 and Journal of Island & Coastal Archaeology in 2010), and non-archaeology journals becoming more relevant to archaeologists. For example, _PLOS ONE_ received its first impact factor in 2010 and in 2011 Nature's _Scientific Reports_ began publishing [@malashichev2017open].
+@fig-change-over-time shows how the bibliometric indicators of field hardness have changed of time for archaeology articles. By two measures, the number of authors and relative title length, archaeology has become increasingly harder over time. On the other hand, three metrics indicate that archaeology has become softer (diversity of references, article length and recently of references). Although all the relationships are statistically significant, generally these temporal trends are very weak with low slope values, indicating very slow change over time. Similarly the r-squared values are very low, demonstrating that much of the variability in these metrics is independent of time. 
+
+The most striking change over time is in the increase in the number of authors, which has the highest r-squared value of these metrics. One interesting detail evident in @fig-change-over-time is the increase in the range of diversity of references after about 2010. This may be due to some broader changes in academic publishing around this time, such as moves to digital-first continuous publishing, new journals appearing (e.g. _Archaeological and Anthropological Sciences_ in 2009 and _Journal of Island & Coastal Archaeology_ in 2010), and non-archaeology journals becoming more relevant to archaeologists. For example, *PLOS ONE* received its first impact factor in 2010 and in 2011 Nature's *Scientific Reports* began publishing [@malashichev2017open].
 
 ### How do archaeology journals vary in hardness?
 
 ```{r}
-library(ggridges)
 
 journal_title_size <- 4
 
-plot_journals_authors <- 
+# get rank order of journals by these bibliometic variables
+
+journal_metrics_for_plotting <- 
 items_df %>% 
+  left_join(items_df_title) %>% 
+  left_join(shannon_per_item) %>% 
+  ungroup() %>% 
+  select(journal,
+         authors_n,  # log
+         pages_n,    # log
+         relative_title_length,
+         prices_index,
+         shannon
+         ) %>% 
+    filter(relative_title_length != -Inf, 
+           relative_title_length !=  Inf,
+           prices_index != "NaN" 
+           ) %>% 
+  mutate(
+    log_authors = log(authors_n),
+    log_pages = log(pages_n)
+  ) 
+
+journal_metrics_for_plotting_summary <- 
+  journal_metrics_for_plotting %>% 
+  group_by(journal) %>% 
+  summarise(mean_log_authors = mean(log_authors),
+            mean_log_pages =   mean(log_pages),
+            mean_relative_title_length = mean(relative_title_length),
+            mean_prices_index = mean(prices_index),
+            mean_shannon =      mean(shannon)) 
+
+library(FactoMineR)
+library(factoextra)
+
+journal_metrics_for_plotting_summary_pca <- 
+journal_metrics_for_plotting_summary %>% 
+  column_to_rownames("journal") %>% 
+  PCA(graph = FALSE)
+
+  fviz_pca_biplot(journal_metrics_for_plotting_summary_pca,
+                  label = "var", repel = TRUE) + 
+  geom_text_repel(aes(label = str_wrap(journal_metrics_for_plotting_summary$journal, 20)), 
+            size = 2) +
+    ggtitle("")
+
+```
+
+```{r}
+# looking into rankings of the journals
+
+journal_summary_metrics_ranks <- 
+journal_metrics_for_plotting_summary %>% 
+  mutate(across(starts_with("mean"), 
+                ~ rank(-.), 
+                .names = "rank_{.col}")) %>% 
+  select(journal, starts_with("rank")) %>% 
+  # reorder by hardness
+  mutate(rank_mean_log_pages = 21 - rank_mean_log_pages,
+         rank_mean_shannon =   21 - rank_mean_shannon)
+
+library(irr)
+journal_summary_metrics_ranks_test <- 
+journal_summary_metrics_ranks %>% 
+  select(-journal) %>% 
+  kendall(correct = TRUE)
+
+# Convert to scientific text
+pretty_print_sci <- function(num){
+  scientific_text <- paste0(gsub("e", " x 10^",  # Replace 'e' with ' x 10^'
+                          sprintf("%.2e", num)), "^") # round to 2 sf
+  return(scientific_text)
+  }
+
+borda_count_tbl <- function(votes_tbl) {
+  # Number of voters
+  num_voters <- ncol(votes_tbl) - 1
+  
+  # Calculate scores for each option
+  scores <- votes_tbl %>%
+    rowwise() %>%
+    mutate(Score = sum(num_voters - c_across(starts_with("rank_")))) %>%
+    ungroup() %>%
+    select(1, Score)
+  
+  # Return scores
+  return(scores)
+}
+
+# Calculate Borda Count scores
+borda_scores <- 
+journal_summary_metrics_ranks %>% 
+  borda_count_tbl() %>% 
+  rename("Journal" = "journal") %>% 
+  arrange(desc(Score))
+
+plot_borda_scores <- 
+  borda_scores %>% 
+  mutate(Journal = str_wrap(Journal, 20)) %>% 
+ggplot() +
+  aes(reorder(Journal, Score),
+      Score) +
+  geom_col() +
+  coord_flip() +
+  ylab("Borda Count scores") + 
+  xlab("") +
+  theme_minimal() +
+  theme(axis.text.y = element_text(size = journal_title_size)) 
+
+```
+
+```{r}
+library(ggridges)
+
+plot_journals_authors <- 
+journal_metrics_for_plotting %>% 
   mutate(journal = str_wrap(journal, 20)) %>% 
-  ggplot(aes(y = reorder(journal,
-                     authors_n), 
-             x = log(authors_n),
+  ggplot(aes(y = reorder(journal, 
+                         log_authors,
+                     FUN = mean),
+             x = log_authors,
              fill =   after_stat(x),
              height = after_stat(density))) +
   geom_density_ridges_gradient(stat = "density",
@@ -581,11 +703,12 @@ items_df %>%
   xlab("Number of authors (ln)")
 
 plot_journals_article_length <- 
-items_df %>% 
+journal_metrics_for_plotting %>% 
   mutate(journal = str_wrap(journal, 20)) %>% 
   ggplot(aes(y = reorder(journal,
-                     -pages_n), 
-             x = log(pages_n),
+                     -log_pages,
+                     FUN = mean), 
+             x = log_pages,
              fill =   after_stat(x),
              height = after_stat(density))) +
   geom_density_ridges_gradient(stat = "density",
@@ -598,10 +721,11 @@ items_df %>%
   ylab("")
 
 plot_journals_title_length <- 
-items_df_title %>% 
+journal_metrics_for_plotting %>% 
   mutate(journal = str_wrap(journal, 20)) %>% 
   ggplot(aes(y = reorder(journal,
-                     relative_title_length), 
+                         relative_title_length,
+                         FUN = mean), 
              x = relative_title_length,
              fill =   after_stat(x),
              height = after_stat(density))) +
@@ -615,11 +739,12 @@ items_df_title %>%
   xlab("Relative title length (ln)")
 
 plot_journals_ref_recency <- 
-items_df %>% 
+journal_metrics_for_plotting %>% 
   mutate(journal = str_wrap(journal, 20)) %>% 
   group_by(journal) %>% 
   ggplot(aes(y = reorder(journal,
-                     prices_index), 
+                     prices_index,
+                     FUN = mean), 
              x = prices_index,            
              fill =   after_stat(x),
              height = after_stat(density))) +
@@ -633,11 +758,12 @@ items_df %>%
   xlab("Recency of references")
 
 plot_journals_ref_diversity <- 
-shannon_per_item %>%  
+journal_metrics_for_plotting %>%  
   mutate(journal = str_wrap(journal, 20)) %>% 
   group_by(journal) %>% 
   ggplot(aes(y = reorder(journal,
-                     -shannon), 
+                     -shannon,
+                     FUN = mean), 
              x = shannon,
              fill =   after_stat(x),
              height = after_stat(density))) +
@@ -653,8 +779,8 @@ shannon_per_item %>%
 
 ```{r}
 #| label: fig-variation-by-journal
-#| fig-cap: Variation by journal
-#| fig-height: 10
+#| fig-cap: Variation in bibliometric indicators of hardness for 20 archaeological journals. The journals are ordered for each indicator so that within each plot, the harder journals are at the top of the plot and the softer journals are at the base. The lower right panel shows a bar plot that is the single consensus ranking computed from all five variables, using the Borda Count ranking algorithm.
+#| fig-height: 12
 
 library(cowplot)
 
@@ -663,12 +789,21 @@ plot_grid(plot_journals_authors,
           plot_journals_title_length,
           plot_journals_ref_recency, 
           plot_journals_ref_diversity,
-          nrow = 2)
+          plot_borda_scores,
+          nrow = 2,
+          labels = "AUTO")
+
 ```
 
-@fig-variation-by-journal shows
+@fig-variation-by-journal shows the distribution of our bibliometric variables of hardness for each of the `r n_journals` journals in the sample. Overall agreement between these bibliometric variables in ranking these journals on a hard-soft spectrum is moderate to strong, with a Kendall's coefficient of concordance (Wt) value of `r round(journal_summary_metrics_ranks_test$value, 2)` (in a 0-1 range, where 1 is perfect agreement) and a p-value of `r pretty_print_sci(journal_summary_metrics_ranks_test$p.value)`. Panel F of @fig-variation-by-journal shows an overall consensus ranking of all journals in the sample. In this consensus ranking the *Journal of Archaeological Science* among the top five archaeology journals for hardness. It is placed at the harder end of the hard-soft spectrum especially by the number of pages and relative title length, and to lesser degrees by the number of authors and recency of references. However, according to the diversity of references, the *Journal of Archaeological Science* is at the middle of the spectrum.
 
+The *Journal of Cultural Heritage* is the only journal that consistently ranks as hard across all variables, occurring in the top five journals for all five metrics. This journal primarily publishes materials science and computational analyses related to conservation and preservation of historic objects in museums and other collections. Authors of papers in recent issues have affiliations with museums, cultural heritage programs, and chemistry, engineering, and physics departments at European and Chinese universities. Notably, papers in this journal typically do not engage in questions or debates about past human behaviour or culture. The absence of these questions in research published in this journal makes it an outlier here, since these questions are central to a common definition of archaeology as 'cultural anthropology of the past', a phrase first found in @leroigourhan1946 and repeated in widely-used contemporary undergraduate textbooks such as @renfrew2024. Most archaeologists would likely be surprised at the decision by Clarivate to include the *Journal of Cultural Heritage* in their category of archaeology journals, leading to this result in @fig-variation-by-journal where the hardest archaeology journal publishes papers that are not very archaeological at all because they do not engage with anthropological topics.
 
+The *Journal of Archaeological Research* is notable because it consistently ranks as soft, ranking as the softest journal for four of our five bibliometric variables. This is a predicable result for a review journal, which is a distinct type of journal dedicated to summarizing, analyzing, and synthesizing existing research in a particular field. The stated aim of the *Journal of Archaeological Research* is to 'bring together the most recent international research summaries on a broad range of topics and geographical areas' [@feinmanAimsScopeJournal2024]. A typical article is a long single-authored synthesis of archaeology in a region or on a topic. As the only review journal in this sample, this is a stark contrast to the other journals here that present original research findings, and like the *Journal of Cultural Heritage*, may be considered an outlier in this sample.
+
+## Dicsussion 
+
+This macroscopic perspective on the way thousands of archaeologists communicate their research has produced a complex picture of archaeology as a science. In the context of a broad spectrum of other research areas, archaeologists behave like social scientists. We are harder than typical social scientists in tending to form larger groups of collaborators more often, and softer in sometimes writing longer articles than more resemble humanities scholarship. The outlook for the future of archaeology is also complex, with three out of five of the bibliometric variables trending towards more humanistic styles of working, but the discipline showing more extreme values in some metrics towards both hard and soft sciences after about 2010. Among archaeology journals, we see distinct communities of practice 
 
 
 
