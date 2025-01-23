@@ -595,6 +595,7 @@ items_df %>%
 
 journal_metrics_for_plotting_summary <- 
   journal_metrics_for_plotting %>% 
+  mutate(journal = str_wrap(journal, 20)) %>% 
   group_by(journal) %>% 
   summarise(mean_log_authors = mean(log_authors),
             mean_log_pages =   mean(log_pages),
@@ -602,19 +603,74 @@ journal_metrics_for_plotting_summary <-
             mean_prices_index = mean(prices_index),
             mean_shannon =      mean(shannon)) 
 
-library(FactoMineR)
-library(factoextra)
-
+# PCA of journal means
 journal_metrics_for_plotting_summary_pca <- 
 journal_metrics_for_plotting_summary %>% 
   column_to_rownames("journal") %>% 
-  PCA(graph = FALSE)
+  prcomp(scale = TRUE)
 
-  fviz_pca_biplot(journal_metrics_for_plotting_summary_pca,
-                  label = "var", repel = TRUE) + 
-  geom_text_repel(aes(label = str_wrap(journal_metrics_for_plotting_summary$journal, 20)), 
-            size = 2) +
-    ggtitle("")
+# Tidy the PCA results
+pca_means_tidy <- journal_metrics_for_plotting_summary_pca %>% tidy(matrix = "pcs")
+# first two PCs explain how much?
+# Get the summary of the PCA
+pca_summary <- summary(journal_metrics_for_plotting_summary_pca)
+# Extract the proportion of variance explained by PC1 and PC2
+variance_explained <- round(pca_summary$importance[2, 1:2] * 100, 0)
+
+# Get the PCA scores
+pca_scores_means <- journal_metrics_for_plotting_summary_pca %>%  augment(journal_metrics_for_plotting_summary)
+
+# Get the PCA loadings
+pca_loadings_means <- 
+  journal_metrics_for_plotting_summary_pca %>% 
+  tidy(matrix = "rotation") %>% 
+    pivot_wider(names_from = "PC", 
+              values_from = "value",
+              names_prefix = "PC") %>% 
+  mutate(column = case_when(
+    column == "mean_log_authors" ~ "Number of\nauthors",
+    column == "mean_log_pages" ~ "Number of\npages",
+    column == "mean_relative_title_length" ~ "Relative\ntitle\nlength",
+    column == "mean_prices_index" ~ "Recency of\nreferences",
+    column == "mean_shannon" ~ "Diversity of\nreferences",
+  ))
+
+# Plot the PCA results
+plot_pca_means <- 
+ggplot() + 
+  labs(x = paste0("PC1 (", variance_explained[1], "%)"),
+       y = paste0("PC2 (", variance_explained[2], "%)")) +
+  geom_point(data = pca_scores_means,
+               aes(.fittedPC1,
+                   .fittedPC2),
+             size = 2) +
+  geom_text_repel(data = pca_scores_means,
+            aes(.fittedPC1,
+                .fittedPC2,
+                label = journal),
+            lineheight = 0.8,
+            size = 2,
+            bg.color = "white",  # Color of the halo
+            bg.r = 0.2,) +
+     geom_segment(data = pca_loadings_means, 
+               aes(x = 0, 
+                   y = 0, 
+                   xend = PC1, 
+                   yend = PC2),
+               arrow = arrow(length = unit(0.2, "cm")), 
+               color = "grey70") +
+  geom_text_repel(data = pca_loadings_means,
+            aes(PC1,
+                PC2,
+                label = column),
+            size = 2,
+            lineheight = 0.7,
+            force = 0,
+            segment.color = NA,
+            color = "grey40",
+           bg.color = "white",  # Color of the halo
+          bg.r = 0.2) +
+  theme_minimal()
 
 ```
 
@@ -779,19 +835,24 @@ journal_metrics_for_plotting %>%
 
 ```{r}
 #| label: fig-variation-by-journal
-#| fig-cap: Variation in bibliometric indicators of hardness for 20 archaeological journals. The journals are ordered for each indicator so that within each plot, the harder journals are at the top of the plot and the softer journals are at the base. The lower right panel shows a bar plot that is the single consensus ranking computed from all five variables, using the Borda Count ranking algorithm.
-#| fig-height: 12
+#| fig-cap: "Panels A-E: Variation in bibliometric indicators of hardness for 20 archaeological journals. The journals are ordered for each indicator so that within each plot, the harder journals are at the top of the plot and the softer journals are at the base. Panel F shows a bar plot that is the single consensus ranking computed from all five variables, using the Borda Count ranking algorithm. Panel G is a biplot of the first and second principal components of a PCA computed on the journal means of the five bibliometric variables."
+#| fig-height: 14
 
 library(cowplot)
 
-plot_grid(plot_journals_authors, 
-          plot_journals_article_length,
-          plot_journals_title_length,
-          plot_journals_ref_recency, 
-          plot_journals_ref_diversity,
-          plot_borda_scores,
-          nrow = 2,
-          labels = "AUTO")
+plot_grid(
+  plot_grid(plot_journals_authors, 
+           plot_journals_article_length,
+           plot_journals_title_length,
+           plot_journals_ref_recency, 
+           plot_journals_ref_diversity,
+           plot_borda_scores,
+           nrow = 2,
+           labels = LETTERS[1:6]),
+  plot_pca_means,
+  nrow = 2,
+  labels = c("", LETTERS[7]),
+  rel_heights = c(1, 0.5))
 
 ```
 
@@ -801,9 +862,17 @@ The *Journal of Cultural Heritage* is the only journal that consistently ranks a
 
 The *Journal of Archaeological Research* is notable because it consistently ranks as soft, ranking as the softest journal for four of our five bibliometric variables. This is a predicable result for a review journal, which is a distinct type of journal dedicated to summarizing, analyzing, and synthesizing existing research in a particular field. The stated aim of the *Journal of Archaeological Research* is to 'bring together the most recent international research summaries on a broad range of topics and geographical areas' [@feinmanAimsScopeJournal2024]. A typical article is a long single-authored synthesis of archaeology in a region or on a topic. As the only review journal in this sample, this is a stark contrast to the other journals here that present original research findings, and like the *Journal of Cultural Heritage*, may be considered an outlier in this sample.
 
+The PCA results in panel G show of @fig-variation-by-journal that PC1 captures most of the variance in the metrics (`r variance_explained[1]`%) and is reasonable proxy for the hard-soft spectrum, with *Journal of Cultural Heritage* representing the hard extreme on the right and *Journal of Archaeological Research* representing the soft extreme on the left. The distribution of PC1 values is skewed left, with most of the journals concentrated at the harder end of the spectrum. The distribution of PC2 values reveals additional structure to the data and can be roughly separated into generalist journals in the negative range (e.g. _American Antiquity_, _Antiquity_, _Advances in Archaeological Practice_), and more specialised journals in the positive range (e.g. _Environmental Archaeology_, _Geoarchaeology_, _Archaeologial Research in Asia_, _Journal of Island and Coastal Archaeology_). The _Journal of Archaeological Science_ sits about midway between these two groups, reflecting its relevance to specialised communities of practice in archaeology, as well as general
+
 ## Dicsussion 
 
-This macroscopic perspective on the way thousands of archaeologists communicate their research has produced a complex picture of archaeology as a science. In the context of a broad spectrum of other research areas, archaeologists behave like social scientists. We are harder than typical social scientists in tending to form larger groups of collaborators more often, and softer in sometimes writing longer articles than more resemble humanities scholarship. The outlook for the future of archaeology is also complex, with three out of five of the bibliometric variables trending towards more humanistic styles of working, but the discipline showing more extreme values in some metrics towards both hard and soft sciences after about 2010. Among archaeology journals, we see distinct communities of practice 
+This macroscopic perspective derived from an analysis of the ways thousands of archaeologists communicate their research has produced a complex picture of archaeology as a science. In the context of a broad spectrum of other research areas, archaeologists behave like social scientists. We are harder than typical social scientists in tending to form larger groups of collaborators more often, and softer in sometimes writing longer articles than more resemble humanities scholarship. The outlook for the future of archaeology is also complex, with three out of five of the bibliometric variables trending towards more humanistic styles of working, but the discipline showing more extreme values in some metrics towards both hard and soft sciences after about 2010. Among archaeology journals, we see distinct communities of practice reflected in the PCA results that are very close together on the hard-soft spectrum, but have minor differences in their communication styles, perhaps due to differences in writing traditions inherited from parent disciplines such as geology and biology.
+
+While these bibliometric variables provide several interesting insights into the status of archaeology as a science, via measurement of consensus, and are important for moving the debate beyond discussions of a small number of case studies, they miss a crucial factor that separates scientific practice from non-science. This is reproducibility, which, according to a report by the US National Science Foundation [@cacioppo2015social], "refers to the ability of a researcher to duplicate the results of a prior study using the same materials as were used by the original investigator. That is, a second researcher might use the same raw data to build the same analysis files and implement the same statistical analysis in an attempt to yield the same results... Reproducibility is a minimum necessary condition for a finding to be believable and informative." The importance of this factor can be traced to Irish chemist Robert Boyle (1627-1691), best known for his experiments with vacuum pumps [@shapin2011leviathan]. Boyle was concerned about the secrecy common among experimentalists in the 17th century and aimed to shift the culture from valuing direct in-person witnessing of scientific demonstrations towards meticulous written communications that were detailed enough to enable a reader to successfully undertake the experiment themselves, independent of the original author. 
+
+
+
+
 
 
 
