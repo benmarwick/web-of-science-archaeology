@@ -878,7 +878,126 @@ How does archaeology compare to these other fields in terms of reproducibility? 
 
 ## Investigating computational reproducibility in archaeology
 
-In 2024 the *Journal of Archaeological Science* introduced a new kind of peer review that has provided an opportunity to investigate computational reproducibility in archaeology. In January 2024 I accepted the position of 'Associate Editor for Reproducibility' and conducted peer reviews of submissions that mentioned programming languages such as R or Python in the methods sections.
+In 2024 the *Journal of Archaeological Science* introduced a new kind of peer review that has provided an opportunity to tackle this question about computational reproducibility in archaeology. In January 2024 I accepted the position of 'Associate Editor for Reproducibility' (AER) for JAS and conducted reproducibility reviews of submissions that mentioned programming languages such as R or Python in the methods sections. A reproducibility review examines the code and data used to generate the results presented in the paper, and attempts to run the authors' code to reproduce the their results. This new AER role is based on similar positions (i.e. 'data editor' or 'reproducibility editor') that journals in economics [@vilhuber2019report], statistics [@wrobel2024partnering], astronomy [@muench2023roles], ecology [@bolnick2022ensuring], and environmental studies [@rosenbergReproducibleResultsPolicy2021] have had, in some cases for over a decade. In 2024, three archaeology journals, in addition to JAS, added AERs to their editorial communities: *Advances in Archaeological Practice* [@marwick2024introducing, one paper reviewed], *Journal of Field Archaeology* [@farahani2024reproducibility, two papers reviewed], and *American Antiquity* [@martin2024editors, no papers reviewed].
+
+```{r}
+# reporting on my AER work
+jas_rr_data <- read_csv("data/JAS AER data analysis.csv")
+base_size <- 10
+
+# what software did the authors use?
+aer_plot_software <- 
+jas_rr_data %>% 
+  separate_longer_delim(Language, ",") %>% 
+  mutate(Language = str_squish(Language)) %>% 
+  count(Language) %>% 
+  drop_na() %>% 
+  mutate(Language = fct_reorder(Language, n, .desc = FALSE)) %>% 
+  ggplot() +
+  aes(Language, n) +
+  geom_bar(stat = 'identity') +
+  coord_flip() +
+  xlab("") +
+  ylab("Number of papers reviewed") +
+  theme_minimal(base_size = base_size)
+
+# what methods did the authors use? ML includes CNN, VAR, DL
+aer_plot_methods <- 
+jas_rr_data %>% 
+  separate_longer_delim(Methods2, ",") %>% 
+  mutate(Methods2 = str_squish(Methods2)) %>% 
+  count(Methods2) %>% 
+  drop_na() %>% 
+  mutate(Methods = fct_reorder(Methods2, n, .desc = FALSE)) %>% 
+ggplot() +
+  aes(Methods, n) +
+  geom_bar(stat = 'identity') +
+  coord_flip() +
+  xlab("") +
+  ylab("Number of papers reviewed") +
+  theme_minimal(base_size = base_size)
+
+# where did they put their materials?
+aer_plot_repo <- 
+jas_rr_data %>% 
+  separate_longer_delim(Repo, ",") %>% 
+  mutate(Repo = str_squish(Repo)) %>% 
+  count(Repo) %>% 
+  drop_na() %>% 
+  mutate(Repo = fct_reorder(Repo, n, .desc = FALSE)) %>% 
+  ggplot() +
+  aes(Repo, n) +
+  geom_bar(stat = 'identity') +
+  coord_flip() +
+  xlab("") +
+  ylab("Number of papers reviewed") +
+  theme_minimal(base_size = base_size) +
+  scale_y_continuous(breaks = scales::breaks_pretty())
+
+# could reproduce the results on the first try?
+aer_first_try <- 
+jas_rr_data %>% 
+  count(`Run on first try?`) %>% 
+  drop_na() %>% 
+  mutate(`Run on first try?` = fct_reorder(`Run on first try?`, n, .desc = FALSE)) 
+
+# why not? issues with code
+aer_plot_issues <- 
+jas_rr_data %>% 
+  separate_longer_delim(`Code issue`, ",") %>% 
+  mutate(`Code issue` = str_squish(`Code issue`)) %>% 
+    mutate(`Code issue` = ifelse(`Code issue` == "Proprietary software", 
+                               "Proprietary\nsoftware",
+                               `Code issue`)) %>% 
+  count(`Code issue`) %>% 
+  drop_na() %>% 
+  mutate(`Code issue` = fct_reorder(`Code issue`, n, .desc = FALSE)) %>% 
+  ggplot() +
+  aes(`Code issue`, n) +
+  geom_bar(stat = 'identity') +
+  coord_flip() +
+  xlab("") +
+  ylab("Number of papers reviewed") +
+  theme_minimal(base_size = base_size)  +
+  scale_y_continuous(breaks = scales::breaks_pretty())
+
+# relationship between code issues and language?
+aer_plot_issues_lang <- 
+jas_rr_data %>% 
+  separate_longer_delim(`Code issue`, ",") %>% 
+  separate_longer_delim(Language, ",") %>% 
+  mutate(Language = str_squish(Language)) %>% 
+  mutate(`Code issue` = str_squish(`Code issue`)) %>% 
+  group_by(`Code issue`, 
+           Language) %>% 
+  tally() %>% 
+  drop_na() %>% 
+  ggplot() +
+  aes(`Code issue`, 
+      Language,
+      size = n) +
+  geom_point() +
+  xlab("Problem with the code") +
+  ylab("Software") +
+  scale_x_discrete(guide = guide_axis(n.dodge = 2)) +
+  theme_minimal(base_size = base_size) +
+  scale_size_area(breaks = c(1, 2, 3, 5)) +
+  theme(legend.position = c(.9,.7),
+  legend.box.background=element_rect(fill="white", 
+                                     color="black")) 
+```
+
+```{r}
+#| label: fig-aer-summary
+#| fig-cap: "Summary of reproducibility reviews for JAS. A: Primary software used for the computational analysis reported in a manuscript. B: Computational or statistical method used by the authors (GMM = geometric morphometrics, Frequentist = hypothesis tests such as chi-square and ANOVA, AI/ML = artifical intellegence and machine learning, including neural networks and deep learning, Network = statitical analysis of social networks, 3D = analysis of 3D data such as artefact models, Composition = compositional analysis of artefacts). C: Locations where authors deposited their code and data files. D: Issues that prevented the reproducible review from succeeding on the first attempt. E: Relationship between software used and issues that make research irreproducible."
+
+library(patchwork)
+(aer_plot_software + aer_plot_methods + aer_plot_repo) / (aer_plot_issues + aer_plot_issues_lang) + plot_annotation(tag_levels = 'A')
+
+
+```
+
+At the time of writing (Feburary 2025) I have completed 47 reproducibility reviews of 25 manuscripts submitted to JAS. Of these, 11 have been published in JAS so far. Seven of these eleven papers fully passed the reproducibility review, resulting in a success rate so of 63%. Four of the seven papers could be fully reproduced on my first attempt, the others required additional input from the authors.
 
 it is hard to assess whether reported findings are credible.
 
