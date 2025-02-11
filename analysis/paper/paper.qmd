@@ -1,0 +1,1044 @@
+---
+title: "Extracting sunbeams from cucumbers: Computational reproducibility is essential for archaeological science"
+format: html
+bibliography: references.bib
+fig-dpi: 600
+execute: 
+    echo: false
+    warning: false
+---
+
+```{=html}
+<!-- 
+
+authoritative, agenda-setting or hypothesis-setting papers, rather than descriptive compilations of the literature.
+
+have the vision and authority to guide the next generation of archaeological science research
+
+cross-ref Vaiglova 2025 this issue
+
+-->
+```
+
+## Introduction
+
+In their paper celebrating the 40th anniversary of this journal Torrence et al [-@torrenceFortyYearsStill2015] noted that reproducibility was an issue important to the reputation and sustainability of the discipline, and necessary for archaeological science to behave like a science. As part of the celebration of the 50th anniversary, and of Torrence's leadership of the journal, my contribution revisits these topics of archaeology's status as a science, this journal's place in the landscape of archaeological science, and how the journal has responded to a growing recognition of the importance of reproducibility. I first present bibliometric evidence of the position of archaeology as a whole, and this journal in particular, in the sciences. Next I report on the journal's progress in supporting reproducible research, and my work doing a new kind of peer review for JAS, one that evaluates the computational reproducibilty of the research submitted for publication. Finally, I analyse twelve months of reproducibility reviews to identify common weaknesses in the ways archaeologists are working currently, and provide simple recommendations for researchers to overcome these and contribute to the improvement computational reproducibility in archaeological science.
+
+The question of archaeology's status as a science usually comes up in the context of what the discipline should or should not be. One of the first landmarks in tackling this question is the debate published by *Antiquity* between classical archaeologist Jacquetta Hawkes and palaeoanthropologist Glynn Isaac. @hawkesProperStudyMankind1968, advocating a humanistic archaeology, was concerned that scientific approaches to archaeology were causing researchers to be "swamped by a vast accumulation of insignificant, disparate facts, like a terrible tide of mud, quite beyond the capacity of any man to contain and mould into historical form". More optimistic about the integration of science and archaeology, @isaacWhitherArchaeology1971 counters that "New levels of precision in presenting data and in interpreting them can surely lead to briefer and more interesting technical reports as well as providing the basis for more lively literary portrayals of what happened in prehistory. Expanding on Isaac's perspective, @binford1962archaeology argued that archaeology should operate as a science after the model proposed by philosopher Carl Hempel, which prescribed hypothesis-driven approaches, leading to generalizable laws of human behavior. Counter-arguments came from numerous directions, notably @hodder1985postprocessual who rejected the quest for generalisations and instead argued that archaeology should be subjective and reflective, focussed on symbolic and relational meanings of material culture and the historical particularity of past human cultures. These debates, and the many more similar ones summarised by @martinon-torresArchaeologicalTheoriesArchaeological2013, have become a genre in archaeological writing that can be characterized as mostly based on personal observations, microscopic dissections of a handful of cherry-picked case studies of good or bad practice, and discussion of various philosophers and sociologists.
+
+What has been missing from these debates is a macroscopic observation of what the majority of archaeologists are actually doing, and an empirical comparison to a broad spectrum of relatively harder and softer disciplines. At the 'hard' end of the spectrum (e.g. physics and chemistry), scholars more typically share a large set of established set of theories, facts, and methods, facilitating fairly rapid agreement on the validity and significance of new results. At the 'soft' end of the spectrum (e.g. economics and psychology), the set of theories, facts, and methods on which there is widespread consensus is smaller, and agreement is slower and less frequently reached about the significance of new findings and the continuing relevance of previous work. Hardness and softness is a controversial distinction, in part because it is often used to imply a rank order of disciplines that encodes legitimacy, productivity, perceived value to society, and worthiness of funding [@DifferentAgenda2012; @coleHierarchySciences1983]. However, independent of these value judgments, empirical analysis of scholarly articles does indicate a spectrum of variation in practice linked to differing degrees of consensus in a discipline, for example in approaches to data visualisation [@clevelandGraphsScientificPublications1984; @smithScientificGraphsHierarchy2000]. Similarly, quantitative analysis of the frequency of positive results (ie. full or partial support for a research hypothesis) in publications is significantly correlated with hardness, consistent with a model where researchers in harder fields more readily accept any result their research produces, while those in softer fields have more freedom to choose which theories and hypotheses to test and how to interpret results [@fanelliPositiveResultsIncrease2010]. The hard-soft spectrum is also evident in surveys of how researchers view their own work relative to those in other fields [@biglanCharacteristicsSubjectMatter1973].
+
+## How to measure the hardness or softness of a science?
+
+To objectively quantify the relative hardness or softness of archaeology, as an evaluation of its status as a science, and the place of this journal in context of other archaeology journals, I take a bibliometric approach. This approach is based on @fanelliBibliometricEvidenceHierarchy2013, who examined the hardness and softness of 12 disciplines using scholarly publication parameters. @fanelliBibliometricEvidenceHierarchy2013 found a spectrum of statistically significant variation in bibliometric variables from the physical to the social sciences, with papers tending at the softer end of the spectrum tending to have fewer co-authors, use less substantive titles, have longer texts, cite older literature, and have a higher diversity of sources. In @fanelliBibliometricEvidenceHierarchy2013's analysis harder sciences include Space Science, Physics, Chemistry, less hard sciences include social sciences include Psychiatry, Psychology, Economics, Business and General Social Sciences, and the Humanities define the soft end of the spectrum. Following @fanelliBibliometricEvidenceHierarchy2013, I quantify the number of authors, length of article, relative title length, age of references, and diversity of references for a large sample of peer-reviewed journal articles.
+
+These parameters are useful because of how they signify consensus in a research community. A larger number of authors on a paper reflects collaboration of people working together on a common goal. Collaborators have specialized roles, each of whom has the ability to study a part of the problem with high accuracy and detail, with harder fields having larger groups of collaborators [@zuckerman1972age]. Reflecting this collaboration group size, harder disciplines tend to have higher average numbers of authors on papers. Article length has an inverse correlation with field hardness. In low-consensus, or softer, fields, papers must be longer to present justification, nuance and contextualization of results. The number of substantive and informative words in an article's title tends to be positively correlated with article length in harder disciplines [@yitzhakiRelationTitleLength2002; @yitzhakiVariationInformativityTitles1997], reflecting a focus on empiricism and efficiency that is characteristic of high-consensus disciplines. While @yitzhakiRelationTitleLength2002 removed stop-words (e.g. prepositions, articles, conjunctions, etc.) to calculate article length, in order to generate results for comparison with @fanelliBibliometricEvidenceHierarchy2013 I follow his method of dividing the total word count of the article title by the total number of pages of the article to compute relative title length.
+
+The age of works cited has long been used as a measure of a field's hardness [@moed1998new; @bornerAtlasScience2010], based on the assumption that harder fields assimilate new results more rapidly that softer fields [@price1970citation]. I calculated a recency of references index for each article (also known as the Price index), which is the proportion of all cited works that were published in the five years preceding the paper. The diversity of references
+
+```{r}
+library(tidyverse)
+
+items_df <- 
+  read_rds(here::here("analysis/data/wos-data-df.rds"))
+
+n_articles <- nrow(items_df)
+year_max <- max(items_df$year)
+year_min <- min(items_df$year)
+
+items_df_2012 <- 
+  items_df %>% 
+  filter(year == 2012)
+
+# how many archaeology articles in 2012
+n_items_df_2012 <- nrow(items_df_2012)
+
+# how many after 2012?
+n_items_df_after_2012 <- 
+  items_df %>% 
+  filter(year %in% 2013:year_max) %>% 
+  nrow()
+
+# what proportion of archaeology articles published after 2012
+prop_pub_after2012 <-  n_items_df_after_2012  / n_articles
+
+# how many distinct journals?
+n_journals <- n_distinct(items_df$journal)
+```
+
+While Fanelli and Glänzel (2013) analysed papers published in a single year (2012), I found only `r n_items_df_2012` papers for that same year, and `r round(prop_pub_after2012*100, 0)`% of papers in the sample published after that date. To make efficient use of the available data and ensure robust representation from different areas of archaeology, including those with lower frequencies of journal article publication, I analysed 9697 papers published during 1975-2025. This sample was collected from Clarivate’s Web of Science database by first selecting the Web of Science category ‘Archaeology’ and the Document type ‘article’ (n = 28,871). To focus on journals of broad relevance to most archaeologists, and that are representative of substantial communities of practice, I then filtered the results to keep only articles published in the top-ranking 25 journals according to their h-indices as reported by Clarivate’s Journal Citation Indicator. Finally I excluded journals with less than 100 articles in the database, resulting in `r n_journals` journals.
+
+The entire R code [@rcoreteamLanguageEnvironmentStatistical2024] used for all the analysis and visualizations contained in this paper is included in the Supplementary Online Materials at https://doi.org/xxx/xxx/xxx to enable re-use of materials and improve reproducibility and transparency [@marwickComputationalReproducibilityArchaeological2017]. All the figures, tables, and statistical test results presented here can be independently reproduced with the code and data in this compendium [@doi:10.1080/00031305.2017.1375986]. The R code is released under the MIT license, the data as CC-0, and figures as CC-BY, to enable maximum re-use.
+
+## Results
+
+### How does archaeology compare to other fields?
+
+```{r}
+library(ggrepel)
+
+# Number of authors ------------------
+boxlplot_n_authors <- 
+items_df %>% 
+  filter(!is.na(year)) %>% 
+  ggplot(aes(1,
+             log(authors_n))) +
+  geom_boxplot(
+               size = 1)  +
+  # median for physics, from Fanelli & Glänzel Fig 2
+  geom_hline(yintercept = 1.4,
+             colour = "grey70") +
+  geom_text_repel(data = tibble(x = 1, 
+                                y = 1.4,
+                                label = "p"),
+                  aes(x, y, label = label),
+                  bg.colour = "white", 
+                  bg.r = .2, 
+                  force = 0) +
+  # median for soc sci, from Fanelli & Glänzel Fig 2
+  geom_hline(yintercept = 0.8,
+             colour = "grey70") +
+  geom_text_repel(data = tibble(x = 1, 
+                                y = 0.8,
+                                label = "s"),
+                  aes(x, y, label = label),
+                  bg.colour = "white", 
+                  bg.r = .2, 
+                  force = 0) +
+    # median for humanities, from Fanelli & Glänzel Fig 2
+  geom_hline(yintercept = 0.0,
+             colour = "grey70") +
+  geom_text_repel(data = tibble(x = 1, 
+                                y = 0.0,
+                                label = "h"),
+                  aes(x, y, label = label),
+                  bg.colour = "white", 
+                  bg.r = .2, 
+                  force = 0) +
+  scale_y_continuous(limits = c(0, 5)) +
+  scale_x_continuous(labels = NULL) +
+  theme_minimal() + 
+  theme(panel.grid  = element_blank()) +
+  ylab("N. of authors (ln)") +
+  xlab("Collaborator group size") 
+
+# Relative title length  ----------------
+
+items_df_title <- 
+  items_df %>% 
+  filter(!is.na(pages_n)) %>%  
+  filter(!is.na(title_n)) %>% 
+  mutate(relative_title_length = log(title_n / pages_n))
+
+boxlplot_rel_title_length <- 
+items_df_title %>% 
+  filter(!is.na(year)) %>% 
+  ggplot(aes(1,
+             relative_title_length)) +
+  geom_boxplot(
+               size = 1)  +
+  # median for physics, from Fanelli & Glänzel Fig 2
+  geom_hline(yintercept = 0.8,
+             colour = "grey70") +
+  geom_text_repel(data = tibble(x = 1, 
+                                y = 0.8,
+                                label = "p"),
+                  aes(x, y, label = label),
+                  bg.colour = "white", 
+                  bg.r = .2, 
+                  force = 0) +
+  # median for soc sci, from Fanelli & Glänzel Fig 2
+  geom_hline(yintercept = 0.0,
+             colour = "grey70") +
+  geom_text_repel(data = tibble(x = 1, 
+                                y = 0.0,
+                                label = "s"),
+                  aes(x, y, label = label),
+                  bg.colour = "white", 
+                  bg.r = .2, 
+                  force = 0) +
+    # median for humanities, from Fanelli & Glänzel Fig 2
+  geom_hline(yintercept = -0.2,
+             colour = "grey70") +
+  geom_text_repel(data = tibble(x = 1, 
+                                y = -0.2,
+                                label = "h"),
+                  aes(x, y, label = label),
+                  bg.colour = "white", 
+                  bg.r = .2, 
+                  force = 0,
+                  nudge_x = 0.05) +
+  
+  scale_y_continuous(limits = c(-4.5, 3),
+                     breaks =  seq(-5, 5, 1),
+                     labels = seq(-5, 5, 1)) +
+  scale_x_continuous(labels = NULL) +
+  theme_minimal() +
+  theme(panel.grid  = element_blank()) +
+  ylab("Ratio of title length to article length (ln)") +
+  xlab("Relative title length")
+
+# Number of pages ------------------
+boxlplot_n_pages <- 
+items_df %>% 
+  ggplot(aes(1,
+             log(pages_n))) +
+  geom_boxplot(
+               size = 1)  +
+  # median for physics, from Fanelli & Glänzel Fig 2
+  geom_hline(yintercept = 1.8,
+             colour = "grey70") +
+  geom_text_repel(data = tibble(x = 1, 
+                                y = 1.8,
+                                label = "p"),
+                  aes(x, y, label = label),
+                  bg.colour = "white", 
+                  bg.r = .2, 
+                  force = 0) +
+  # median for soc sci, from Fanelli & Glänzel Fig 2
+  geom_hline(yintercept = 2.5,
+             colour = "grey70") +
+  geom_text_repel(data = tibble(x = 1, 
+                                y = 2.5,
+                                label = "s"),
+                  aes(x, y, label = label),
+                  bg.colour = "white", 
+                  bg.r = .2, 
+                  force = 0) +
+    # median for humanities, from Fanelli & Glänzel Fig 2
+  geom_hline(yintercept = 2.8,
+             colour = "grey70") +
+  geom_text_repel(data = tibble(x = 1, 
+                                y = 2.8,
+                                label = "h"),
+                  aes(x, y, label = label),
+                  bg.colour = "white", 
+                  bg.r = .2, 
+                  force = 0) +
+  scale_y_reverse(limits = c(5, 0)) +
+  scale_x_continuous(labels = NULL) +
+  theme_minimal() + 
+  theme(panel.grid  = element_blank()) +
+  ylab("N. of pages (ln)") +
+  xlab("Article length")
+
+# Price's index - age of references ------------------
+library(stringr)
+
+# output storage
+prices_index <- vector("list", length = nrow(items_df))
+
+# loop, this takes a moment
+for(i in seq_len(nrow(items_df))){
+  
+  refs <-  items_df$refs[i]
+  year <-  items_df$year[i]
+  
+  ref_years <- 
+    as.numeric(str_match(str_extract_all(refs, ", [0-9]{4}, ")[[1]], "\\d{4}"))
+  
+  preceeding_five_years <-  
+    seq(year - 5, year, 1)
+  
+  refs_n_in_preceeding_five_years <- 
+    ref_years[ref_years %in% preceeding_five_years]
+  
+  prices_index[[i]] <- 
+    length(refs_n_in_preceeding_five_years) / length(ref_years)
+  
+  # for debugging
+  # print(i)
+  
+}
+
+prices_index <- flatten_dbl(prices_index)
+
+# add to data frame
+items_df$prices_index <-  prices_index
+
+# plot
+boxlplot_price_index <- 
+items_df %>% 
+  ggplot(aes(1,
+             prices_index)) +
+  geom_boxplot(
+               size = 1)  +
+  # median for physics, from Fanelli & Glänzel Fig 2
+  geom_hline(yintercept = 0.38,
+             colour = "grey70") +
+  geom_text_repel(data = tibble(x = 1, 
+                                y = 0.38,
+                                label = "p"),
+                  aes(x, y, label = label),
+                  bg.colour = "white", 
+                  bg.r = .2, 
+                  force = 0) +
+  # median for soc sci, from Fanelli & Glänzel Fig 2
+  geom_hline(yintercept = 0.29,
+             colour = "grey70") +
+  geom_text_repel(data = tibble(x = 1, 
+                                y = 0.29,
+                                label = "s"),
+                  aes(x, y, label = label),
+                  bg.colour = "white", 
+                  bg.r = .2, 
+                  force = 0) +
+    # median for humanities, from Fanelli & Glänzel Fig 2
+  geom_hline(yintercept = 0.19,
+             colour = "grey70") +
+  geom_text_repel(data = tibble(x = 1, 
+                                y = 0.19,
+                                label = "h"),
+                  aes(x, y, label = label),
+                  bg.colour = "white", 
+                  bg.r = .2, 
+                  force = 0) +
+  scale_y_continuous(limits = c(0, 1)) +
+  scale_x_continuous(labels = NULL) +
+  theme_minimal() +
+  theme(panel.grid  = element_blank()) +
+  ylab("Prop. refs in last 5 years") +
+  xlab("Recency of references")
+
+# Shannon index - diversity of references ------------------
+# journal name as species, article as habitat
+
+# simplify the refs, since they are a bit inconsistent, some of
+# these steps take a few seconds
+ref_list1 <- map(items_df$refs, ~tolower(.x))
+ref_list2 <- map(ref_list1, ~str_replace_all(.x, "\\.|,| ", ""))
+ref_list3 <- map(ref_list2, ~str_split(.x, "\n"))
+ref_list4 <- map(ref_list3, ~data_frame(x = .x))
+ref_list5 <- bind_rows(ref_list4, .id = "id") 
+ref_list6 <- unnest(ref_list5)
+
+# get the journal names out of the refs
+ref_list7 <- 
+  ref_list6 %>% 
+  mutate(journal_name = gsub("\\-", "", x)) %>% 
+  mutate(journal_name = gsub("\\:", "", journal_name)) %>% 
+  mutate(journal_name = gsub("^[a-z'\\(\\)\\:]+[0-9]{4}", "", journal_name)) %>% 
+  mutate(journal_name = gsub("v[0-9]+.*", "", journal_name)) %>% 
+  mutate(journal_name = gsub("p[0-9]+$", "", journal_name))
+
+# prepare to compute shannon and join with other variables
+items_df$id <- 1:nrow(items_df)
+
+# tally of all referenced items
+all_cited_items <- 
+  ref_list7 %>% 
+  select(x) %>% 
+  group_by(x) %>% 
+  tally() %>% 
+  arrange(desc(n)) 
+
+# get a list of the top journals
+top_journals <- 
+  ref_list7 %>% 
+  select(journal_name) %>% 
+  group_by(journal_name) %>% 
+  tally() %>% 
+  filter(n > 50) %>% 
+  arrange(desc(n)) 
+
+# In the Shannon index, p_i is the proportion (n/N) of individuals of one particular species (journal) found (n) divided by the total number of individuals found (N), ln is the natural log, Σ is the sum of the calculations, and s is the number of species. 
+
+# compute diversity of all citations for each article (habitat)
+shannon_per_item <- 
+  ref_list7 %>% 
+  group_by(id, x) %>% 
+  tally() %>% 
+  mutate(n_in_article = n) %>% 
+  select(-n) %>% 
+  left_join(all_cited_items) %>% 
+  mutate(p_i = n / sum(n, na.rm = TRUE)) %>% 
+  mutate(p_i_ln = log(p_i)) %>% 
+  group_by(id) %>% 
+  summarise(shannon = -sum(p_i * p_i_ln, na.rm = TRUE)) %>% 
+  mutate(id = as.numeric(id)) %>% 
+  arrange(id)  %>% 
+  left_join(items_df)
+
+# plot
+boxlplot_shannon_index <- 
+shannon_per_item %>% 
+  filter(!is.na(year)) %>% 
+  ggplot(aes(1,
+             shannon)) +
+  geom_boxplot(
+               size = 1)  +
+  # median for physics, from Fanelli & Glänzel Fig 2
+  geom_hline(yintercept = 2.6,
+             colour = "grey70") +
+  geom_text_repel(data = tibble(x = 1, 
+                                y = 2.6,
+                                label = "p"),
+                  aes(x, y, label = label),
+                  bg.colour = "white", 
+                  bg.r = .2, 
+                  force = 0) +
+  # median for soc sci, from Fanelli & Glänzel Fig 2
+  geom_hline(yintercept = 3.2,
+             colour = "grey70") +
+  geom_text_repel(data = tibble(x = 1, 
+                                y = 3.2,
+                                label = "s"),
+                  aes(x, y, label = label),
+                  bg.colour = "white", 
+                  bg.r = .2, 
+                  force = 0) +
+    # median for humanities, from Fanelli & Glänzel Fig 2
+  geom_hline(yintercept = 3.3,
+             colour = "grey70") +
+  geom_text_repel(data = tibble(x = 1, 
+                                y = 3.3,
+                                label = "h"),
+                  aes(x, y, 
+                      label = label,
+                      segment.colour = NA),
+                  bg.colour = "white", 
+                  bg.r = .2, 
+                  force = 0,
+                  nudge_x = 0.05) +
+  scale_y_reverse(limits = c(6, 0)) +
+  scale_x_continuous(labels = NULL) +
+  theme_minimal()  +
+  theme(panel.grid  = element_blank()) +
+  ylab("Shannon Index") +
+  xlab("Diversity of references")
+```
+
+```{r}
+#| label: fig-compare-other-fields
+#| fig-cap: Distributions of article characteristics hypothesised to reflect the level of consensus. The boxplot shows the distribution of values of archaeology articles. The thick black line in the middle of the boxplot is the median value, the box represents the inter-quartile range (the range between the 25th and 75th percentiles, where 50% of the data are located), and individual points represent outliers. The thin grey horizontal lines in each boxplot indicate the median values computed by Fanelli and Glanzel (2013), where p = physics, s = social sciences, h = humanities. ln denotes the natural logarithm, or logarithm to the base e. 
+#| fig-height: 8
+
+library(cowplot)
+
+plot_grid(boxlplot_n_authors, 
+          boxlplot_rel_title_length,
+          boxlplot_n_pages,
+          boxlplot_price_index, 
+          boxlplot_shannon_index,
+          nrow = 2)
+```
+
+@fig-compare-other-fields shows the distribution of bibliometric variables for archaeology in context of data from other fields presented by @fanelliBibliometricEvidenceHierarchy2013. The most striking indicator of archaeology as a hard science is the number of authors, where it is between the social sciences and physics. Archaeology is a close fit with the social sciences in relative title length. It is between the the social sciences and humanities in recency of references and diversity of references. The clearest indicator of archaeology as a soft science is article length where it is similar to the humanities. Overall archaeology does not sit squarely at either end of the hard-soft spectrum. It is generally not a harder science than the social sciences, with the exception of collaborator group sizes.
+
+### How has the hardness of archaeology varied over time?
+
+```{r}
+
+over_time <-  
+  items_df %>%  
+  left_join(items_df_title) %>%  
+  left_join(shannon_per_item) %>%  
+      filter(relative_title_length != -Inf, 
+            relative_title_length !=  Inf,
+            prices_index != "NaN" 
+           ) %>% 
+  mutate(log_authors_n = log(authors_n), 
+         log_pages_n = log(pages_n), 
+         journal_wrp = str_wrap(journal, 30)) %>%  
+  select(year, 
+         log_authors_n, 
+         log_pages_n, 
+         prices_index,  
+         shannon, 
+         relative_title_length) 
+  
+over_time_long <-  
+  over_time %>%  
+  ungroup() %>%  
+  select(-journal) %>%  
+  gather(variable,  
+         value, 
+         -year) %>%  
+  filter(value != -Inf, 
+         value !=  Inf) %>%  
+  mutate(variable = case_when( 
+    variable == "log_authors_n" ~ "N. of authors (ln)", 
+    variable == "log_pages_n"   ~ "N. of pages (ln)", 
+    variable == "prices_index"  ~ "Recency of references", 
+    variable == "shannon"  ~ "Diversity of references", 
+    variable == "relative_title_length"  ~ "Relative title length (ln)" 
+  )) %>%  
+  filter(!is.na(variable)) %>%  
+  filter(!is.nan(value)) %>%  
+  filter(!is.na(value)) %>%  
+  filter(value != "NaN") %>%  
+  mutate(value = parse_number(value))
+ 
+# compute beta estimates so we can colour lines to indicate more or
+# less hard
+
+library(broom)
+ 
+over_time_long_models <- 
+  over_time_long %>%  
+  group_nest(variable) %>%  
+  mutate(model = map(data, ~tidy(lm(value ~ year, data = .)))) %>%  
+  unnest(model) %>%  
+  filter(term == 'year') %>%  
+  mutate(becoming_more_scientific = case_when( 
+    variable == "N. of authors (ln)"         & estimate > 0 ~ "TRUE", 
+    variable == "N. of pages (ln)"           & estimate < 0 ~ "TRUE", 
+    variable == "N. of refs (sqrt)"          & estimate < 0 ~ "TRUE", 
+    variable == "Recency of references"      & estimate > 0 ~ "TRUE", 
+    variable == "Relative title length (ln)" & estimate > 0 ~ "TRUE", 
+    variable == "Diversity of references"    & estimate < 0 ~ "TRUE",
+    TRUE ~ "FALSE"
+  )) 
+
+# join with data
+over_time_long_colour <- 
+  over_time_long %>% 
+  left_join(over_time_long_models)
+ 
+```
+
+```{r}
+#| label: fig-change-over-time
+#| fig-cap: Distribution of article characteristics for archaeology articles over time. Data points represent individual articles. The colour of the points indicates if the overall trend is toward softer (orange) or harder (green) Generalized Additive Models were computed to fit the lines summarising the relationships between the variables and the time series. 
+#| fig-height: 6
+
+library(ggpmisc)
+library(mgcv)
+formula <-  y ~ x
+
+over_time_long_colour_gams <- 
+over_time_long_colour %>% 
+  nest(.by = variable) %>% 
+  mutate(mod_gam = lapply(data, 
+                          function(df) gam(year ~ s(value, bs = "cr"), 
+                                           data = df)))
+
+over_time_long_colour_gams_summary <- 
+over_time_long_colour %>% 
+  nest(.by = variable) %>% 
+  mutate(fit = map(data, ~mgcv::gam(year ~ s(value, bs = "cs"), data = .)),
+         results = map(fit, glance),
+         R.square = map_dbl(fit, ~ summary(.)$r.sq)) %>%
+  unnest(results) %>%
+  select(-data, -fit) %>% 
+  select(variable, adj.r.squared)
+
+over_time_long_colour_gams_summary_df <- 
+over_time_long_colour %>% 
+  left_join(over_time_long_colour_gams_summary)
+
+ggplot() + 
+  geom_point(data = over_time_long_colour_gams_summary_df, 
+       aes(year,  
+           value, 
+           colour = becoming_more_scientific),
+       alpha = 0.5) + 
+  geom_smooth(data = over_time_long_colour_gams_summary_df,
+              aes(year, value),
+              method="gam", 
+              formula = y ~ s(x, bs = "cs"),
+              se = FALSE,  
+              size = 3, 
+              colour = "#7570b3") +
+  facet_wrap( ~ variable,
+              scales = "free_y") + 
+  theme_bw(base_size = 12) +
+  scale_color_manual(values = c("#d95f02",
+                                "#1b9e77" )) +
+  guides(colour = "none") +
+  ylab("") +
+  geom_text(data = over_time_long_colour_gams_summary_df %>% 
+              group_by(variable) %>% 
+              summarise(max_value = max(value),
+                        adj.r.squared = unique(adj.r.squared)),
+           aes(
+           x = 1980, 
+           y = max_value, 
+           label = paste("Pseudo R² = ", 
+                         signif(adj.r.squared, 
+                                digits = 3))),
+           hjust = 0, vjust = 1.5)
+ 
+```
+
+@fig-change-over-time shows how the bibliometric indicators of field hardness have changed of time for archaeology articles. By two measures, the number of authors and relative title length, archaeology has become increasingly harder over time. On the other hand, three metrics indicate that archaeology has become softer (diversity of references, article length and recently of references). Although all the relationships are statistically significant, generally these temporal trends are very weak with low slope values, indicating very slow change over time. Similarly the r-squared values are very low, demonstrating that much of the variability in these metrics is independent of time.
+
+The most striking change over time is in the increase in the number of authors, which has the highest r-squared value of these metrics. One interesting detail evident in @fig-change-over-time is the increase in the range of diversity of references after about 2010. This may be due to some broader changes in academic publishing around this time, such as moves to digital-first continuous publishing, new journals appearing (e.g. *Archaeological and Anthropological Sciences* in 2009 and *Journal of Island & Coastal Archaeology* in 2010), and non-archaeology journals becoming more relevant to archaeologists. For example, *PLOS ONE* received its first impact factor in 2010 and in 2011 Nature's *Scientific Reports* began publishing [@malashichev2017open].
+
+### How do archaeology journals vary in hardness?
+
+```{r}
+
+journal_title_size <- 4
+
+# get rank order of journals by these bibliometic variables
+
+journal_metrics_for_plotting <- 
+items_df %>% 
+  left_join(items_df_title) %>% 
+  left_join(shannon_per_item) %>% 
+  ungroup() %>% 
+  select(journal,
+         authors_n,  # log
+         pages_n,    # log
+         relative_title_length,
+         prices_index,
+         shannon
+         ) %>% 
+    filter(relative_title_length != -Inf, 
+           relative_title_length !=  Inf,
+           prices_index != "NaN" 
+           ) %>% 
+  mutate(
+    log_authors = log(authors_n),
+    log_pages = log(pages_n)
+  ) 
+
+journal_metrics_for_plotting_summary <- 
+  journal_metrics_for_plotting %>% 
+  mutate(journal = str_wrap(journal, 20)) %>% 
+  group_by(journal) %>% 
+  summarise(mean_log_authors = mean(log_authors),
+            mean_log_pages =   mean(log_pages),
+            mean_relative_title_length = mean(relative_title_length),
+            mean_prices_index = mean(prices_index),
+            mean_shannon =      mean(shannon)) 
+
+# PCA of journal means
+journal_metrics_for_plotting_summary_pca <- 
+journal_metrics_for_plotting_summary %>% 
+  column_to_rownames("journal") %>% 
+  prcomp(scale = TRUE)
+
+# Tidy the PCA results
+pca_means_tidy <- journal_metrics_for_plotting_summary_pca %>% tidy(matrix = "pcs")
+# first two PCs explain how much?
+# Get the summary of the PCA
+pca_summary <- summary(journal_metrics_for_plotting_summary_pca)
+# Extract the proportion of variance explained by PC1 and PC2
+variance_explained <- round(pca_summary$importance[2, 1:2] * 100, 0)
+
+# Get the PCA scores
+pca_scores_means <- journal_metrics_for_plotting_summary_pca %>%  augment(journal_metrics_for_plotting_summary)
+
+# Get the PCA loadings
+pca_loadings_means <- 
+  journal_metrics_for_plotting_summary_pca %>% 
+  tidy(matrix = "rotation") %>% 
+    pivot_wider(names_from = "PC", 
+              values_from = "value",
+              names_prefix = "PC") %>% 
+  mutate(column = case_when(
+    column == "mean_log_authors" ~ "Number of\nauthors",
+    column == "mean_log_pages" ~ "Number of\npages",
+    column == "mean_relative_title_length" ~ "Relative\ntitle\nlength",
+    column == "mean_prices_index" ~ "Recency of\nreferences",
+    column == "mean_shannon" ~ "Diversity of\nreferences",
+  ))
+
+# Plot the PCA results
+plot_pca_means <- 
+ggplot() + 
+  labs(x = paste0("PC1 (", variance_explained[1], "%)"),
+       y = paste0("PC2 (", variance_explained[2], "%)")) +
+  geom_point(data = pca_scores_means,
+               aes(.fittedPC1,
+                   .fittedPC2),
+             size = 2) +
+  geom_text_repel(data = pca_scores_means,
+            aes(.fittedPC1,
+                .fittedPC2,
+                label = journal),
+            lineheight = 0.8,
+            size = 2,
+            bg.color = "white",  # Color of the halo
+            bg.r = 0.2,) +
+     geom_segment(data = pca_loadings_means, 
+               aes(x = 0, 
+                   y = 0, 
+                   xend = PC1, 
+                   yend = PC2),
+               arrow = arrow(length = unit(0.2, "cm")), 
+               color = "grey70") +
+  geom_text_repel(data = pca_loadings_means,
+            aes(PC1,
+                PC2,
+                label = column),
+            size = 2,
+            lineheight = 0.7,
+            force = 0,
+            segment.color = NA,
+            color = "grey40",
+           bg.color = "white",  # Color of the halo
+          bg.r = 0.2) +
+  theme_minimal()
+
+```
+
+```{r}
+# looking into rankings of the journals
+
+journal_summary_metrics_ranks <- 
+journal_metrics_for_plotting_summary %>% 
+  mutate(across(starts_with("mean"), 
+                ~ rank(-.), 
+                .names = "rank_{.col}")) %>% 
+  select(journal, starts_with("rank")) %>% 
+  # reorder by hardness
+  mutate(rank_mean_log_pages = 21 - rank_mean_log_pages,
+         rank_mean_shannon =   21 - rank_mean_shannon)
+
+library(irr)
+journal_summary_metrics_ranks_test <- 
+journal_summary_metrics_ranks %>% 
+  select(-journal) %>% 
+  kendall(correct = TRUE)
+
+# Convert to scientific text
+pretty_print_sci <- function(num){
+  scientific_text <- paste0(gsub("e", " x 10^",  # Replace 'e' with ' x 10^'
+                          sprintf("%.2e", num)), "^") # round to 2 sf
+  return(scientific_text)
+  }
+
+borda_count_tbl <- function(votes_tbl) {
+  # Number of voters
+  num_voters <- ncol(votes_tbl) - 1
+  
+  # Calculate scores for each option
+  scores <- votes_tbl %>%
+    rowwise() %>%
+    mutate(Score = sum(num_voters - c_across(starts_with("rank_")))) %>%
+    ungroup() %>%
+    select(1, Score)
+  
+  # Return scores
+  return(scores)
+}
+
+# Calculate Borda Count scores
+borda_scores <- 
+journal_summary_metrics_ranks %>% 
+  borda_count_tbl() %>% 
+  rename("Journal" = "journal") %>% 
+  arrange(desc(Score))
+
+plot_borda_scores <- 
+  borda_scores %>% 
+  mutate(Journal = str_wrap(Journal, 20)) %>% 
+ggplot() +
+  aes(reorder(Journal, Score),
+      Score) +
+  geom_col() +
+  coord_flip() +
+  ylab("Borda Count scores") + 
+  xlab("") +
+  theme_minimal() +
+  theme(axis.text.y = element_text(size = journal_title_size)) 
+
+```
+
+```{r}
+library(ggridges)
+
+plot_journals_authors <- 
+journal_metrics_for_plotting %>% 
+  mutate(journal = str_wrap(journal, 20)) %>% 
+  ggplot(aes(y = reorder(journal, 
+                         log_authors,
+                     FUN = mean),
+             x = log_authors,
+             fill =   after_stat(x),
+             height = after_stat(density))) +
+  geom_density_ridges_gradient(stat = "density",
+                               colour = "white") +
+  scale_fill_viridis_c() +
+  guides(fill = 'none') +
+  theme_minimal() +
+  theme(axis.text.y = element_text(size = journal_title_size)) +
+  ylab("") + 
+  xlab("Number of authors (ln)")
+
+plot_journals_article_length <- 
+journal_metrics_for_plotting %>% 
+  mutate(journal = str_wrap(journal, 20)) %>% 
+  ggplot(aes(y = reorder(journal,
+                     -log_pages,
+                     FUN = mean), 
+             x = log_pages,
+             fill =   after_stat(x),
+             height = after_stat(density))) +
+  geom_density_ridges_gradient(stat = "density",
+                               colour = "white") +
+  scale_fill_viridis_c() +
+  guides(fill = 'none') +
+  theme_minimal() +
+  theme(axis.text.y = element_text(size = journal_title_size)) +
+  xlab("Number of pages (ln)") +
+  ylab("")
+
+plot_journals_title_length <- 
+journal_metrics_for_plotting %>% 
+  mutate(journal = str_wrap(journal, 20)) %>% 
+  ggplot(aes(y = reorder(journal,
+                         relative_title_length,
+                         FUN = mean), 
+             x = relative_title_length,
+             fill =   after_stat(x),
+             height = after_stat(density))) +
+  geom_density_ridges_gradient(stat = "density",
+                               colour = "white") +
+  scale_fill_viridis_c() +
+  guides(fill = 'none') +
+  theme_minimal() +
+  theme(axis.text.y = element_text(size = journal_title_size)) +
+  ylab("") +
+  xlab("Relative title length (ln)")
+
+plot_journals_ref_recency <- 
+journal_metrics_for_plotting %>% 
+  mutate(journal = str_wrap(journal, 20)) %>% 
+  group_by(journal) %>% 
+  ggplot(aes(y = reorder(journal,
+                     prices_index,
+                     FUN = mean), 
+             x = prices_index,            
+             fill =   after_stat(x),
+             height = after_stat(density))) +
+  geom_density_ridges_gradient(stat = "density",
+                               colour = "white") +
+  scale_fill_viridis_c() +
+  guides(fill = 'none') +
+  theme_minimal() +
+  theme(axis.text.y = element_text(size = journal_title_size)) +
+  ylab("") +
+  xlab("Recency of references")
+
+plot_journals_ref_diversity <- 
+journal_metrics_for_plotting %>%  
+  mutate(journal = str_wrap(journal, 20)) %>% 
+  group_by(journal) %>% 
+  ggplot(aes(y = reorder(journal,
+                     -shannon,
+                     FUN = mean), 
+             x = shannon,
+             fill =   after_stat(x),
+             height = after_stat(density))) +
+  geom_density_ridges_gradient(stat = "density",
+                               colour = "white") +
+  scale_fill_viridis_c() +
+  guides(fill = 'none') +
+  theme_minimal() +
+  theme(axis.text.y = element_text(size = journal_title_size)) +
+  ylab("") +
+  xlab("Diversity of references")
+```
+
+```{r}
+#| label: fig-variation-by-journal
+#| fig-cap: "Panels A-E: Variation in bibliometric indicators of hardness for 20 archaeological journals. The journals are ordered for each indicator so that within each plot, the harder journals are at the top of the plot and the softer journals are at the base. Panel F shows a bar plot that is the single consensus ranking computed from all five variables, using the Borda Count ranking algorithm. Panel G is a biplot of the first and second principal components of a PCA computed on the journal means of the five bibliometric variables."
+#| fig-height: 14
+
+library(cowplot)
+
+plot_grid(
+  plot_grid(plot_journals_authors, 
+           plot_journals_article_length,
+           plot_journals_title_length,
+           plot_journals_ref_recency, 
+           plot_journals_ref_diversity,
+           plot_borda_scores,
+           nrow = 2,
+           labels = LETTERS[1:6]),
+  plot_pca_means,
+  nrow = 2,
+  labels = c("", LETTERS[7]),
+  rel_heights = c(1, 0.5))
+
+```
+
+@fig-variation-by-journal shows the distribution of our bibliometric variables of hardness for each of the `r n_journals` journals in the sample. Overall agreement between these bibliometric variables in ranking these journals on a hard-soft spectrum is moderate to strong, with a Kendall's coefficient of concordance (Wt) value of `r round(journal_summary_metrics_ranks_test$value, 2)` (in a 0-1 range, where 1 is perfect agreement) and a p-value of `r pretty_print_sci(journal_summary_metrics_ranks_test$p.value)`. Panel F of @fig-variation-by-journal shows an overall consensus ranking of all journals in the sample. In this consensus ranking the *Journal of Archaeological Science* among the top five archaeology journals for hardness. It is placed at the harder end of the hard-soft spectrum especially by the number of pages and relative title length, and to lesser degrees by the number of authors and recency of references. However, according to the diversity of references, the *Journal of Archaeological Science* is at the middle of the spectrum.
+
+The *Journal of Cultural Heritage* is the only journal that consistently ranks as hard across all variables, occurring in the top five journals for all five metrics. This journal primarily publishes materials science and computational analyses related to conservation and preservation of historic objects in museums and other collections. Authors of papers in recent issues have affiliations with museums, cultural heritage programs, and chemistry, engineering, and physics departments at European and Chinese universities. Notably, papers in this journal typically do not engage in questions or debates about past human behaviour or culture. The absence of these questions in research published in this journal makes it an outlier here, since these questions are central to a common definition of archaeology as 'cultural anthropology of the past', a phrase first found in @leroigourhan1946 and repeated in widely-used contemporary undergraduate textbooks such as @renfrew2024. Most archaeologists would likely be surprised at the decision by Clarivate to include the *Journal of Cultural Heritage* in their category of archaeology journals, leading to this result in @fig-variation-by-journal where the hardest archaeology journal publishes papers that are not very archaeological at all because they do not engage with anthropological topics.
+
+The *Journal of Archaeological Research* is notable because it consistently ranks as soft, ranking as the softest journal for four of our five bibliometric variables. This is a predicable result for a review journal, which is a distinct type of journal dedicated to summarizing, analyzing, and synthesizing existing research in a particular field. The stated aim of the *Journal of Archaeological Research* is to 'bring together the most recent international research summaries on a broad range of topics and geographical areas' [@feinmanAimsScopeJournal2024]. A typical article is a long single-authored synthesis of archaeology in a region or on a topic. As the only review journal in this sample, this is a stark contrast to the other journals here that present original research findings, and like the *Journal of Cultural Heritage*, may be considered an outlier in this sample.
+
+The PCA results in panel G show of @fig-variation-by-journal that PC1 captures most of the variance in the metrics (`r variance_explained[1]`%) and is reasonable proxy for the hard-soft spectrum, with *Journal of Cultural Heritage* representing the hard extreme on the right and *Journal of Archaeological Research* representing the soft extreme on the left. The distribution of PC1 values is skewed left, with most of the journals concentrated at the harder end of the spectrum. The distribution of PC2 values reveals additional structure to the data and can be roughly separated into generalist journals in the negative range (e.g. *American Antiquity*, *Antiquity*, *Advances in Archaeological Practice*), and more specialised journals in the positive range (e.g. *Environmental Archaeology*, *Geoarchaeology*, *Archaeologial Research in Asia*, *Journal of Island and Coastal Archaeology*). The *Journal of Archaeological Science* sits about midway between these two groups, reflecting its relevance to specialised communities of practice in archaeology, as well as general
+
+## Reproducibility: A key measure of how scientific a field is
+
+This macroscopic perspective derived from an analysis of the ways thousands of archaeologists communicate their research has produced a complex picture of archaeology as a science. In the context of a broad spectrum of other research areas, archaeologists behave like social scientists. We are harder than typical social scientists in tending to form larger groups of collaborators more often, and softer in sometimes writing longer articles than more resemble humanities scholarship. The outlook for the future of archaeology is also complex, with three out of five of the bibliometric variables trending towards more humanistic styles of working, but the discipline showing more extreme values in some metrics towards both hard and soft sciences after about 2010. Among archaeology journals, we see distinct communities of practice reflected in the PCA results that are very close together on the hard-soft spectrum, but have minor differences in their communication styles, perhaps due to differences in writing traditions inherited from parent disciplines such as geology and biology.
+
+While these bibliometric variables provide several interesting insights into the status of archaeology as a science, via measurement of consensus, and are important for moving the debate beyond discussions of a small number of case studies, they miss a crucial factor that separates scientific practice from non-science. This is reproducibility, which, according to a report by the US National Science Foundation [@cacioppo2015social], "refers to the ability of a researcher to duplicate the results of a prior study using the same materials as were used by the original investigator. That is, a second researcher might use the same raw data to build the same analysis files and implement the same statistical analysis in an attempt to yield the same results... Reproducibility is a minimum necessary condition for a finding to be believable and informative." The importance of this factor can be traced to Irish chemist Robert Boyle (1627-1691), best known for his experiments with vacuum pumps [@shapin2011leviathan]. Boyle was concerned about the secrecy common among experimentalists in the 17th century and aimed to shift the culture from valuing direct in-person witnessing of scientific demonstrations towards meticulous written communications that were detailed enough to enable a reader to successfully undertake the experiment themselves, independent of the original author.
+
+With many disciplines making increasing use of computationally intensive analyses in recent years there has been renewed interest in reproducibility [@levequeReproducibleResearchScientific2012]. In part, this is because computationally intensive research is difficult to communicate within the constraints of the methods section of a traditional journal article — the reader needs also needs the computer code written by the original authors, not just the article text. There is also the broader context of rising pressure to publish in prestigious journals and intense competition for funds that create strong incentives for malpractice in research [@edwards2017academic]. These two factors have led to widespread concerns of a reproducibility crisis in many fields [@Baker2016]. Estimates of scientific reproducibility in several fields confirm the extent of this problem. Empirical replications of 100 studies published in three psychology journals found that 36% of replications had statistically significant results, compared to 96% of the original studies [@OpenScienceCollaboration2015]. Similar empirical replications of large numbers of social science studies and experiemental economics studies successfully replicated 61% and 62% of their target studies respectively [@camererEvaluatingReplicabilitySocial2018; @camererEvaluatingReplicabilityLaboratory2016].
+
+Similarly bleak results come from measurements specifically of the reproducibility of computational analyses of scientific studies. An attempt at reproducing the computational results of 204 papers in *Science* resulted in success in reproducing the findings for 26% [@stoddenEmpiricalAnalysisJournal2018]. The computational results of two out of 41 geoscience papers could be fully reproduced on the first attempt [@konkolComputationalReproducibilityGeoscientific2019]. In the biomedical field, code in 1,203 out of 27,271 (4%) notebooks associated with 3,467 publications could be run without errors [@samuelComputationalReproducibilityJupyter2024]. Statisticians could reproduce 15% of 93 papers [@xiongStatePlayReproducibility2023]. Economists have been especially active in researching computational reproducibility, with studies indicating successful reproduction of results using code and data provided by authors for 30% of 67 papers [@ChangLi2015], 14% of 203 papers [@gertler2018make], 44% of 152 papers [@herbert2021reproducibility], 30% of 419 articles [@fivsar2024reproducibility], and 28% of 168 papers [@perignonComputationalReproducibilityFinance2024]. These efforts confirm that the reproducibility of published research is widely recognised as a cornerstone of rigorous science, and work on evaluating how successful a research community is at generating reproducible results has become a distinctive and important meta-research activity in many fields.
+
+How does archaeology compare to these other fields in terms of reproducibility? Empirical reproducibility has long been valued in field archaeology. Throughout the history of archaeology, well-known sites have been repeatedly revisited to test old hypotheses with new evidence or methods, for example, Olduvai Gorge (Tanzania), Cahokia (USA), Çatalhöyük (Turkey), and Madjedbebe (Australia). Similarly among many experimental archaeologists, empirical reproducibility is a key concern, for example in lithic use-wear identification [@hayesLearningBlindTests2017] and the measurement of lithics [@pargeterReplicabilityLithicAnalysis2023]. To what extent does this concern extend to computational reproducibility among archaeologists?
+
+## How reproducible is archaeology? Investigating computational reproducibility
+
+In 2024 the *Journal of Archaeological Science* introduced a new kind of peer review that has provided an opportunity to tackle this question about computational reproducibility in archaeology. In January 2024 I accepted the position of 'Associate Editor for Reproducibility' (AER) for JAS and conducted reproducibility reviews of submissions that mentioned programming languages such as R or Python in the methods sections. A reproducibility review examines the code and data used to generate the results presented in the paper, and attempts to run the authors' code to reproduce the their results (see @editorsReproducibilityJournalArchaeological for more details about this process). This new AER role is based on similar positions (i.e. 'data editor' or 'reproducibility editor') that journals in economics [@vilhuber2019report], statistics [@wrobel2024partnering], astronomy [@muench2023roles], ecology [@bolnick2022ensuring], and environmental studies [@rosenbergReproducibleResultsPolicy2021] have had, in some cases for over a decade. In 2024, three archaeology journals, in addition to JAS, added AERs to their editorial communities: *Advances in Archaeological Practice* [@marwick2024introducing, one paper reviewed], *Journal of Field Archaeology* [@farahani2024reproducibility, two papers reviewed], and *American Antiquity* [@martin2024editors, no papers reviewed].
+
+```{r}
+# reporting on my AER work
+jas_rr_data <- 
+  read_csv(here::here("analysis/data/JAS AER data analysis.csv"))
+
+base_size <- 10
+
+# what software did the authors use?
+aer_plot_software <- 
+jas_rr_data %>% 
+  separate_longer_delim(Language, ",") %>% 
+  mutate(Language = str_squish(Language)) %>% 
+  count(Language) %>% 
+  drop_na() %>% 
+  mutate(Language = fct_reorder(Language, n, .desc = FALSE)) %>% 
+  ggplot() +
+  aes(Language, n) +
+  geom_bar(stat = 'identity') +
+  coord_flip() +
+  xlab("") +
+  ylab("Number of papers reviewed") +
+  theme_minimal(base_size = base_size)
+
+# what methods did the authors use? ML includes CNN, VAR, DL
+aer_plot_methods <- 
+jas_rr_data %>% 
+  separate_longer_delim(Methods2, ",") %>% 
+  mutate(Methods2 = str_squish(Methods2)) %>% 
+  count(Methods2) %>% 
+  drop_na() %>% 
+  mutate(Methods = fct_reorder(Methods2, n, .desc = FALSE)) %>% 
+ggplot() +
+  aes(Methods, n) +
+  geom_bar(stat = 'identity') +
+  coord_flip() +
+  xlab("") +
+  ylab("Number of papers reviewed") +
+  theme_minimal(base_size = base_size)
+
+# where did they put their materials?
+aer_plot_repo <- 
+jas_rr_data %>% 
+  separate_longer_delim(Repo, ",") %>% 
+  mutate(Repo = str_squish(Repo)) %>% 
+  count(Repo) %>% 
+  drop_na() %>% 
+  mutate(Repo = fct_reorder(Repo, n, .desc = FALSE)) %>% 
+  ggplot() +
+  aes(Repo, n) +
+  geom_bar(stat = 'identity') +
+  coord_flip() +
+  xlab("") +
+  ylab("Number of papers reviewed") +
+  theme_minimal(base_size = base_size) +
+  scale_y_continuous(breaks = scales::breaks_pretty())
+
+# could reproduce the results on the first try?
+aer_first_try <- 
+jas_rr_data %>% 
+  count(`Run on first try?`) %>% 
+  drop_na() %>% 
+  mutate(`Run on first try?` = fct_reorder(`Run on first try?`, n, .desc = FALSE)) 
+
+# why not? issues with code
+aer_plot_issues <- 
+jas_rr_data %>% 
+  separate_longer_delim(`Code issue`, ",") %>% 
+  mutate(`Code issue` = str_squish(`Code issue`)) %>% 
+    mutate(`Code issue` = ifelse(`Code issue` == "Proprietary software", 
+                               "Proprietary\nsoftware",
+                               `Code issue`)) %>% 
+  count(`Code issue`) %>% 
+  drop_na() %>% 
+  mutate(`Code issue` = fct_reorder(`Code issue`, n, .desc = FALSE)) %>% 
+  ggplot() +
+  aes(`Code issue`, n) +
+  geom_bar(stat = 'identity') +
+  coord_flip() +
+  xlab("") +
+  ylab("Number of papers reviewed") +
+  theme_minimal(base_size = base_size)  +
+  scale_y_continuous(breaks = scales::breaks_pretty())
+
+# relationship between code issues and language?
+aer_plot_issues_lang <- 
+jas_rr_data %>% 
+  separate_longer_delim(`Code issue`, ",") %>% 
+  separate_longer_delim(Language, ",") %>% 
+  mutate(Language = str_squish(Language)) %>% 
+  mutate(`Code issue` = str_squish(`Code issue`)) %>% 
+  group_by(`Code issue`, 
+           Language) %>% 
+  tally() %>% 
+  drop_na() %>% 
+  ggplot() +
+  aes(`Code issue`, 
+      Language,
+      size = n) +
+  geom_point() +
+  xlab("Problem with the code") +
+  ylab("Software") +
+  scale_x_discrete(guide = guide_axis(n.dodge = 2)) +
+  theme_minimal(base_size = base_size) +
+  scale_size_area(breaks = c(1, 2, 3, 5)) +
+  theme(legend.position = c(.9,.7),
+  legend.box.background=element_rect(fill="white", 
+                                     color="black")) 
+```
+
+```{r}
+#| label: fig-aer-summary
+#| fig-cap: "Summary of reproducibility reviews for JAS. A: Primary software used for the computational analysis reported in a manuscript. B: Computational or statistical method used by the authors (GMM = geometric morphometrics, Frequentist = hypothesis tests such as chi-square and ANOVA, AI/ML = artifical intellegence and machine learning, including neural networks and deep learning, Network = statitical analysis of social networks, 3D = analysis of 3D data such as artefact models, Composition = compositional analysis of artefacts). C: Locations where authors deposited their code and data files. D: Issues that prevented the reproducible review from succeeding on the first attempt. E: Relationship between software used and issues that make research irreproducible."
+
+library(patchwork)
+(aer_plot_software + aer_plot_methods + aer_plot_repo) / (aer_plot_issues + aer_plot_issues_lang) + plot_annotation(tag_levels = 'A')
+
+
+```
+
+At the time of writing (January 2025) we have completed 47 reproducibility reviews of 25 manuscripts submitted to JAS. Of these, 11 have been published in JAS to date. Seven of these eleven papers fully passed the reproducibility review, resulting in a success rate, by one measure, of 63%. Four of the seven papers could be fully reproduced on my first attempt, the others required additional input from the authors. For comparison with reproducibility studies in other fields reported above, the seven fully reproducible papers should be divided by the 25 reviewed for reproducibility, resulting in a 28% success rate. Expanding the denominator to include the total number of research articles published in JAS from May 2024 (when the first article to pass the reproducibility review, @herskindComputationalLinguisticMethodology2024, was published) to January 2025 (n = 97), which are articles that could have been eligible for reproducibility review had the authors used an open source programming language (e.g. instead of commercial software such as Microsoft Excel or SPSS, etc.) the success rate is 7%. In any case, the computational reproducibility of archaeological research is generally on the low end of the distribution of values obtained from a variety of hard and soft sciences.
+
+@fig-aer-summary shows a summary of basic characteristics of the 25 articles that have been through the reproducibility review process so far. The most commonly used software is R, followed by Python. Results generated with proprietary or closed-source software are out of scope for reproducibility reviews. Several distinct types of analyses are well-represented in this sample, especially geometric morphometry, network statistics, and analyses using artificial intelligence or machine learning algorithms (this includes deep learning and neural networks). Most authors are sharing their code and data files via Zenodo, a non-profit generic research data repository hosted by CERN that accepts any file format and freely assigns all publicly available uploads a DOI to make the files easily and uniquely citable [@petersZenodoSpotlightTraditional2017]. In this same category of DOI-issuing, research-grade repositories is OSF (the Open Science Foundation), Figshare, and university repositories. GitHub, a commercial service owned by Microsoft is a code hosting platform that is convenient for collaboration, is also popular among JAS authors, but is a problematic choice because does not offer DOIs or the same commitments to long-term availability as Zenodo. Some authors attached their code and data as journal article supplementary files, but this is a poor choice for long-term availability because these files are typically renamed and converted to different formats during the article production process, making it difficult or impossible for a reader to combine the code and data to reproduce the results.
+
+Panels D and E of @fig-aer-summary summarise the common issues that resulted in irreproducible results. The most common issue was an incomplete compendium. This ranges from missing data files down to missing lines of code. In most cases this can attributed to accidental carelessness, with the exception of two cases where data was unavailable due to licensing restrictions. Unspecified or under-specified dependencies is another common issue that prevents code from running. This refers to the software packages in addition to R or Python that an author used to do specialized analyses and visualisations, (e.g. dplyr for R or numpy for Python). If an author does not clearly specify the name and version number of the packages that they used for their analysis, it can be very time-consuming or impossible to correctly identify these because many packages have functions with similar names, and functions in any one package can change they way they behave as the developers update their package. Other reasons why papers failed the reproducibility review is that the paths to data files were incorrectly specified (likely a result of the author reorganising their compendium after completing their analysis, or omitting data files from the materials submitted for review), and errors returned by functions, which have diverse causes.
+
+## How to improve the computational reproducibility of archaeology?
+
+Despite the relatively small number of reproducibility reviews reported on here, there are patterns of common issues that point to a small set of simple tasks authors can do that have high potential to increase reproducibility. The problem of incomplete materials can be tackled in several basic ways. First, authors should use a clear and logical folder structure for their code and data. There are many excellent, simple, and widely-used templates that authors can choose from, e.g. @doi:10.1080/00031305.2017.1375986, @figueiredoSimpleKitUse2022, @Cookiecutter, @cooperGuideReproducibleCode2017 and @wilsonGoodEnoughPractices2017
+
+Second, for analyses that are not highly time-consuming (which was over 90% of the sample), authors should re-run their code more than once, and ideally not on the same computer (e.g. by another co-author of the paper), before submission to confirm everything works as expected. This would ensure portability and likely also prevent issues relating to path and function errors. Complex and time-consuming analyses should use pipeline or workflow management tools, e.g. GNU Make, Luigi, Snakemake, or Targets, to document the relationship of the files and folders in a machine-readable format and simplify running and re-running code [@wrattenReproducibleScalableShareable2021; @landau2021targets].
+
+Third, authors should include in their compendium a README document that describes to readers the folders and files contained in the project. The README file is typically the first file that a reader will look at in a compendium so it should include brief instructions to guide the user to a successful reproduction of the original results (e.g. what order to run the code files in). A README should also briefly describe the contents of the compendium, where other necessary files can be obtained (e.g. data files not included in the compendium because they require registration), and the key software packages needed and the version numbers that the authors used.
+
+Fourth, authors should ensure clear, direct and obvious connections between their code and the results they present in their paper. One simple way to do this is to have one code file for each figure and table, and name the code files with the figure or table number and some key words in the caption. Another way some authors are accomplishing this is by using literate programming tools, such as Quarto and Jupyter notebooks [@quarto; @kluyver2016jupyter] that enable the research narrative and code for data analysis to be woven together in one document. Quarto was a popular tool among the JAS papers in the reproducibility review sample, for example, @vernonMethodDefiningDispersed2024 and @ragnoSheepGoatsTaxonomic2024 wrote their entire manuscripts using Quarto. These four simple steps have high potential to substantially increase the computational reproducibility of archaeological science.
+
+Our finding that dependencies are a common cause of irreproducible results is consistent with previous studies that have identified this as a widespread weakness in communicating computationally intensive research [@trisovicLargescaleStudyResearch2022; @samuelComputationalReproducibilityJupyter2024]. In our sample, issues relating to dependencies are strongly associated with the use of Python. One possible reason for this is that relative to R, Python uses more package managers, more environments, and deeper dependency chains with more complex inter-dependencies that change more rapidly [@decan2016topology; @decanEmpiricalComparisonDependency2019; @korkmazModelingImpactPython2020]. Another reason may be that there is a bigger and more established community of R users in archaeology [@schmidtToolDrivenRevolutionsArchaeological2020; @batistOpenArchaeologyOpen2024] that highly values code that is easy for others to reuse and has evolved practices to effectively communicate dependencies [e.g. @bilottiPointPatternAnalysis2024; @willExploringUtilityUnretouched2025].
+
+The simplest way for archaeologists, to improve here is to write the names and version numbers of the software and packages they used in their README file, as we see in @herskindComputationalLinguisticMethodology2024 and @monnaStudyingSerialityMaterial2024. For more complex research projects, i.e. those using five or more packages or machine learning algorithms, authors should use dependency management tools to keep track of the packages and version numbers needed to reproduce their results. This is an active area of development, and while there are many tools currently available, the most robust and widely used include renv for R [@renv, see examples in @vernonMethodDefiningDispersed2024 and @ragnoSheepGoatsTaxonomic2024] and conda and poetry for Python [@conda2023; @poetry2023].
+
+A more comprehensive solution, and the leading best practice for managing dependencies in many computationally intensive fields using Python in particular, is to include a Dockerfile in the compendium [@moreauContainersComputationalReproducibility2023]. This is a set of a machine- and human-readable instructions that enables a user to recreate the author's computational environment (including those requirements beyond the R or Python packages) on another computer [@nustTenSimpleRules2020]. Dockerfiles are gradually being adopted by archaeologists, see @cremaModellingDiffusionInnovation2024 and @liaoApplyingMaskRCNN2024 for examples, and most of our reproducibility reviews include a recommendation that the author include a Dockerfile to manage complex dependencies efficiently.
+
+## Conclusion
+
+In Jonathon Swift's classic satirical novel *Gulliver's Travels* (1726) Gulliver visits the fictional Grand Academy of Lagado in Balnibarbi, a caricature of the Royal Society of London, and meets severals researchers working on wildly impractical projects, including one attempting to extracting sunbeams out of cucumbers.
+
+I have presented a bibliometric analysis on the status of archaeology as a science, showing that we generally behave as social scientists If archaeological science is to continue to progress through increased consensus through the accumulation of reliable facts and methods, it is essential for researchers to take computational reproducibility seriously. Computers have become a central field and laboratory instrument for so much of our work, so we have an ethical duty to document how we change our data as it flows through silicon just as carefully as we document the operating parameters of a mass spectrometer or any other field or laboratory instrument. However, the current state of quantitative archaeology, with most researchers not using open source code, is comparable to the secrecy of alchemy prior to the emergence of chemistry. Abandoning this habit of secrecy in favour of reproducibility is vital if we are to avoid a future where our journals are filled with pretty pictures that the reader has no hope of repeating or adapting in their own work. It is time for computational reproducibility to be considered a minimum requirement for evaluating the integrity and usefulness of empirical results.
+
+Computational reproducibility is not a panacea, results that are fully reproducible can contain errors and fraud. It is no guarantee of code quality, or that statistics have been used appropriately (cf. Vaiglova this issue), or that data management is consistent with FAIR and CARE principles [cf. @carrollOperationalizingCAREFAIR2021]. It is also time-consuming for authors to ensure their computational work can be reproduced, and for reviewers to evaluate. In an professional environment where job security and career progression is often associated with pressure to publish many high-impact papers, demands for authors to spend time on reproducibility, resulting in less time for publishing more papers, may seem frustrating. This may seem especially unfair to early career researchers on short-term contracts, who may feel the goalposts for career success are being moved and that they are being asked to do work their graduate training has not prepared them for. This highlights the need for a culture shift among senior archaeological scientists to value reproducibility in hiring and promotion decision-making. Professors should contribute to this culture shift by nurturing a positive culture of reanalysis and reproducibility in their graduate teaching and evaluation [e.g. @marwickHowUseReplication2020].
+
+```{=html}
+<!--
+
+limitations: not looked at FAIR or CARE attributes of data, not looked at code quality (efficiency, readability, style)
+
+While consensus is one measure of the hardness of a science, the computability
+
+n an ideal science, scholars share a common background of established theories, facts and methods. This allows them to agree (usually after debate and further evidence) on the validity and significance of a new research finding, making it the basis for further theorizing and research. Harder sciences are hypothesised to come closer to this ideal. Moving towards “softer” fields, this consensus becomes less likely to be reached, the common background shrinks and fractures, and so data become less able to “speak for themselves” [\[](https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0066938#pone.0066938-Fanelli1)
+
+
+ -->
+```
