@@ -3,6 +3,8 @@
 
 # Extracting sunbeams from cucumbers: Computational reproducibility is essential for archaeological science
 
+[![.github/workflows/knit-in-docker.yml](https://github.com/benmarwick/web-of-science-archaeology/actions/workflows/knit-in-docker.yml/badge.svg)](https://github.com/benmarwick/web-of-science-archaeology/actions/workflows/knit-in-docker.yml)
+
 This repository contains the data and code for my paper to be submitted
 to the Journal of Archaeological Science. Earlier versions were
 presented at the University of Cambridge

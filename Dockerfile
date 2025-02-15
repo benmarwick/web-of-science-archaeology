@@ -1,24 +1,29 @@
 # get the base image, the rocker/verse has R, RStudio and pandoc
 FROM rocker/verse:4.4.1
 
-# required
-MAINTAINER Ben Marwick <bmarwick@uw.edu>
+# metadata
+LABEL maintainer="Ben Marwick <bmarwick@uw.edu>"
 
-WORKDIR /web-of-science-archaeology
-COPY . /web-of-science-archaeology
+# Switch to the existing rstudio user
+USER rstudio
 
-# go into the repo directory
-RUN . /etc/environment \
-  && R -e "install.packages('remotes', repos = c(CRAN = 'https://cloud.r-project.org'))" \
-  && R -e "remotes::install_github('rstudio/renv')" \
-  # install pkgs we need
-  && R -e "renv::restore()" \
-  # render the manuscript into a docx, you'll need to edit this if you've
-  # customised the location and name of your main Rmd file
-  # render the manuscript into a docx
-  && R -e "rmarkdown::render('analysis/paper/paper.qmd')"
-  
-  
+# Set the working directory to the project directory
+WORKDIR /home/rstudio/web-of-science-archaeology
+
+# Copy the project files
+COPY --chown=rstudio:rstudio . .
+
+# Install remotes and renv
+RUN R -e "install.packages('remotes', repos = c(CRAN = 'https://cloud.r-project.org'))" && \
+    R -e "remotes::install_github('rstudio/renv')"
+
+# Restore the renv environment
+RUN R -e "renv::restore()"
+
+# Render the manuscript
+RUN R -e "rmarkdown::render('analysis/paper/paper.qmd')"
+
+
 # To run this container locally:
 
 ### STEP 1 ###
@@ -30,7 +35,7 @@ RUN . /etc/environment \
 # docker run --rm -it -e ROOT=TRUE -e PASSWORD=rstudio -dp 8787:8787 wos
 
 ### STEP 3 ###
-# Go to http://localhost:8787/ with your browswe. USERID=rstudio, PASSWORD=rstudio
+# Go to http://localhost:8787/ with your browser. USERID=rstudio, PASSWORD=rstudio
 
 
 ### STEP 4 ####
