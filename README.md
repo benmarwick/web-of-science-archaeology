@@ -32,7 +32,7 @@ following these steps:
 1.  Install [Docker](https://www.docker.com/get-started/) on your
     computer
 2.  Download the compendium as a zip from from this URL:
-    [master.zip](/archive/master.zip) and unzip  
+    [master.zip](/archive/refs/heads/main.zip) and unzip
 3.  Set your terminal working directory to the compendium, and run
     `docker build -t wos .` to build the container on your computer, it
     will take a few minutes and require an internet connection.
