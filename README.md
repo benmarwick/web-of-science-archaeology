@@ -3,8 +3,6 @@
 
 # Extracting sunbeams from cucumbers: Computational reproducibility is essential for archaeological science
 
-[![.github/workflows/knit-in-docker.yml](https://github.com/benmarwick/web-of-science-archaeology/actions/workflows/knit-in-docker.yml/badge.svg)](https://github.com/benmarwick/web-of-science-archaeology/actions/workflows/knit-in-docker.yml)
-
 This repository contains the data and code for my paper to be submitted
 to the Journal of Archaeological Science. Earlier versions were
 presented at the University of Cambridge
@@ -23,22 +21,34 @@ The **analysis** directory contains:
 - [:file_folder: figures](/analysis/figures): Plots and other
   illustrations
 
-## How to run in your browser or download and run locally
+## How to download and run locally in a Docker container
 
-This research compendium has been developed using the statistical
-programming language R. To work with the compendium, you will need
-installed on your computer the [R
-software](https://cloud.r-project.org/) itself and optionally [RStudio
-Desktop](https://rstudio.com/products/rstudio/download/).
+This research compendium includes a [Dockerfile](Dockerfile) that
+specifies the computational environment used to generate the results
+presented in the paper. You can recreate this environment, which
+includes R, RStudio and all necessary R packages, on your computer by
+following these steps:
 
-You can download the compendium as a zip from from this URL:
-[master.zip](/archive/master.zip). After unzipping:
-
-- open the `.Rproj` file in RStudio  
-- install the packages used in the Quarto document  
-- finally, render the `analysis/paper/paper.qmd` document to produce the
-  `paper.docx`, or run `rmarkdown::render("analysis/paper/paper.qmd")`
-  in the R console
+1.  Install [Docker](https://www.docker.com/get-started/) on your
+    computer
+2.  Download the compendium as a zip from from this URL:
+    [master.zip](/archive/master.zip) and unzip  
+3.  Set your terminal working directory to the compendium, and run
+    `docker build -t wos .` to build the container on your computer, it
+    will take a few minutes and require an internet connection.
+4.  Run in your terminal
+    `docker run --rm -it -e ROOT=TRUE -e PASSWORD=rstudio -dp 8787:8787 wos`
+    to run the container
+5.  Go to <http://localhost:8787/> with your browser and enter rstudio
+    in both fields to start RStudio in the browser, running in the
+    Docker container
+6.  In RStudio, run
+    `rstudioapi::openProject("/home/rstudio/web-of-science-archaeology")`
+    to open this project
+7.  Run `rmarkdown::render("analysis/paper/paper.qmd")` to render the
+    Quarto document
+8.  When finished, to remove the Docker container and files, run this in
+    the terminal `docker ps -aq | xargs docker stop | xargs docker rm`
 
 ### Licenses
 

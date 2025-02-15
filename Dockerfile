@@ -4,10 +4,8 @@ FROM rocker/verse:4.4.1
 # metadata
 LABEL maintainer="Ben Marwick <bmarwick@uw.edu>"
 
-# Define a variable for the project directory
+# Define project directory and renv cache
 ENV PROJ_DIR /home/rstudio/web-of-science-archaeology
-
-# Define renv global cache directory (inside the container)
 ENV RENV_PATHS_CACHE=/renv/cache
 
 # Set the working directory to the project directory
@@ -25,10 +23,8 @@ RUN R -e "renv::restore()"
 # Set permissions
 RUN chmod -R 777 /home/
 
-# Ensure renv is activated in RStudio by writing to .Rprofile
-RUN echo 'if (interactive()) renv::activate()' >> $PROJ_DIR/.Rprofile
-
-# Render the manuscript
+# Render the manuscript, this is only relevant for continuous integration
+# not relavant for interactive use
 RUN R -e "rmarkdown::render('analysis/paper/paper.qmd')"
 
 
@@ -44,7 +40,6 @@ RUN R -e "rmarkdown::render('analysis/paper/paper.qmd')"
 
 ### STEP 3 ###
 # Go to http://localhost:8787/ with your browser. USERID=rstudio, PASSWORD=rstudio
-
 
 ### STEP 4 ####
 # Clean and delete containes. Run on the terminal:
