@@ -31,25 +31,26 @@ following these steps:
 
 1.  Install [Docker](https://www.docker.com/get-started/) on your
     computer
-2.  Download the compendium as a zip from from this URL:
-    [master.zip](https://github.com/benmarwick/web-of-science-archaeology/archive/refs/heads/main.zip)
-    and unzip
+2.  Download the compendium from GitHub by clicking on the green
+    `< > Code` button above, then click `Download ZIP`, and unzip on
+    your computer
 3.  Set your terminal working directory to the compendium, and run
     `docker build -t wos .` to build the container on your computer, it
     will take a few minutes and require an internet connection.
 4.  Run in your terminal
     `docker run --rm -it -e ROOT=TRUE -e PASSWORD=rstudio -dp 8787:8787 wos`
-    to run the container
-5.  Go to <http://localhost:8787/> with your browser and enter rstudio
-    in both fields to start RStudio in the browser, running in the
-    Docker container
+    to start the container on your computer
+5.  Go to <http://localhost:8787/> with your browser and enter `rstudio`
+    in both fields to start RStudio in your browser, running in the
+    Docker container with all the required depedencies installed
 6.  In RStudio, run
     `rstudioapi::openProject("/home/rstudio/web-of-science-archaeology")`
-    to open this project
+    to open the compendium’s project
 7.  Run `rmarkdown::render("analysis/paper/paper.qmd")` to render the
-    Quarto document
-8.  When finished, to remove the Docker container and files, run this in
-    the terminal `docker ps -aq | xargs docker stop | xargs docker rm`
+    Quarto document that is the manuscript submitted for publication
+8.  When finished, to delete the Docker container from your computer,
+    run this in the terminal
+    `docker ps -aq | xargs docker stop | xargs docker rm`
 
 ### Licenses
 
