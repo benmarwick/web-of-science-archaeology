@@ -1065,7 +1065,7 @@ Computational reproducibility is not a panacea, results that are fully reproduci
 
 # Acknowledgements
 
-Versions of this paper were presented at 
+Versions of this paper were presented at the Summer School on Reproducible Research In Landscape Archaeology at the Freie Universität Berlin and  Christian-Albrechts-Universität zu Kiel (2017), the Big Data in Archaeology Conference at the McDonald Institute for Archaeological Research at the University of Cambridge (2019) and the Workshop on Exploring Data-Driven Solutions to Archaeological Problems at the Abu Dhabi Institute at New York University (2025). Thanks to the participants of those events for their feedback. Thanks to the JAS editors for the invitation to contribute to this special issue. 
 
 # Data Availability Statement
 
