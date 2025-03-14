@@ -1,24 +1,45 @@
 ---
 title: "Extracting sunbeams from cucumbers: Computational reproducibility is essential for archaeological science"
-format: html
-bibliography: references.bib
+author:
+  - Ben Marwick:
+      correspondence: "yes"
+      email: bmarwick@uw.edu
+      orcid: 0000-0003-1689-0557
+      institute: uw
+institute:
+  - uw:
+      name: Department of Anthropology, University of Washington
+      address: 4218 Memorial Way Northeast, Seattle, WA 98105
 fig-dpi: 600
-execute: 
-    echo: false
-    warning: false
+title-block-published: "Last updated"  
+date: now
+date-format: long
+format: 
+  docx:
+    reference-doc: "templates/template.docx" # Insert path for the DOCX file
+execute:
+  echo: false
+  warning: false
+  message: false
+  comment: "#>"
+  fig-path: "../figures/"
+  fig-dpi: 600
+filters:
+  - templates/scholarly-metadata.lua
+  - templates/author-info-blocks.lua
+  - templates/pagebreak.lua
+bibliography: references.bib
+csl: "templates/journal-of-archaeological-science.csl" # Insert path for the bib-style
+abstract: |
+  Computational reproducibility is increasingly essential for advancing archaeological science, yet its implementation remains inconsistent across the discipline. This study presents a bibliometric assessment of archaeology’s status relative to other fields alongside a systematic review of computational reproducibility in published archaeological research. Analyzing nearly 10,000 articles, I identify trends in authorship, citation practices, and related metrics that position archaeology between the natural and social sciences. A review of reproducibility assessments for the Journal of Archaeological Science reveals persistent challenges, including missing data, unspecified dependencies, and inadequate documentation. To address these issues, I recommend to authors basic practical steps such as standardized project organization and explicit dependency documentation. Strengthening reproducibility will enhance archaeology’s scientific rigor and ensure the verifiability of research findings. This study underscores the urgent need for cultural and technical shifts to establish reproducibility as a cornerstone of rigorous, accountable, and impactful archaeological science.
+keywords: |
+  Computational reproducibility; Archaeological science; Bibliometric analysis; Open science
+highlights: |
+  Archaeology occupies an intermediate position between the natural and social sciences.
+  Computational reproducibility in archaeology is low, with key barriers in incomplete compendiums, unspecified dependencies, and errors in code.
+  Practical steps like logical folder structures, README files, and dependency management tools can substantially improve computational reproducibility.
+  A cultural shift toward valuing reproducibility in hiring, promotion, and training is essential for advancing archaeological science.
 ---
-
-```{=html}
-<!-- 
-
-authoritative, agenda-setting or hypothesis-setting papers, rather than descriptive compilations of the literature.
-
-have the vision and authority to guide the next generation of archaeological science research
-
-cross-ref Vaiglova 2025 this issue
-
--->
-```
 
 ## Introduction
 
@@ -77,6 +98,8 @@ The entire R code [@rcoreteamLanguageEnvironmentStatistical2024] used for all th
 ```{r}
 library(ggrepel)
 
+base_size <- 6
+
 # Number of authors ------------------
 boxlplot_n_authors <- 
 items_df %>% 
@@ -117,7 +140,7 @@ items_df %>%
                   force = 0) +
   scale_y_continuous(limits = c(0, 5)) +
   scale_x_continuous(labels = NULL) +
-  theme_minimal() + 
+  theme_minimal(base_size = base_size) + 
   theme(panel.grid  = element_blank()) +
   ylab("N. of authors (ln)") +
   xlab("Collaborator group size") 
@@ -168,12 +191,11 @@ items_df_title %>%
                   bg.r = .2, 
                   force = 0,
                   nudge_x = 0.05) +
-  
   scale_y_continuous(limits = c(-4.5, 3),
                      breaks =  seq(-5, 5, 1),
                      labels = seq(-5, 5, 1)) +
   scale_x_continuous(labels = NULL) +
-  theme_minimal() +
+  theme_minimal(base_size = base_size) +
   theme(panel.grid  = element_blank()) +
   ylab("Ratio of title length to article length (ln)") +
   xlab("Relative title length")
@@ -217,7 +239,7 @@ items_df %>%
                   force = 0) +
   scale_y_reverse(limits = c(5, 0)) +
   scale_x_continuous(labels = NULL) +
-  theme_minimal() + 
+  theme_minimal(base_size = base_size) + 
   theme(panel.grid  = element_blank()) +
   ylab("N. of pages (ln)") +
   xlab("Article length")
@@ -295,7 +317,7 @@ items_df %>%
                   force = 0) +
   scale_y_continuous(limits = c(0, 1)) +
   scale_x_continuous(labels = NULL) +
-  theme_minimal() +
+  theme_minimal(base_size = base_size) +
   theme(panel.grid  = element_blank()) +
   ylab("Prop. refs in last 5 years") +
   xlab("Recency of references")
@@ -402,7 +424,7 @@ shannon_per_item %>%
                   nudge_x = 0.05) +
   scale_y_reverse(limits = c(6, 0)) +
   scale_x_continuous(labels = NULL) +
-  theme_minimal()  +
+  theme_minimal(base_size = base_size)  +
   theme(panel.grid  = element_blank()) +
   ylab("Shannon Index") +
   xlab("Diversity of references")
@@ -411,7 +433,7 @@ shannon_per_item %>%
 ```{r}
 #| label: fig-compare-other-fields
 #| fig-cap: Distributions of article characteristics hypothesised to reflect the level of consensus. The boxplot shows the distribution of values of archaeology articles. The thick black line in the middle of the boxplot is the median value, the box represents the inter-quartile range (the range between the 25th and 75th percentiles, where 50% of the data are located), and individual points represent outliers. The thin grey horizontal lines in each boxplot indicate the median values computed by Fanelli and Glanzel (2013), where p = physics, s = social sciences, h = humanities. ln denotes the natural logarithm, or logarithm to the base e. 
-#| fig-height: 8
+#| fig-height: 4
 
 library(cowplot)
 
@@ -500,7 +522,7 @@ over_time_long_colour <-
 ```{r}
 #| label: fig-change-over-time
 #| fig-cap: Distribution of article characteristics for archaeology articles over time. Data points represent individual articles. The colour of the points indicates if the overall trend is toward softer (orange) or harder (green) Generalized Additive Models were computed to fit the lines summarising the relationships between the variables and the time series. 
-#| fig-height: 6
+#| fig-height: 4
 
 library(ggpmisc)
 library(mgcv)
@@ -538,11 +560,11 @@ ggplot() +
               method="gam", 
               formula = y ~ s(x, bs = "cs"),
               se = FALSE,  
-              size = 3, 
+              size = 2, 
               colour = "#7570b3") +
   facet_wrap( ~ variable,
               scales = "free_y") + 
-  theme_bw(base_size = 12) +
+  theme_bw(base_size = base_size) +
   scale_color_manual(values = c("#d95f02",
                                 "#1b9e77" )) +
   guides(colour = "none") +
@@ -557,7 +579,9 @@ ggplot() +
            label = paste("Pseudo R² = ", 
                          signif(adj.r.squared, 
                                 digits = 3))),
-           hjust = 0, vjust = 1.5)
+           hjust = 0, 
+           vjust = 1.5,
+           size = 2)
  
 ```
 
@@ -569,7 +593,7 @@ The most striking change over time is in the increase in the number of authors, 
 
 ```{r}
 
-journal_title_size <- 4
+journal_title_size <- 2
 
 # get rank order of journals by these bibliometic variables
 
@@ -644,15 +668,16 @@ ggplot() +
   geom_point(data = pca_scores_means,
                aes(.fittedPC1,
                    .fittedPC2),
-             size = 2) +
+             size = 1) +
   geom_text_repel(data = pca_scores_means,
             aes(.fittedPC1,
                 .fittedPC2,
                 label = journal),
             lineheight = 0.8,
-            size = 2,
+            segment.color = NA,
+            size = 1,
             bg.color = "white",  # Color of the halo
-            bg.r = 0.2,) +
+            bg.r = 0.2) +
      geom_segment(data = pca_loadings_means, 
                aes(x = 0, 
                    y = 0, 
@@ -664,14 +689,15 @@ ggplot() +
             aes(PC1,
                 PC2,
                 label = column),
-            size = 2,
+            size = 1,
             lineheight = 0.7,
             force = 0,
             segment.color = NA,
             color = "grey40",
            bg.color = "white",  # Color of the halo
           bg.r = 0.2) +
-  theme_minimal()
+  theme_minimal(base_size = base_size) +
+  coord_equal()
 
 ```
 
@@ -733,7 +759,7 @@ ggplot() +
   coord_flip() +
   ylab("Borda Count scores") + 
   xlab("") +
-  theme_minimal() +
+  theme_minimal(base_size = base_size) +
   theme(axis.text.y = element_text(size = journal_title_size)) 
 
 ```
@@ -754,7 +780,7 @@ journal_metrics_for_plotting %>%
                                colour = "white") +
   scale_fill_viridis_c() +
   guides(fill = 'none') +
-  theme_minimal() +
+  theme_minimal(base_size = base_size) +
   theme(axis.text.y = element_text(size = journal_title_size)) +
   ylab("") + 
   xlab("Number of authors (ln)")
@@ -772,7 +798,7 @@ journal_metrics_for_plotting %>%
                                colour = "white") +
   scale_fill_viridis_c() +
   guides(fill = 'none') +
-  theme_minimal() +
+  theme_minimal(base_size = base_size) +
   theme(axis.text.y = element_text(size = journal_title_size)) +
   xlab("Number of pages (ln)") +
   ylab("")
@@ -790,7 +816,7 @@ journal_metrics_for_plotting %>%
                                colour = "white") +
   scale_fill_viridis_c() +
   guides(fill = 'none') +
-  theme_minimal() +
+  theme_minimal(base_size = base_size) +
   theme(axis.text.y = element_text(size = journal_title_size)) +
   ylab("") +
   xlab("Relative title length (ln)")
@@ -809,7 +835,7 @@ journal_metrics_for_plotting %>%
                                colour = "white") +
   scale_fill_viridis_c() +
   guides(fill = 'none') +
-  theme_minimal() +
+  theme_minimal(base_size = base_size) +
   theme(axis.text.y = element_text(size = journal_title_size)) +
   ylab("") +
   xlab("Recency of references")
@@ -828,7 +854,7 @@ journal_metrics_for_plotting %>%
                                colour = "white") +
   scale_fill_viridis_c() +
   guides(fill = 'none') +
-  theme_minimal() +
+  theme_minimal(base_size = base_size) +
   theme(axis.text.y = element_text(size = journal_title_size)) +
   ylab("") +
   xlab("Diversity of references")
@@ -837,7 +863,7 @@ journal_metrics_for_plotting %>%
 ```{r}
 #| label: fig-variation-by-journal
 #| fig-cap: "Panels A-E: Variation in bibliometric indicators of hardness for 20 archaeological journals. The journals are ordered for each indicator so that within each plot, the harder journals are at the top of the plot and the softer journals are at the base. Panel F shows a bar plot that is the single consensus ranking computed from all five variables, using the Borda Count ranking algorithm. Panel G is a biplot of the first and second principal components of a PCA computed on the journal means of the five bibliometric variables."
-#| fig-height: 14
+#| fig-height: 6
 
 library(cowplot)
 
@@ -849,11 +875,13 @@ plot_grid(
            plot_journals_ref_diversity,
            plot_borda_scores,
            nrow = 2,
-           labels = LETTERS[1:6]),
+           labels = LETTERS[1:6],
+           label_size = 6),
   plot_pca_means,
   nrow = 2,
   labels = c("", LETTERS[7]),
-  rel_heights = c(1, 0.5))
+  rel_heights = c(1, 0.5),
+  label_size = 6)
 
 ```
 
@@ -886,7 +914,7 @@ In 2024 the *Journal of Archaeological Science* introduced a new kind of peer re
 jas_rr_data <- 
   read_csv(here::here("analysis/data/JAS AER data analysis.csv"))
 
-base_size <- 10
+base_size <- 4
 
 # what software did the authors use?
 aer_plot_software <- 
@@ -986,13 +1014,18 @@ jas_rr_data %>%
   theme_minimal(base_size = base_size) +
   scale_size_area(breaks = c(1, 2, 3, 5)) +
   theme(legend.position = c(.9,.7),
-  legend.box.background=element_rect(fill="white", 
-                                     color="black")) 
+        legend.title = element_text(hjust = 0.5),
+        legend.spacing = unit(0.1, "cm"),  # Reduce space between legend items
+        legend.margin = margin(1, 5, 1, 1),  # Reduce margin around the legend
+        legend.key.size = unit(0.2, "cm"),  # Reduce size of legend keys
+        legend.box.background=element_rect(fill="white", 
+                                          color="black")) 
 ```
 
 ```{r}
 #| label: fig-aer-summary
 #| fig-cap: "Summary of reproducibility reviews for JAS. A: Primary software used for the computational analysis reported in a manuscript. B: Computational or statistical method used by the authors (GMM = geometric morphometrics, Frequentist = hypothesis tests such as chi-square and ANOVA, AI/ML = artifical intellegence and machine learning, including neural networks and deep learning, Network = statitical analysis of social networks, 3D = analysis of 3D data such as artefact models, Composition = compositional analysis of artefacts). C: Locations where authors deposited their code and data files. D: Issues that prevented the reproducible review from succeeding on the first attempt. E: Relationship between software used and issues that make research irreproducible."
+#| fig-height: 3
 
 library(patchwork)
 (aer_plot_software + aer_plot_methods + aer_plot_repo) / (aer_plot_issues + aer_plot_issues_lang) + plot_annotation(tag_levels = 'A')
@@ -1008,7 +1041,7 @@ Panels D and E of @fig-aer-summary summarise the common issues that resulted in 
 
 ## How to improve the computational reproducibility of archaeology?
 
-Despite the relatively small number of reproducibility reviews reported on here, there are patterns of common issues that point to a small set of simple tasks authors can do that have high potential to increase reproducibility. The problem of incomplete materials can be tackled in several basic ways. First, authors should use a clear and logical folder structure for their code and data. There are many excellent, simple, and widely-used templates that authors can choose from, e.g. @doi:10.1080/00031305.2017.1375986, @figueiredoSimpleKitUse2022, @Cookiecutter, @cooperGuideReproducibleCode2017 and @wilsonGoodEnoughPractices2017
+Despite the relatively small number of reproducibility reviews reported on here, there are patterns of common issues that point to a small set of simple tasks authors can do that have high potential to increase reproducibility. The problem of incomplete materials can be tackled in several basic ways. First, authors should use a simple and logical folder structure to organise their code and data to be as self-contained as possible (ie. not requiring files outside of the project folder). There are many excellent, simple, and widely-used templates that authors can choose from, e.g. @doi:10.1080/00031305.2017.1375986, @figueiredoSimpleKitUse2022, @Cookiecutter, @cooperGuideReproducibleCode2017 and @wilsonGoodEnoughPractices2017
 
 Second, for analyses that are not highly time-consuming (which was over 90% of the sample), authors should re-run their code more than once, and ideally not on the same computer (e.g. by another co-author of the paper), before submission to confirm everything works as expected. This would ensure portability and likely also prevent issues relating to path and function errors. Complex and time-consuming analyses should use pipeline or workflow management tools, e.g. GNU Make, Luigi, Snakemake, or Targets, to document the relationship of the files and folders in a machine-readable format and simplify running and re-running code by others [@wrattenReproducibleScalableShareable2021; @landau2021targets].
 
@@ -1024,20 +1057,25 @@ A more comprehensive solution, and the leading best practice for managing depend
 
 ## Conclusion
 
-In the classic satirical novel *Gulliver's Travels* (1726) by Irish writer Jonathon Swift Gulliver visits the fictional Grand Academy of Lagado in Balnibarbi, a caricature of the Royal Society of London, and meets several researchers working on wildly impractical projects, including one attempting to extracting sunbeams out of cucumbers. This is usually interpreted as a subversive and anti-colonial parody depicting institutionalized research as an absurd fund-raising activity with no practical benefits to society [@alff2014swift; @nicolson1937scientific]. It has also been used as a metaphor for the difficulty of extracting useful data out of published  @feinbergExtractingSunbeamsCucumbers2011
+In the classic satirical novel *Gulliver's Travels* (1726) by Irish writer Jonathon Swift Gulliver visits the fictional Grand Academy of Lagado in Balnibarbi, a caricature of the Royal Society of London, and meets several researchers working on wildly impractical projects, including one attempting to extracting sunbeams out of cucumbers. This is usually interpreted as a subversive anti-colonial parody depicting institutionalized research as an absurd fund-raising activity with no practical benefits to society [@alff2014swift; @nicolson1937scientific]. It has also been used as a metaphor for the difficulty of getting insights from data tables in scholarly publications [@feinbergExtractingSunbeamsCucumbers2011]. This metaphor is relevant in our current age of computationally intensive research, where extracting useful code and data from the publication of a typical computational study can be as frustrating and fruitless as extracting sunbeams from a cucumber.
 
-I have presented a bibliometric analysis on the status of archaeology as a science, showing distinct disunity that is increasing over time,. On average we generally behave as social scientists, with some elements in common with harder sciences. If archaeological science is to continue to progress through increased consensus through the accumulation of reliable facts and methods, it is essential for researchers to take computational reproducibility seriously. Computers have become a central field and laboratory instrument for so much of our work, so we have an ethical duty to document how we change our data as it flows through silicon just as carefully as we document the operating parameters of a mass spectrometer or any other field or laboratory instrument. However, the current state of quantitative archaeology, with most researchers not using open source code, is comparable to the secrecy of alchemy prior to the emergence of chemistry. Abandoning this habit of secrecy in favour of reproducibility is vital if we are to avoid a future where our journals are filled with pretty pictures that the reader has no hope of repeating or adapting in their own work. It is time for computational reproducibility to be considered a minimum requirement for evaluating the integrity and usefulness of empirical results.
+I have presented a bibliometric analysis on the status of archaeology as a science, showing distinct disunity that is increasing over time. On average we generally behave as social scientists, with some elements in common with harder sciences. These observations are consistent with @Lakatos1978model's of a research program as a central foundation of irrefutable core assumptions complemented by a set of hypotheses, models, and methods that are adjusted, modified, or replaced by day-to-day research. Archaeology consists of multiple programs like this, with distinct and sometimes non-overlapping sets of core assumptions, such as processual and post-processual archaeology. Some programs are more amenable to reproducibility, while others offer insights through alternative methods. Among the programs that depend on quantitative methods to assess hypotheses and models, if they are to continue to progress through increased consensus through the accumulation of reliable facts and methods, it is essential for researchers to take computational reproducibility seriously. Computers have become a central field and laboratory instrument for much of our work, so we have an ethical duty to document how we change our data as it flows through silicon just as carefully as we document the operating parameters of a mass spectrometer or any other field or laboratory instrument. However, the current state of quantitative archaeology, with most researchers not using open source code, is comparable to the secrecy of alchemy prior to the emergence of chemistry. Abandoning this habit of secrecy in favour of transparency and reproducibility is vital if we are to avoid a future where our journals are filled with pretty pictures that the reader has no hope of repeating or adapting in their own work. Computational reproducibility must be considered a minimum requirement for evaluating the integrity and usefulness of empirical results.
 
-Computational reproducibility is not a panacea, results that are fully reproducible can contain errors and fraud. It is no guarantee of code quality, or that statistics have been used appropriately (cf. Vaiglova this issue), or that data management is consistent with FAIR and CARE principles [cf. @carrollOperationalizingCAREFAIR2021]. It is also time-consuming for authors to ensure their computational work can be reproduced, and for reviewers to evaluate. In an professional environment where job security and career progression is often associated with pressure to publish many high-impact papers, demands for authors to spend time on reproducibility, resulting in less time for publishing more papers, may seem frustrating. This may seem especially unfair to early career researchers on short-term contracts, who may feel the goalposts for career success are being moved and that they are being asked to do work their graduate training has not prepared them for. This highlights the need for a culture shift among senior archaeological scientists to value reproducibility in hiring and promotion decision-making. Professors should contribute to this culture shift by nurturing a positive culture of reanalysis and reproducibility in their graduate teaching and evaluation [e.g. @marwickHowUseReplication2020].
+Computational reproducibility is not a panacea, results that are fully reproducible can contain errors and fraud. It is no guarantee of code quality, or that statistics have been used appropriately (cf. Vaiglova 2025; Crema 2025), or that data management is consistent with FAIR and CARE principles [@carrollOperationalizingCAREFAIR2021]. It is also time-consuming for authors to ensure their computational work can be reproduced, and for reviewers to evaluate. In an professional environment where job security and career progression is often associated with pressure to publish many high-impact papers, demands for authors to spend time on reproducibility, resulting in less time for publishing more papers, may seem frustrating. This may seem especially unfair to early career researchers on short-term contracts, who may feel the goalposts for career success are being moved and that they are being asked to do more work their graduate training has not prepared them for. This highlights the need for a culture shift among senior archaeological scientists to value reproducibility in hiring and promotion decision-making. Professors must contribute to this shift by nurturing a culture of reanalysis and reproducibility in their teaching, for example by using replication assignments and by training students in the most current best practices and tools for reproducible research, such as R and Python [@marwickHowUseReplication2020].
 
-```{=html}
-<!--
+# Acknowledgements
 
-limitations: not looked at FAIR or CARE attributes of data, not looked at code quality (efficiency, readability, style)
+Versions of this paper were presented at the Summer School on Reproducible Research In Landscape Archaeology at the Freie Universität Berlin and  Christian-Albrechts-Universität zu Kiel (2017), the Big Data in Archaeology Conference at the McDonald Institute for Archaeological Research at the University of Cambridge (2019) and the Workshop on Exploring Data-Driven Solutions to Archaeological Problems at the Abu Dhabi Institute at New York University (2025). Thanks to the participants of those events for their feedback. Thanks to the JAS editors for the invitation to contribute to this special issue. 
 
-While consensus is one measure of the hardness of a science, the computability
+# Data Availability Statement
 
-n an ideal science, scholars share a common background of established theories, facts and methods. This allows them to agree (usually after debate and further evidence) on the validity and significance of a new research finding, making it the basis for further theorizing and research. Harder sciences are hypothesised to come closer to this ideal. Moving towards “softer” fields, this consensus becomes less likely to be reached, the common background shrinks and fractures, and so data become less able to “speak for themselves” [\[](https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0066938#pone.0066938-Fanelli1)
+The data that support the findings of this study are openly available in [repository name] at http://doi.org/[doi]
 
- -->
-```
+# References
+
+<!-- The following line ensures the references appear here for the MS Word or HTML output files, rather than right at the end of the document (this will not work for PDF files):  -->
+
+::: {#refs}
+:::
+
+\newpage
