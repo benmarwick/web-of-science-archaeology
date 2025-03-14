@@ -3,12 +3,18 @@
 
 # Extracting sunbeams from cucumbers: Computational reproducibility is essential for archaeological science
 
-This repository contains the data and code for my paper to be submitted
-to the Journal of Archaeological Science. Earlier versions were
-presented at the University of Cambridge
+This repository contains the data and code for my paper that has been
+submitted to the *Journal of Archaeological Science*. Earlier versions
+were presented at the University of Cambridge
 [(2019)](https://github.com/benmarwick/March-2019-Cambridge-Big-Data-Archaeology)
 and New York University
-[(2025)](https://github.com/benmarwick/nyu-2025-workshop)
+[(2025)](https://github.com/benmarwick/nyu-2025-workshop). A pre-print
+of the paper is online here and may be cited as follows:
+
+> Marwick, B. (2025). Extracting sunbeams from cucumbers: Computational
+> reproducibility is essential for archaeological science. Pre-print
+> hosted at SocArXiv. Accessed 21 February 2025.
+> <https://doi.org/10.31235/osf.io/fdhvb_v1>
 
 ## Contents
 
@@ -31,8 +37,8 @@ following these steps:
 
 1.  Install [Docker](https://www.docker.com/get-started/) on your
     computer
-2.  Download the compendium from GitHub by clicking on the green
-    `< > Code` button above, then click `Download ZIP`, and unzip on
+2.  Download the compendium, e.g. from GitHub by clicking on the green
+    `< > Code` button above, then click `Download ZIP`, then unzip on
     your computer
 3.  Set your terminal working directory to the compendium, and run
     `docker build -t wos .` to build the container on your computer, it
