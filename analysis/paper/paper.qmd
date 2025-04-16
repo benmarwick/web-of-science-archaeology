@@ -1,5 +1,5 @@
 ---
-title: "Extracting sunbeams from cucumbers: Computational reproducibility is essential for archaeological science"
+title: "Is Archaeology a science? Insights and imperatives from 10,000 articles and a year of reproducibility reviews"
 author:
   - Ben Marwick:
       correspondence: "yes"
