@@ -102,39 +102,30 @@ base_size <- 6
 
 # Number of authors ------------------
 boxlplot_n_authors <- 
-items_df %>% 
-  filter(!is.na(year)) %>% 
-  ggplot(aes(1,
-             log(authors_n))) +
-  geom_boxplot(
+  ggplot() +
+  # boxplot of data from this study
+  geom_boxplot(data = items_df %>% 
+  filter(!is.na(year)),
+  aes(1, log(authors_n)),
                size = 1)  +
-  # median for physics, from Fanelli & Glänzel Fig 2
-  geom_hline(yintercept = 1.4,
-             colour = "grey70") +
-  geom_text_repel(data = tibble(x = 1, 
-                                y = 1.4,
-                                label = "p"),
-                  aes(x, y, label = label),
-                  bg.colour = "white", 
-                  bg.r = .2, 
-                  force = 0) +
-  # median for soc sci, from Fanelli & Glänzel Fig 2
-  geom_hline(yintercept = 0.8,
-             colour = "grey70") +
-  geom_text_repel(data = tibble(x = 1, 
-                                y = 0.8,
-                                label = "s"),
-                  aes(x, y, label = label),
-                  bg.colour = "white", 
-                  bg.r = .2, 
-                  force = 0) +
-    # median for humanities, from Fanelli & Glänzel Fig 2
-  geom_hline(yintercept = 0.0,
-             colour = "grey70") +
-  geom_text_repel(data = tibble(x = 1, 
-                                y = 0.0,
-                                label = "h"),
-                  aes(x, y, label = label),
+  # boxplot of data from Fanelli & Glänzel Fig 2
+  geom_boxplot(data = sim_data %>% 
+  filter(Variable == "N. of authors (ln)",
+         Category %in% c("h", "p", "s")),
+  aes(1, Value, 
+      group = Category),
+  size = 1,
+  colour = "grey80")  +
+  # annotations from Fanelli & Glänzel Fig 2
+  geom_text_repel(data = sim_data %>% 
+  filter(Variable == "N. of authors (ln)",
+         Category %in% c("h", "p", "s")) %>% 
+  group_by(Category) %>% 
+  summarise(y = median(Value)) %>% 
+  mutate(label = Category),
+                  aes(1, y, 
+                      label = label,
+                       group = Category),
                   bg.colour = "white", 
                   bg.r = .2, 
                   force = 0) +
@@ -144,7 +135,9 @@ items_df %>%
   theme(panel.grid  = element_blank()) +
   ylab("N. of authors (ln)") +
   xlab("Collaborator group size") 
+```
 
+```{r}
 # Relative title length  ----------------
 
 items_df_title <- 
