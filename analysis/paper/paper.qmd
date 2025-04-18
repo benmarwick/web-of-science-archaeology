@@ -98,7 +98,10 @@ The entire R code [@rcoreteamLanguageEnvironmentStatistical2024] used for all th
 ```{r}
 library(ggrepel)
 
+source("analysis/code/008-redraw-Fanelli-and-Glanzel-Fig-2.R")
+
 base_size <- 6
+color <- c('#1b9e77','#d95f02','#7570b3')
 
 # Number of authors ------------------
 boxlplot_n_authors <- 
@@ -115,17 +118,19 @@ boxlplot_n_authors <-
   aes(1, Value, 
       group = Category),
   size = 1,
-  colour = "grey80")  +
+  colour = color, 
+  alpha = 0)  +
   # annotations from Fanelli & Glänzel Fig 2
-  geom_text_repel(data = sim_data %>% 
-  filter(Variable == "N. of authors (ln)",
-         Category %in% c("h", "p", "s")) %>% 
-  group_by(Category) %>% 
-  summarise(y = median(Value)) %>% 
-  mutate(label = Category),
-                  aes(1, y, 
-                      label = label,
-                       group = Category),
+  geom_text_repel(data = sim_data %>%  
+    filter(Variable == "N. of authors (ln)", 
+           Category %in% subcat_order) %>%  
+    group_by(Category) %>%  
+    summarise(y = median(Value)) %>%
+    mutate(
+      label = as.character(Category)
+    ),
+                  aes(c(0.75, 1, 1.25), y, label = label),
+                  color = color,
                   bg.colour = "white", 
                   bg.r = .2, 
                   force = 0) +
@@ -153,37 +158,29 @@ items_df_title %>%
              relative_title_length)) +
   geom_boxplot(
                size = 1)  +
-  # median for physics, from Fanelli & Glänzel Fig 2
-  geom_hline(yintercept = 0.8,
-             colour = "grey70") +
-  geom_text_repel(data = tibble(x = 1, 
-                                y = 0.8,
-                                label = "p"),
-                  aes(x, y, label = label),
+  # boxplot of data from Fanelli & Glänzel Fig 2
+  geom_boxplot(data = sim_data %>% 
+  filter(Variable == "Relative title length (ln)",
+         Category %in% c("h", "p", "s")),
+  aes(1, Value, 
+      group = Category),
+  size = 1,
+  colour = color, 
+  alpha = 0)  +
+  # annotations from Fanelli & Glänzel Fig 2
+  geom_text_repel(data = sim_data %>%  
+    filter(Variable == "Relative title length (ln)", 
+           Category %in% subcat_order) %>%  
+    group_by(Category) %>%  
+    summarise(y = median(Value)) %>%
+    mutate(
+      label = as.character(Category)
+    ),
+                  aes(c(0.75, 1, 1.25), y, label = label),
                   bg.colour = "white", 
+    colour = color,
                   bg.r = .2, 
                   force = 0) +
-  # median for soc sci, from Fanelli & Glänzel Fig 2
-  geom_hline(yintercept = 0.0,
-             colour = "grey70") +
-  geom_text_repel(data = tibble(x = 1, 
-                                y = 0.0,
-                                label = "s"),
-                  aes(x, y, label = label),
-                  bg.colour = "white", 
-                  bg.r = .2, 
-                  force = 0) +
-    # median for humanities, from Fanelli & Glänzel Fig 2
-  geom_hline(yintercept = -0.2,
-             colour = "grey70") +
-  geom_text_repel(data = tibble(x = 1, 
-                                y = -0.2,
-                                label = "h"),
-                  aes(x, y, label = label),
-                  bg.colour = "white", 
-                  bg.r = .2, 
-                  force = 0,
-                  nudge_x = 0.05) +
   scale_y_continuous(limits = c(-4.5, 3),
                      breaks =  seq(-5, 5, 1),
                      labels = seq(-5, 5, 1)) +
@@ -200,34 +197,27 @@ items_df %>%
              log(pages_n))) +
   geom_boxplot(
                size = 1)  +
-  # median for physics, from Fanelli & Glänzel Fig 2
-  geom_hline(yintercept = 1.8,
-             colour = "grey70") +
-  geom_text_repel(data = tibble(x = 1, 
-                                y = 1.8,
-                                label = "p"),
-                  aes(x, y, label = label),
-                  bg.colour = "white", 
-                  bg.r = .2, 
-                  force = 0) +
-  # median for soc sci, from Fanelli & Glänzel Fig 2
-  geom_hline(yintercept = 2.5,
-             colour = "grey70") +
-  geom_text_repel(data = tibble(x = 1, 
-                                y = 2.5,
-                                label = "s"),
-                  aes(x, y, label = label),
-                  bg.colour = "white", 
-                  bg.r = .2, 
-                  force = 0) +
-    # median for humanities, from Fanelli & Glänzel Fig 2
-  geom_hline(yintercept = 2.8,
-             colour = "grey70") +
-  geom_text_repel(data = tibble(x = 1, 
-                                y = 2.8,
-                                label = "h"),
-                  aes(x, y, label = label),
-                  bg.colour = "white", 
+  # boxplot of data from Fanelli & Glänzel Fig 2
+  geom_boxplot(data = sim_data %>% 
+  filter(Variable == "N. of pages (ln)",
+         Category %in% c("h", "p", "s")),
+  aes(1, Value, 
+      group = Category),
+  size = 1,
+  colour = color, 
+  alpha = 0)  +
+  # annotations from Fanelli & Glänzel Fig 2
+  geom_text_repel(data = sim_data %>%  
+    filter(Variable == "N. of pages (ln)", 
+           Category %in% subcat_order) %>%  
+    group_by(Category) %>%  
+    summarise(y = median(Value)) %>%
+    mutate(
+      label = as.character(Category)
+    ),
+                  aes(c(0.75, 1, 1.25), y, label = label),
+                  bg.colour = "white",
+    colour = color, 
                   bg.r = .2, 
                   force = 0) +
   scale_y_reverse(limits = c(5, 0)) +
@@ -278,34 +268,26 @@ items_df %>%
              prices_index)) +
   geom_boxplot(
                size = 1)  +
-  # median for physics, from Fanelli & Glänzel Fig 2
-  geom_hline(yintercept = 0.38,
-             colour = "grey70") +
-  geom_text_repel(data = tibble(x = 1, 
-                                y = 0.38,
-                                label = "p"),
-                  aes(x, y, label = label),
-                  bg.colour = "white", 
-                  bg.r = .2, 
-                  force = 0) +
-  # median for soc sci, from Fanelli & Glänzel Fig 2
-  geom_hline(yintercept = 0.29,
-             colour = "grey70") +
-  geom_text_repel(data = tibble(x = 1, 
-                                y = 0.29,
-                                label = "s"),
-                  aes(x, y, label = label),
-                  bg.colour = "white", 
-                  bg.r = .2, 
-                  force = 0) +
-    # median for humanities, from Fanelli & Glänzel Fig 2
-  geom_hline(yintercept = 0.19,
-             colour = "grey70") +
-  geom_text_repel(data = tibble(x = 1, 
-                                y = 0.19,
-                                label = "h"),
-                  aes(x, y, label = label),
-                  bg.colour = "white", 
+  # boxplot of data from Fanelli & Glänzel Fig 2
+  geom_boxplot(data = sim_data %>% 
+  filter(Variable == "Price's index",
+         Category %in% c("h", "p", "s")),
+  aes(1, Value, 
+      group = Category),
+  size = 1,
+  colour = color,  
+  alpha = 0)  +
+  # annotations from Fanelli & Glänzel Fig 2
+  geom_text_repel(data = sim_data %>%  
+    filter(Variable == "Price's index", 
+           Category %in% subcat_order) %>%  
+    group_by(Category) %>%  
+    summarise(y = median(Value)) %>%
+    mutate(
+      label = as.character(Category)
+    ),
+                  aes(c(0.75, 1, 1.25), y, label = label),
+                  bg.colour = "white", colour = color, 
                   bg.r = .2, 
                   force = 0) +
   scale_y_continuous(limits = c(0, 1)) +
@@ -382,39 +364,29 @@ shannon_per_item %>%
              shannon)) +
   geom_boxplot(
                size = 1)  +
-  # median for physics, from Fanelli & Glänzel Fig 2
-  geom_hline(yintercept = 2.6,
-             colour = "grey70") +
-  geom_text_repel(data = tibble(x = 1, 
-                                y = 2.6,
-                                label = "p"),
-                  aes(x, y, label = label),
+   # boxplot of data from Fanelli & Glänzel Fig 2
+  geom_boxplot(data = sim_data %>% 
+  filter(Variable == "Shannon div. of sources",
+         Category %in% c("h", "p", "s")),
+  aes(1, Value, 
+      group = Category),
+  size = 1,
+  colour = color,  
+  alpha = 0)  +
+  # annotations from Fanelli & Glänzel Fig 2
+  geom_text_repel(data = sim_data %>%  
+    filter(Variable == "Shannon div. of sources", 
+           Category %in% subcat_order) %>%  
+    group_by(Category) %>%  
+    summarise(y = median(Value)) %>%
+    mutate(
+      label = as.character(Category)
+    ),
+                  aes(c(0.75, 1, 1.25), y, label = label),
+    colour = color, 
                   bg.colour = "white", 
                   bg.r = .2, 
                   force = 0) +
-  # median for soc sci, from Fanelli & Glänzel Fig 2
-  geom_hline(yintercept = 3.2,
-             colour = "grey70") +
-  geom_text_repel(data = tibble(x = 1, 
-                                y = 3.2,
-                                label = "s"),
-                  aes(x, y, label = label),
-                  bg.colour = "white", 
-                  bg.r = .2, 
-                  force = 0) +
-    # median for humanities, from Fanelli & Glänzel Fig 2
-  geom_hline(yintercept = 3.3,
-             colour = "grey70") +
-  geom_text_repel(data = tibble(x = 1, 
-                                y = 3.3,
-                                label = "h"),
-                  aes(x, y, 
-                      label = label,
-                      segment.colour = NA),
-                  bg.colour = "white", 
-                  bg.r = .2, 
-                  force = 0,
-                  nudge_x = 0.05) +
   scale_y_reverse(limits = c(6, 0)) +
   scale_x_continuous(labels = NULL) +
   theme_minimal(base_size = base_size)  +

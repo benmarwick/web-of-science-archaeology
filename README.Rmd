@@ -16,11 +16,11 @@ knitr::opts_chunk$set(
 
 ```
 
-# Extracting sunbeams from cucumbers: Computational reproducibility is essential for archaeological science
+# Is Archaeology a science? Insights and imperatives from 10,000 articles and a year of reproducibility reviews
 
 This repository contains the data and code for my paper that has been submitted to the _Journal of Archaeological Science_. Earlier versions were presented at the University of Cambridge [(2019)](https://github.com/benmarwick/March-2019-Cambridge-Big-Data-Archaeology) and New York University [(2025)](https://github.com/benmarwick/nyu-2025-workshop). A pre-print of the paper is online here and may be cited as follows:
 
-> Marwick, B. (2025). Extracting sunbeams from cucumbers: Computational reproducibility is essential for archaeological science. Pre-print hosted at SocArXiv. Accessed 21 February 2025. https://doi.org/10.31235/osf.io/fdhvb_v1 
+> Marwick, B. (2025). Is Archaeology a science? Insights and imperatives from 10,000 articles and a year of reproducibility reviews. Pre-print hosted at SocArXiv. Accessed 21 February 2025. https://doi.org/10.31235/osf.io/fdhvb_v1 
 
 ## Contents
 

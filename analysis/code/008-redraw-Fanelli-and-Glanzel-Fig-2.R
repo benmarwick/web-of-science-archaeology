@@ -99,14 +99,14 @@ sim_data$Category <- factor(sim_data$Category, levels = categories)
 sim_data$Variable <- factor(sim_data$Variable, levels = variables)
 
 # --- Create the Plot ---
-ggplot(sim_data, aes(x = Category, y = Value)) +
-  geom_boxplot(outlier.shape = 1, outlier.size = 1.5) + # Use circles for outliers
-  facet_wrap(~ Variable, scales = "free_y", ncol = 4) + # Create grid, free y-axis
-  theme_bw() + # Black and white theme similar to original
-  labs(x = NULL, y = NULL) + # Remove axis titles
-  theme(
-    strip.background = element_blank(), # Remove background from facet titles
-    strip.text = element_text(size = 10, face = "bold"), # Adjust facet title appearance
-    axis.text.x = element_text(size = 10, face = "bold"), # Make x-axis labels bold like original
-    panel.spacing = unit(1, "lines") # Add some space between panels
-  )
+# ggplot(sim_data, aes(x = Category, y = Value)) +
+#   geom_boxplot(outlier.shape = 1, outlier.size = 1.5) + # Use circles for outliers
+#   facet_wrap(~ Variable, scales = "free_y", ncol = 4) + # Create grid, free y-axis
+#   theme_bw() + # Black and white theme similar to original
+#   labs(x = NULL, y = NULL) + # Remove axis titles
+#   theme(
+#     strip.background = element_blank(), # Remove background from facet titles
+#     strip.text = element_text(size = 10, face = "bold"), # Adjust facet title appearance
+#     axis.text.x = element_text(size = 10, face = "bold"), # Make x-axis labels bold like original
+#     panel.spacing = unit(1, "lines") # Add some space between panels
+#   )
