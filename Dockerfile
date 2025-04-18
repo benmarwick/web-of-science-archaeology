@@ -14,6 +14,9 @@ WORKDIR $PROJ_DIR
 # Copy the project files
 COPY . $PROJ_DIR
 
+# Set permissions
+RUN chown -R rstudio:rstudio $PROJ_DIR
+
 # Install renv
 RUN R -e "install.packages('renv', repos = c(CRAN = 'https://cloud.r-project.org'))" 
 
