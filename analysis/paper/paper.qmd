@@ -101,7 +101,9 @@ library(ggrepel)
 source(here::here("analysis/code/008-redraw-Fanelli-and-Glanzel-Fig-2.R"))
 
 base_size <- 6
-color <- c('#1b9e77','#d95f02','#7570b3')
+color <- c('#d95f02', '#7570b3',  '#1b9e77')
+alpha <- 0.2
+linewidth <- 0.1
 
 # Number of authors ------------------
 boxlplot_n_authors <- 
@@ -118,8 +120,10 @@ boxlplot_n_authors <-
   aes(1, Value, 
       group = Category),
   size = 1,
+  fill = color,
   colour = color, 
-  alpha = 0)  +
+  alpha = alpha,
+  linewidth = linewidth)  +
   # annotations from Fanelli & Glänzel Fig 2
   geom_text_repel(data = sim_data %>%  
     filter(Variable == "N. of authors (ln)",
@@ -140,9 +144,8 @@ boxlplot_n_authors <-
   theme(panel.grid  = element_blank()) +
   ylab("N. of authors (ln)") +
   xlab("Collaborator group size") 
-```
 
-```{r}
+
 # Relative title length  ----------------
 
 items_df_title <- 
@@ -165,8 +168,10 @@ items_df_title %>%
   aes(1, Value, 
       group = Category),
   size = 1,
+  fill = color,
   colour = color, 
-  alpha = 0)  +
+  alpha = alpha,
+  linewidth = linewidth)  +
   # annotations from Fanelli & Glänzel Fig 2
   geom_text_repel(data = sim_data %>%  
     filter(Variable == "Relative title length (ln)", 
@@ -204,8 +209,10 @@ items_df %>%
   aes(1, Value, 
       group = Category),
   size = 1,
+  fill = color,
   colour = color, 
-  alpha = 0)  +
+  alpha = alpha,
+  linewidth = linewidth)  +
   # annotations from Fanelli & Glänzel Fig 2
   geom_text_repel(data = sim_data %>%  
     filter(Variable == "N. of pages (ln)", 
@@ -275,8 +282,10 @@ items_df %>%
   aes(1, Value, 
       group = Category),
   size = 1,
+  fill = color,
   colour = color,  
-  alpha = 0)  +
+  alpha = alpha,
+  linewidth = linewidth)  +
   # annotations from Fanelli & Glänzel Fig 2
   geom_text_repel(data = sim_data %>%  
     filter(Variable == "Price's index", 
@@ -371,8 +380,10 @@ shannon_per_item %>%
   aes(1, Value, 
       group = Category),
   size = 1,
+  fill = color,
   colour = color,  
-  alpha = 0)  +
+  alpha = alpha,
+  linewidth = linewidth)  +
   # annotations from Fanelli & Glänzel Fig 2
   geom_text_repel(data = sim_data %>%  
     filter(Variable == "Shannon div. of sources", 
