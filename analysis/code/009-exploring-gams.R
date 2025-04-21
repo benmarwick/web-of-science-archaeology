@@ -85,113 +85,7 @@ stack(each_variable) %>%
   facet_wrap(~ind, scales = "free")
 
 
-over_time_long_colour_gams_testing_nested_df %>% 
-  mutate(mod_gam = case_when(
-    variable == "N. of authors" ~ lapply(data, 
-                            function(df) gam(value ~ s(year, bs = "cr"), 
-                                           family = nb(),
-                                           method = "REML",
-                                           data = df)),
-    variable == "N. of pages" ~ lapply(data, 
-                             function(df) gam(value ~ s(year, bs = "cr"), 
-                                          family = gaussian(),
-                                           method = "REML",
-                                           data = df)),
-    variable == "Recency of references" ~ lapply(data, 
-                              function(df) gam(value ~ s(year, bs = "cr"), 
-                                           family = betar(link = "logit"),
-                                           method = "REML",
-                                           data = df)),
-    variable == "Diversity of references" ~ lapply(data, 
-                              function(df) gam(value ~ s(year, bs = "cr"), 
-                                           family = gaussian(),
-                                           method = "REML",
-                                           data = df)),
-    variable == "Relative title length (ln)" ~ lapply(data, 
-                              function(df) gam(value ~ s(year, bs = "cr"), 
-                                           family = gaussian(),
-                                           method = "REML",
-                                           data = df)),
-    .default = NULL
-    ))
-
-# inspect diagnostics
-map(over_time_long_colour_gams_testing$mod_gam,
-    gam.check)
-
-library(gratia)
-library(patchwork)
-
-plots_with_titles <- 
-over_time_long_colour_gams_testing %>%
-  mutate(appraise_plot = map2(mod_gam, variable, ~ {
-    p <- appraise(.x)  
-    p + plot_annotation(title = .y)
-  }))
-
-plots_with_titles$appraise_plot[2]
-
-
-# the nested df is 'over_time_long_colour_gams_testing_nested_df'
-# with list-column 'data' and character column 'variable'
-
-# Ensure purrr is loaded
-library(purrr)
-library(dplyr)
-library(mgcv)
-
-# the nested df is 'over_time_long_colour_gams_testing_nested_df'
-# with list-column 'data' and character column 'variable'
-
-over_time_long_colour_gams_testing_nested_df_out <- 
-  over_time_long_colour_gams_testing_nested_df %>%
-  mutate(
-    mod_gam = map2(data, variable, ~{ # Map over data (.x) and variable (.y)
-      current_df <- .x # The dataframe for the current row
-      current_var <- .y # The variable name for the current row
-      
-      # --- Use if/else if/else to choose the family ---
-      if (current_var == "N. of authors") {
-        chosen_family <- nb() # ok 
-      } else if (current_var == "N. of pages") {
-        chosen_family <- nb() # ok
-      } else if (current_var == "Recency of references") {
-        chosen_family <- betar(link = "logit") # needs work
-      } else if (current_var == "Diversity of references") {
-        chosen_family <- gaussian() # ok
-      } else if (current_var == "Relative title length (ln)") {
-        chosen_family <- gaussian() # ok
-      } else {
-        # Default fallback, adjust if needed (e.g., stop with an error)
-        chosen_family <- gaussian()
-        # Or: stop("Unknown variable encountered: ", current_var)
-      }
-      # --- End of family selection ---
-      
-      # Define the value column name 
-      response_col <- "value" 
-      
-      # Construct the formula dynamically
-      gam_formula <- as.formula(paste(response_col, "~ s(year, bs = 'cr')"))
-      
-      # Fit the GAM using the data and family for THIS row
-      gam(gam_formula,
-          family = chosen_family,
-          method = "REML",
-          data = current_df)
-    })
-  )
-
-# Now check the results or proceed with diagnostics
-print(over_time_long_colour_gams_testing_nested_df_out)
-map(over_time_long_colour_gams_testing_nested_df_out$mod_gam, summary)
-map2(over_time_long_colour_gams_testing_nested_df_out$mod_gam, 
-    over_time_long_colour_gams_testing_nested_df_out$variable,
-    ~gratia::appraise(.x) + plot_annotation(title = .y))
-map(over_time_long_colour_gams_testing_nested_df_out$mod_gam, gam.check)
-
-
-# ---  switch to brms ---------------------------------
+# ---  fit models with brms ---------------------------------
 library(brms)
 library(dplyr)
 library(purrr)
@@ -206,8 +100,8 @@ results_brms <- over_time_long_colour_gams_testing_nested_df %>%
   mutate(
     # Create a new column for brms models to avoid overwriting gam models if needed
     mod_brms = map2(data, variable, ~{
-      current_df <- .x       # The dataframe for the current row
-      current_var <- .y      # The variable name for the current row
+      current_df <- .x        # The dataframe for the current row
+      current_var <- .y       # The variable name for the current row
       response_col <- "value" #  this matches the response column name in nested dfs
       
       message(paste("Fitting brms model for:", current_var)) # Progress message
@@ -259,12 +153,12 @@ results_brms <- over_time_long_colour_gams_testing_nested_df %>%
           # --- Stan control arguments (adjust as needed) ---
           cores = 4,  # Number of cores for parallel chains 
           chains = 4, # Number of Markov chains (4 is standard for final runs)
-          iter = 2500, # Total iterations per chain (includes warmup)
+          iter = 3000, # Total iterations per chain (includes warmup)
           warmup = 1000,# Number of warmup iterations (discarded)
-          control = list(adapt_delta = 0.999), # for helping convergence for complex models
+          control = list(adapt_delta = 0.9999), # for helping convergence for complex models
           seed = 123, # For reproducibility
           silent = 2, # Suppress compilation messages from Stan
-          refresh = 0 # Suppress iteration progress updates (can set to e.g., 500)
+          refresh = 0 # Suppress iteration progress updates 
           
         )
       }, error = function(e) {

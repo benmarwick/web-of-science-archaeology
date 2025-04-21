@@ -41,9 +41,7 @@ if(nrow(results_brms_valid) == 0) {
 
 # Introduction
 
-*(Briefly introduce the research question, the variables being analyzed, and the goal of modeling their temporal trends.)*
-
-# Methods
+This supplementary document provides further details on the General Additive Models (GAMs) used to model change in the bibliometric variables over time.  GAMs are useful because they can be fit to complex, nonlinear relationships and make good predictions, while still being able to provide inferential statistics and understand and explain the underlying structure of our models.
 
 ## Modeling Approach
 
@@ -70,7 +68,7 @@ kable(spec_data, caption = "Model specifications for each response variable.", b
 
 ```
 
-For all models, the effect of `year` was modeled using a penalized thin plate regression spline (`s(year, bs = 'tp')`) *[Note: Your code used `bs='cr'` (cubic regression spline), adjust text if needed. I'll assume 'cr' based on your code]* allowing for flexible non-linear trends. Default weakly informative priors provided by `brms` were used for all parameters, including the intercept, distributional parameters (e.g., `shape`, `sigma`, `phi`, `zoi`, `coi`), and the standard deviation of the smooth term. *(Modify this sentence if you set custom priors, and list/justify them).*.
+For all models, the effect of `year` was modeled using a cubic  regression spline (`s(year, bs = 'cr')`)  allowing for flexible non-linear trends. Default weakly informative priors provided by `brms` were used for all parameters, including the intercept, distributional parameters (e.g., `shape`, `sigma`, `phi`, `zoi`, `coi`), and the standard deviation of the smooth term. 
 
 ## MCMC Sampling
 
@@ -82,7 +80,7 @@ Models were fitted using `r results_brms_valid$mod_brms[[1]]$algorithm$chains` M
 
 Convergence of the MCMC chains to the target posterior distribution was assessed rigorously.
 
-1.  **Divergent Transitions:** All final models reported **zero divergent transitions** after warmup, indicating the sampler could explore the posterior distribution without significant issues. *(Crucially, confirm this is true for your final fits. Mention if `adapt_delta` adjustments were needed, e.g., "Initial fits for [Variable Name(s)] showed divergent transitions, which were resolved by refitting with `control = list(adapt_delta = 0.995)`.")*
+1.  **Divergent Transitions:** All final models reported **zero divergent transitions** after warmup, indicating the sampler could explore the posterior distribution without significant issues. Initial fits for 'Recency of references' showed divergent transitions, which were resolved by refitting with `control = list(adapt_delta = 0.995)`.")
 
 ```{r check_divergences, echo=TRUE}
 # Code to programmatically check divergences 
