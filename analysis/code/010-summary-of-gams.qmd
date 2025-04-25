@@ -20,23 +20,6 @@ library(broom.mixed) # Provides tidy methods for brmsfit objects
 library(cowplot)     # For plot_grid
 library(knitr)       # For kable
 library(gt)          # For potentially nicer tables (optional alternative to kable)
-
-# Set brms options (optional)
-# options(mc.cores = parallel::detectCores())
-
-# Load your results object (replace with your actual loading code)
-# load("path/to/your/results_brms.RData")
-# For demonstration, let's assume 'results_brms' exists and contains valid models
-# Filter out any models that failed to fit (are NULL)
-results_brms_valid <- results_brms %>%
-  filter(!sapply(mod_brms, is.null)) %>%
-  filter(sapply(mod_brms, inherits, "brmsfit"))
-
-# Check if any valid models remain
-if(nrow(results_brms_valid) == 0) {
-  stop("No valid brms models found in results_brms.")
-}
-
 ```
 
 # Introduction
@@ -49,7 +32,115 @@ Temporal trends for five variables related to scientific publications were analy
 
 ## Model Specification
 
-Separate GAMs were fitted for each response variable against publication year (`year`). The specific model structure for each variable was chosen based on the nature of the response data:
+Separate GAMs were fitted for each response variable against publication year (`year`). The specific model structure for each variable was chosen based on the nature of the response data. @fig-brms-distros shows the distributions of the five variables related to scientific publications. The shape of these distributions informed our decisions about model specification. 
+Recency of references: This variable, bounded between 0 and 1, exhibited a right-skewed distribution with notable occurrences at the boundaries (0 and 1). Consequently, a Zero-One Inflated Beta (zero_one_inflated_beta()) distribution family was selected. The associated logit link function is standard for modeling the mean (mu) of proportions, transforming the (0, 1) interval to the real line (-∞, +∞) and modeling the log-odds of the mean recency score for values strictly between 0 and 1.
+
+Diversity of references & Relative title length (ln): Both variables displayed approximately symmetric, bell-shaped (normal) distributions. For these continuous variables, the Gaussian (gaussian()) family was employed with the canonical identity link function, meaning the linear predictor directly models the expected value (mean) of the response variable.
+
+N. of authors & N. of pages: These count variables both exhibited highly right-skewed distributions. Therefore, the Negative Binomial (negbinomial()) family was chosen. The standard log link function was applied, ensuring that the predicted mean remains positive (μ = exp(η)) and implying that predictor effects are multiplicative on the original count scale, which is conventional for count data.
+
+
+```{r}
+#| label: fig-brms-distros
+#| fig-cap: "Distributions of the response variables"
+
+# prepare data for GAMS
+
+# create data objects needed for this document
+qmd_file <- here::here("analysis/paper/paper.qmd")
+
+# A one-liner to run the R code in the main paper and create all the data objects
+{ f <- tempfile(fileext = ".R"); on.exit(unlink(f, force = TRUE)); knitr::purl(qmd_file, output = f, documentation = 0, quiet = TRUE); source(f, local = FALSE); }
+
+# on with the show
+over_time <-  
+  items_df %>%  
+  left_join(items_df_title) %>%  
+  left_join(shannon_per_item) %>%  
+  filter(relative_title_length != -Inf, 
+         relative_title_length !=  Inf,
+         prices_index != "NaN" 
+  ) %>% 
+  mutate(log_authors_n = log(authors_n), 
+         log_pages_n = log(pages_n), 
+         journal_wrp = str_wrap(journal, 30)) %>%  
+  select(year, 
+         log_authors_n, 
+         log_pages_n, 
+         prices_index,  
+         shannon, 
+         relative_title_length,
+         authors_n,
+         pages_n) 
+
+over_time_long <-  
+  over_time %>%  
+  ungroup() %>%  
+  select(-journal) %>%  
+  gather(variable,  
+         value, 
+         -year) %>%  
+  filter(value != -Inf, 
+         value !=  Inf) %>%  
+  mutate(variable = case_when( 
+    variable == "prices_index"  ~ "Recency of references", 
+    variable == "shannon"  ~ "Diversity of references", 
+    variable == "relative_title_length"  ~ "Relative title length (ln)", 
+    variable == "authors_n" ~ "N. of authors",
+    variable == "pages_n" ~ "N. of pages"
+  )) %>%  
+  filter(!is.na(variable)) %>%  
+  filter(!is.nan(value)) %>%  
+  filter(!is.na(value)) %>%  
+  filter(value != "NaN") %>%  
+  mutate(value = parse_number(value))
+
+# compute beta estimates so we can colour lines to indicate more or
+# less hard
+
+library(broom)
+
+over_time_long_models <- 
+  over_time_long %>%  
+  group_nest(variable) %>%  
+  mutate(model = map(data, ~tidy(lm(value ~ year, data = .)))) %>%  
+  unnest(model) %>%  
+  filter(term == 'year') %>%  
+  mutate(becoming_more_scientific = case_when( 
+    variable == "N. of authors"         & estimate > 0 ~ "TRUE", 
+    variable == "N. of pages"           & estimate < 0 ~ "TRUE", 
+    variable == "N. of refs (sqrt)"          & estimate < 0 ~ "TRUE", 
+    variable == "Recency of references"      & estimate > 0 ~ "TRUE", 
+    variable == "Relative title length (ln)" & estimate > 0 ~ "TRUE", 
+    variable == "Diversity of references"    & estimate < 0 ~ "TRUE",
+    TRUE ~ "FALSE"
+  )) 
+
+# join with data
+over_time_long_colour <- 
+  over_time_long %>% 
+  left_join(over_time_long_models)
+
+over_time_long_colour_gams_testing_nested_df <- 
+  over_time_long_colour %>% 
+  nest(.by = variable) 
+
+# check the distributions of each variable
+each_variable <- 
+map(over_time_long_colour_gams_testing_nested_df$data, 
+    ~.x$value)
+
+names(each_variable) <- over_time_long_colour_gams_testing_nested_df$variable
+
+stack(each_variable) %>% 
+  ggplot() +
+  aes(values) +
+  geom_histogram() +
+  facet_wrap(~ind, scales = "free") +
+  theme_minimal()
+```
+
+The table below summarises the selections made for each variable, based on their distributions obsvered in @fig-brms-distros.
 
 ```{r model_spec_table, echo=FALSE}
 # Create a summary table of model specifications
@@ -70,6 +161,117 @@ kable(spec_data, caption = "Model specifications for each response variable.", b
 
 For all models, the effect of `year` was modeled using a cubic  regression spline (`s(year, bs = 'cr')`)  allowing for flexible non-linear trends. Default weakly informative priors provided by `brms` were used for all parameters, including the intercept, distributional parameters (e.g., `shape`, `sigma`, `phi`, `zoi`, `coi`), and the standard deviation of the smooth term. 
 
+
+```{r}
+#| eval: false
+
+# ---  fit models with brms -------------------------------
+# this takes a few hours
+
+library(brms)
+library(dplyr)
+library(purrr)
+
+# --- Set options for brms (optional, can help speed up) ---
+options(mc.cores = parallel::detectCores()) # Use all available CPU cores
+
+# --- the nested df is 'over_time_long_colour_gams_testing_nested_df' 
+# with list-column 'data' and character column 'variable'
+
+results_brms <- over_time_long_colour_gams_testing_nested_df %>%
+  mutate(
+    # Create a new column for brms models to avoid overwriting gam models if needed
+    mod_brms = map2(data, variable, ~{
+      current_df <- .x        # The dataframe for the current row
+      current_var <- .y       # The variable name for the current row
+      response_col <- "value" #  this matches the response column name in nested dfs
+      
+      message(paste("Fitting brms model for:", current_var)) # Progress message
+      
+      # --- 1. Choose the brms family based on the variable name ---
+      chosen_family <- if (current_var == "N. of authors") {
+        negbinomial() # For count data
+      } else if (current_var == "N. of pages") {
+        negbinomial() # For count data
+      } else if (current_var == "Recency of references") {
+        zero_one_inflated_beta() # For 0/1 inflated proportions
+      } else if (current_var == "Diversity of references") {
+        gaussian() # For continuous, approx normal data
+      } else if (current_var == "Relative title length (ln)") {
+        gaussian() # For continuous, normal data
+      } else {
+        warning(paste("Unknown variable:", current_var, "- using Gaussian default."))
+        gaussian() # Default fallback
+      }
+      
+      # --- 2. Construct the formula using brms::bf() ---
+      # Handle the special structure for Zero-One Inflated Beta
+      if (inherits(chosen_family, "zero_one_inflated_beta")) {
+        # Formula for the mean (between 0 and 1), plus formulas for
+        # zoi (zero-inflation probability) and coi (one-inflation probability).
+        # zoi and coi are modelled simply as intercepts.
+        brm_formula <- bf(
+          paste(response_col, "~ s(year, bs = 'cr')"), 
+          # Smooth term for mean
+          zoi ~ 1,                                    
+          # Intercept for prob of 0
+          coi ~ 1                                     
+          # Intercept for prob of 1
+        )
+      } else {
+        # Standard formula for other families
+        brm_formula <- bf(
+          paste(response_col, "~ s(year, bs = 'cr')")
+        )
+      }
+      
+      # --- 3. Fit the brms model ---
+      # Using tryCatch to prevent one failure from stopping everything
+      tryCatch({
+        brm(
+          formula = brm_formula,
+          family = chosen_family,
+          data = current_df,
+          # --- Stan control arguments (adjust as needed) ---
+          cores = 4,  # Number of cores for parallel chains 
+          chains = 4, # Number of Markov chains (4 is standard for final runs)
+          iter = 3000, # Total iterations per chain (includes warmup)
+          warmup = 1000,# Number of warmup iterations (discarded)
+          control = list(adapt_delta = 0.9999), # for helping convergence for complex models
+          seed = 123, # For reproducibility
+          silent = 2, # Suppress compilation messages from Stan
+          refresh = 0 # Suppress iteration progress updates 
+          
+        )
+      }, error = function(e) {
+        # Print a warning if a model fails to fit
+        warning(paste("brms fitting failed for variable:", 
+                      current_var, "\nError:", e$message))
+        return(NULL) # Return NULL for failed models
+      })
+    }) # End of map2
+  ) # End of mutate
+
+
+# quite a large file
+saveRDS(results_brms, here::here("analysis/data/results_brms.RData"))
+
+```
+
+```{r}
+
+# Load my brms results object so we don't have to re-run the above block
+load(here::here("analysis/data/results_brms.RData"))
+
+# For demonstration, let's assume 'results_brms' exists and contains valid models
+# Filter out any models that failed to fit (are NULL)
+results_brms_valid <- results_brms %>%
+  filter(!sapply(mod_brms, is.null)) %>%
+  filter(sapply(mod_brms, inherits, "brmsfit"))
+
+
+```
+
 ## MCMC Sampling
 
 Models were fitted using `r results_brms_valid$mod_brms[[1]]$algorithm$chains` Markov chains. Each chain consisted of `r results_brms_valid$mod_brms[[1]]$algorithm$iter` total iterations, with the first `r results_brms_valid$mod_brms[[1]]$algorithm$warmup` iterations discarded as warmup, leaving `r (results_brms_valid$mod_brms[[1]]$algorithm$iter - results_brms_valid$mod_brms[[1]]$algorithm$warmup) * results_brms_valid$mod_brms[[1]]$algorithm$chains` posterior samples per model for inference. No thinning was applied (thin = 1).
@@ -83,6 +285,8 @@ Convergence of the MCMC chains to the target posterior distribution was assessed
 1.  **Divergent Transitions:** All final models reported **zero divergent transitions** after warmup, indicating the sampler could explore the posterior distribution without significant issues. Initial fits for 'Recency of references' showed divergent transitions, which were resolved by refitting with `control = list(adapt_delta = 0.995)`.")
 
 ```{r check_divergences, echo=TRUE}
+#| tbl-cap: "Number of divergences for each variable"
+
 # Code to programmatically check divergences 
 library(rstan)
 sampler_params_list <- map(results_brms_valid$mod_brms, ~{
@@ -108,13 +312,14 @@ divergence_summary <- tibble(
    n_divergences = divergences_per_model
 )
 
-print("Number of Divergent Transitions per Model:")
-print(divergence_summary)
+
+kable(divergence_summary)
 
 ```
 
 
 ```{r convergence_summary_table, echo=FALSE}
+#| tbl-cap: "Summary of MCMC Convergence Diagnostics. Max R-hat should be close to 1.0 (e.g., < 1.01). Min ESS values indicate the minimum effective sample size across all parameters. N Divergences should be 0 for reliable results."
 
 
 #```{r convergence_summary_table, echo=FALSE}
@@ -185,7 +390,7 @@ convergence_summary_df <- map2_dfr(
 # (kable formatting code remains the same)
 kable(
   convergence_summary_df,
-  caption = "Summary of MCMC Convergence Diagnostics. Max R-hat should be close to 1.0 (e.g., < 1.01). Min ESS values indicate the minimum effective sample size across all parameters. N Divergences should be 0 for reliable results.",
+  caption = ,
   digits = c(NA, 3, 0, 0, 0), # Specify digits for numeric columns
   booktabs = TRUE
 ) %>%
