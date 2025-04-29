@@ -28,7 +28,7 @@ This supplementary document provides further details on the General Additive Mod
 
 ## Modeling Approach
 
-Temporal trends for five variables related to scientific publications were analyzed using Bayesian Generalized Additive Models (GAMs) implemented via the `brms` package (version `r packageVersion("brms")`) in R (version `r getRversion()`) [@brms_package; @R_core]. `brms` utilizes Stan (version `r brms::stan_version()`) for posterior sampling via dynamic Hamiltonian Monte Carlo (specifically, the No-U-Turn Sampler, NUTS) [@stan_dev].
+Temporal trends for five variables related to scientific publications were analyzed using Bayesian Generalized Additive Models (GAMs) implemented via the `brms` package (version `r packageVersion("brms")`) in R (version `r getRversion()`) [@brms_package; @R_core]. `brms` utilizes Stan (version `r rstan::stan_version()`) for posterior sampling via dynamic Hamiltonian Monte Carlo (specifically, the No-U-Turn Sampler, NUTS) [@stan_dev].
 
 ## Model Specification
 
@@ -178,76 +178,71 @@ options(mc.cores = parallel::detectCores()) # Use all available CPU cores
 # --- the nested df is 'over_time_long_colour_gams_testing_nested_df' 
 # with list-column 'data' and character column 'variable'
 
+# --- Define the Prior ---
+# Apply a regularizing prior to the standard deviation of all smooth terms
+# Exponential(1) encourages smaller standard deviations (less wiggly smooths)
+sds_prior <- prior(exponential(1), class = "sds")
+
+# --- Run the models with the added prior ---
 results_brms <- over_time_long_colour_gams_testing_nested_df %>%
   mutate(
-    # Create a new column for brms models to avoid overwriting gam models if needed
+    # Create a new column for brms models
     mod_brms = map2(data, variable, ~{
       current_df <- .x        # The dataframe for the current row
       current_var <- .y       # The variable name for the current row
-      response_col <- "value" #  this matches the response column name in nested dfs
-      
-      message(paste("Fitting brms model for:", current_var)) # Progress message
-      
-      # --- 1. Choose the brms family based on the variable name ---
+      response_col <- "value" # Ensure this matches
+
+      message(paste("Fitting brms model for:", current_var))
+
+      # --- 1. Choose the brms family ---
       chosen_family <- if (current_var == "N. of authors") {
-        negbinomial() # For count data
+        negbinomial()
       } else if (current_var == "N. of pages") {
-        negbinomial() # For count data
+        negbinomial()
       } else if (current_var == "Recency of references") {
-        zero_one_inflated_beta() # For 0/1 inflated proportions
+        zero_one_inflated_beta()
       } else if (current_var == "Diversity of references") {
-        gaussian() # For continuous, approx normal data
+        gaussian()
       } else if (current_var == "Relative title length (ln)") {
-        gaussian() # For continuous, normal data
+        gaussian()
       } else {
         warning(paste("Unknown variable:", current_var, "- using Gaussian default."))
-        gaussian() # Default fallback
+        gaussian()
       }
-      
-      # --- 2. Construct the formula using brms::bf() ---
-      # Handle the special structure for Zero-One Inflated Beta
+
+      # --- 2. Construct the formula ---
       if (inherits(chosen_family, "zero_one_inflated_beta")) {
-        # Formula for the mean (between 0 and 1), plus formulas for
-        # zoi (zero-inflation probability) and coi (one-inflation probability).
-        # zoi and coi are modelled simply as intercepts.
         brm_formula <- bf(
-          paste(response_col, "~ s(year, bs = 'cr')"), 
-          # Smooth term for mean
-          zoi ~ 1,                                    
-          # Intercept for prob of 0
-          coi ~ 1                                     
-          # Intercept for prob of 1
+          paste(response_col, "~ s(year, bs = 'cr')"),
+          zoi ~ 1,
+          coi ~ 1
         )
       } else {
-        # Standard formula for other families
         brm_formula <- bf(
           paste(response_col, "~ s(year, bs = 'cr')")
         )
       }
-      
-      # --- 3. Fit the brms model ---
-      # Using tryCatch to prevent one failure from stopping everything
+
+      # --- 3. Fit the brms model with the prior ---
       tryCatch({
         brm(
           formula = brm_formula,
           family = chosen_family,
           data = current_df,
-          # --- Stan control arguments (adjust as needed) ---
-          cores = 4,  # Number of cores for parallel chains 
-          chains = 4, # Number of Markov chains (4 is standard for final runs)
-          iter = 3000, # Total iterations per chain (includes warmup)
-          warmup = 1000,# Number of warmup iterations (discarded)
-          control = list(adapt_delta = 0.9999), # for helping convergence for complex models
-          seed = 123, # For reproducibility
-          silent = 2, # Suppress compilation messages from Stan
-          refresh = 0 # Suppress iteration progress updates 
-          
+          prior = sds_prior, 
+          cores =    4,
+          chains =   4,
+          iter =     50000,
+          warmup =   5000,
+          control =  list(adapt_delta = 0.99999), 
+          seed =     123,
+          silent =   2,
+          refresh =  0
         )
       }, error = function(e) {
-        # Print a warning if a model fails to fit
-        warning(paste("brms fitting failed for variable:", 
+        warning(paste("brms fitting failed for variable:",
                       current_var, "\nError:", e$message))
-        return(NULL) # Return NULL for failed models
+        return(NULL)
       })
     }) # End of map2
   ) # End of mutate
@@ -261,20 +256,17 @@ saveRDS(results_brms, here::here("analysis/data/results_brms.RData"))
 ```{r}
 
 # Load my brms results object so we don't have to re-run the above block
-load(here::here("analysis/data/results_brms.RData"))
+results_brms <- readRDS(here::here("analysis/data/results_brms.RData"))
 
-# For demonstration, let's assume 'results_brms' exists and contains valid models
 # Filter out any models that failed to fit (are NULL)
 results_brms_valid <- results_brms %>%
   filter(!sapply(mod_brms, is.null)) %>%
   filter(sapply(mod_brms, inherits, "brmsfit"))
-
-
 ```
 
 ## MCMC Sampling
 
-Models were fitted using `r results_brms_valid$mod_brms[[1]]$algorithm$chains` Markov chains. Each chain consisted of `r results_brms_valid$mod_brms[[1]]$algorithm$iter` total iterations, with the first `r results_brms_valid$mod_brms[[1]]$algorithm$warmup` iterations discarded as warmup, leaving `r (results_brms_valid$mod_brms[[1]]$algorithm$iter - results_brms_valid$mod_brms[[1]]$algorithm$warmup) * results_brms_valid$mod_brms[[1]]$algorithm$chains` posterior samples per model for inference. No thinning was applied (thin = 1).
+Models were fitted using `r brms::nchains(results_brms_valid$mod_brms[[1]])` Markov chains. Each chain consisted of `r results_brms_valid$mod_brms[[1]]$fit@sim$iter` total iterations, with the first `r results_brms_valid$mod_brms[[1]]$fit@sim$warmup` iterations discarded as warmup, leaving `r (results_brms_valid$mod_brms[[1]]$fit@sim$iter - results_brms_valid$mod_brms[[1]]$fit@sim$warmup) * brms::nchains(results_brms_valid$mod_brms[[1]])` posterior samples per model for inference. No thinning was applied (thin = 1).
 
 # Results
 
@@ -282,136 +274,190 @@ Models were fitted using `r results_brms_valid$mod_brms[[1]]$algorithm$chains` M
 
 Convergence of the MCMC chains to the target posterior distribution was assessed rigorously.
 
-1.  **Divergent Transitions:** All final models reported **zero divergent transitions** after warmup, indicating the sampler could explore the posterior distribution without significant issues. Initial fits for 'Recency of references' showed divergent transitions, which were resolved by refitting with `control = list(adapt_delta = 0.995)`.")
-
-```{r check_divergences, echo=TRUE}
-#| tbl-cap: "Number of divergences for each variable"
-
-# Code to programmatically check divergences 
-library(rstan)
-sampler_params_list <- map(results_brms_valid$mod_brms, ~{
-  if (!is.null(.x) && inherits(.x, "brmsfit")) {
-    # Get parameters excluding warmup draws
-    nuts_params(.x, inc_warmup = FALSE)
-  } else {
-    NULL
-  }
-})
-
-divergences_per_model <- map_dbl(sampler_params_list, ~{
-  if (!is.null(.x)) {
-    # Sum divergent transitions across all chains
-    sum(subset(.x, Parameter == "divergent__")$Value)
-  } else {
-    NA_real_ # Use NA for models that didn't fit
-  }
-})
-
-divergence_summary <- tibble(
-   variable = results_brms_valid$variable,
-   n_divergences = divergences_per_model
-)
-
-
-kable(divergence_summary)
-
-```
-
 
 ```{r convergence_summary_table, echo=FALSE}
 #| tbl-cap: "Summary of MCMC Convergence Diagnostics. Max R-hat should be close to 1.0 (e.g., < 1.01). Min ESS values indicate the minimum effective sample size across all parameters. N Divergences should be 0 for reliable results."
 
+# Function to extract diagnostics from a single model
+get_diagnostics <- function(m) {
+  ms <- summary(m)
+  
+  tibble(
+    chains = brms::nchains(m),
+    rhat_max = max(brms::rhat(m)), 
+    bulk_ess_min = min(ms$spec_pars$Bulk_ESS, 
+                       na.rm = TRUE),
+    tail_ess_min = min(ms$spec_pars$Tail_ESS, 
+                       na.rm = TRUE),
+    num_divergent = rstan::get_num_divergent(m$fit)
+  )
+}
 
-#```{r convergence_summary_table, echo=FALSE}
-# Load necessary libraries if not already done
-library(brms)
-library(posterior) # Explicitly load posterior for ess functions
-library(purrr)
-library(dplyr)
+# Apply to all models
+diagnostics_table <- results_brms_valid %>%
+  mutate(diagnostics = map(mod_brms, get_diagnostics)) %>%
+  unnest(diagnostics) %>% 
+  select(variable, 
+         chains,
+         rhat_max,
+         bulk_ess_min,
+         tail_ess_min,
+         num_divergent)
+
+# View the table
+
 library(knitr)
-library(kableExtra) # Optional for styling
+library(kableExtra)
 
-# --- Calculate Convergence Diagnostics ---
-# Use map2_dfr to iterate over models and variable names, creating a data frame
-convergence_summary_df <- map2_dfr(
+kable(
+  diagnostics_table,
+  caption = "Summary of MCMC Convergence Diagnostics. Max R-hat should be close to 1.0. Min ESS values indicate the minimum effective sample size across all parameters. N Divergences should be 0.",
+  digits = c(NA, 0, 3, 0, 0, 0), # Chains/ESS/Div as integers, Rhat to 3 decimals
+  booktabs = TRUE,
+  linesep = ""
+) %>%
+  kableExtra::kable_styling(latex_options = "scale_down", full_width = FALSE) %>%
+  kableExtra::footnote(general = "Ideal values: Max R-hat ≈ 1.0, Min ESS > 1000, N Divergences = 0.", general_title = "Note:", footnote_as_chunk = TRUE)
+```
+
+1.  **Divergent Transitions:** All final models reported less than ten **divergent transitions** after warmup, indicating the sampler could explore the posterior distribution without significant issues. Initial fits for 'Recency of references' showed divergent transitions, which were managed by refitting with `control = list(adapt_delta = 0.9999)`.")
+2.  **R-hat (R̂):** The potential scale reduction factor (R̂) was examined for all parameters. All R̂ values were ≤ 1.01, indicating successful convergence of the chains to a common distribution.
+3.  **Effective Sample Size (ESS):** Both Bulk-ESS and Tail-ESS were assessed. Minimum ESS values across all parameters were deemed sufficiently large (> 1000) for reliable estimation of posterior summaries and credible intervals.
+4.  **Trace Plots:** Trace plots for key parameters were visually inspected and showed good mixing and stationarity, providing further confidence in chain convergence (@fig-trace-plots-mcmc-trace).
+
+
+```{r fig.height=3 * length(results_brms_valid$mod_brms)}
+#| label: fig-trace-plots-mcmc-trace,
+#| echo: false
+#| message: false
+#| warning: false
+#| fig-width: 10
+#| fig-cap: "Trace plots for key parameters (Intercept and smooth term standard deviation) with divergence markers for each model. Well-mixing chains should resemble stationary 'fuzzy caterpillars' with chains overlapping."
+#---------------------------------------------------------------------
+# Load necessary libraries
+#---------------------------------------------------------------------
+library(brms)
+library(purrr)     # For map2
+library(dplyr)     # For tibble etc.
+library(posterior) # For as_draws_array
+library(bayesplot) # For mcmc_trace and nuts_params
+library(ggplot2)   # For ggtitle and theme adjustments
+library(cowplot)   # For plot_grid
+#---------------------------------------------------------------------
+
+#---------------------------------------------------------------------
+# Generate Trace Plots using mcmc_trace for each model
+#---------------------------------------------------------------------
+trace_plots_list <- map2(
   results_brms_valid$mod_brms,
   results_brms_valid$variable,
   ~{
-    # Assign model and variable name for clarity within the loop
+    # Assign model and variable name for clarity
     model <- .x
     var_name <- .y
 
-    # Initialize values
-    max_rhat <- NA_real_
-    min_bulk_ess <- NA_real_
-    min_tail_ess <- NA_real_
-    n_divergences <- NA_integer_
+    # Initialize plot object as NULL
+    p <- NULL
 
     # Proceed only if model is a valid brmsfit object
     if (!is.null(model) && inherits(model, "brmsfit")) {
-      # Use try() to gracefully handle potential errors
       try({
-        # R-hat
-        rhats <- brms::rhat(model)
-        if(is.numeric(rhats)) max_rhat <- max(rhats, na.rm = TRUE)
+        # --- Define parameters to plot ---
+        # Use the names confirmed to work: b_Intercept and sds_syear_1
+        # Check if these parameters actually exist in the current model
+        all_model_pars <- parnames(model)
+        pars_to_plot <- character(0) # Start with empty vector
 
-        # Bulk ESS - Use posterior::ess_bulk()
-        bulk_ess <- posterior::ess_bulk(model)
-        if(is.numeric(bulk_ess) && length(bulk_ess) > 0) min_bulk_ess <- min(bulk_ess, na.rm = TRUE)
-
-        # Tail ESS - Use posterior::ess_tail()
-        tail_ess <- posterior::ess_tail(model)
-         if(is.numeric(tail_ess) && length(tail_ess) > 0) min_tail_ess <- min(tail_ess, na.rm = TRUE)
-
-        # Divergences
-        nuts_p <- brms::nuts_params(model)
-        nuts_df <- as.data.frame(nuts_p)
-        if ("divergent__" %in% names(nuts_df)) {
-           n_divergences <- sum(nuts_df$divergent__, na.rm = TRUE)
+        if ("b_Intercept" %in% all_model_pars) {
+          pars_to_plot <- c(pars_to_plot, "b_Intercept")
         } else {
-           warning(paste("Column 'divergent__' not found in nuts_params output for:", var_name))
-           n_divergences <- 0L
+           warning(paste("'b_Intercept' not found for model:", var_name))
         }
-      }, silent = TRUE) # Keep try silent, but check warnings/NA values later
+
+        if ("sds_syear_1" %in% all_model_pars) {
+           pars_to_plot <- c(pars_to_plot, "sds_syear_1")
+        } else {
+           # Handle cases where the smooth sds name might differ slightly
+           # Example: find any parameter starting with sds_s
+           sds_par_alt <- grep("^sds_s", all_model_pars, value = TRUE)
+           if(length(sds_par_alt) > 0) {
+               pars_to_plot <- c(pars_to_plot, sds_par_alt[1])
+               warning(paste("Using alternative sds name:", sds_par_alt[1], "for model:", var_name))
+           } else {
+               warning(paste("'sds_syear_1' (or similar) not found for model:", var_name))
+           }
+        }
+        # --- End of parameter identification ---
+
+        # Proceed only if we found parameters to plot
+        if(length(pars_to_plot) > 0) {
+            # 1) Extract draws as an array
+            post_array <- posterior::as_draws_array(model)
+
+            # 2) Extract NUTS diagnostics (divergences)
+            np <- brms::nuts_params(model)
+
+            # 3) Generate trace plot with divergence ticks
+            p <- bayesplot::mcmc_trace(
+                    post_array,
+                    pars = pars_to_plot, # Use the identified parameters
+                    np = np, # Provide NUTS parameters for divergence markers
+                    facet_args = list(ncol = 1, strip.position = "left") # Arrange vertically
+                  ) +
+                 ggtitle(var_name) + # Add variable name as title
+                 theme(
+                    plot.title = element_text(hjust = 0.5, size = 11), # Center title
+                    legend.position = "none" # Often hide legend
+                    )
+        } else {
+            message(paste("No parameters selected for plotting trace for model:", var_name))
+        }
+
+      }, silent = TRUE) # Use try silently, check for NULL later
+    } else {
+        warning(paste("Invalid or NULL model object encountered for variable:", var_name))
     }
 
-    # Return a tibble
-    tibble(
-      Variable = var_name,
-      `Max R-hat` = max_rhat,
-      `Min Bulk ESS` = floor(min_bulk_ess), # Floor ESS for cleaner table
-      `Min Tail ESS` = floor(min_tail_ess), # Floor ESS for cleaner table
-      `N Divergences` = as.integer(n_divergences) # Ensure integer
-    )
+    # Return the ggplot object (or NULL if failed or no pars found)
+    return(p)
   }
 )
+#---------------------------------------------------------------------
 
-# --- Display the Table ---
-# (kable formatting code remains the same)
-kable(
-  convergence_summary_df,
-  caption = ,
-  digits = c(NA, 3, 0, 0, 0), # Specify digits for numeric columns
-  booktabs = TRUE
-) %>%
-  kableExtra::kable_styling(latex_options = "scale_down")
+#---------------------------------------------------------------------
+# Combine and Display Plots
+#---------------------------------------------------------------------
+# Remove any NULL elements from the list
+valid_trace_plots <- trace_plots_list[!sapply(trace_plots_list, is.null)]
 
-# somthing not quite right here
+# Check if there are any valid plots left
+if (length(valid_trace_plots) > 0) {
+  # Combine the valid plots into a grid
+  # Adjust ncol and fig.height chunk option as needed
+  combined_trace_plots <- plot_grid(
+                              plotlist = valid_trace_plots,
+                              ncol = 2 # Arrange in 2 columns
+                              )
 
-
+  # Display the combined plot
+  print(combined_trace_plots)
+} else {
+  message("No valid trace plots were generated.")
+}
+#---------------------------------------------------------------------
 ```
 
 
-
-2.  **R-hat (R̂):** The potential scale reduction factor (R̂) was examined for all parameters. All R̂ values were ≤ 1.01, indicating successful convergence of the chains to a common distribution.
-3.  **Effective Sample Size (ESS):** Both Bulk-ESS and Tail-ESS were assessed. Minimum ESS values across all parameters were deemed sufficiently large (e.g., > 1000 *[adjust threshold based on your results/field standards]*) for reliable estimation of posterior summaries and credible intervals.
-4.  **Trace Plots:** Trace plots for key parameters were visually inspected and showed good mixing and stationarity, providing further confidence in chain convergence. *(Optionally include an example trace plot in an Appendix)*.
-
 ## Model Fit Assessment
 
-Model fit was primarily assessed using graphical posterior predictive checks (PPCs). Datasets were simulated from the posterior predictive distribution of each fitted model and compared to the observed data distribution.
+Model fit was primarily assessed using graphical posterior predictive checks (PPCs). Datasets were simulated from the posterior predictive distribution of each fitted model and compared to the observed data distribution (@fig-ppc-plot).
 
-```{r ppc_plot, fig.cap="Posterior predictive checks (density overlays) for each model. The dark line (y) represents the density of the observed data, while the light lines (y_rep) represent densities from datasets simulated from the fitted model."}
+```{r}
+#| label: fig-ppc-plot
+#| fig-cap: "Posterior predictive checks (density overlays) for each model. The dark line (y) represents the density of the observed data, while the light lines (y_rep) represent densities from datasets simulated from the fitted model."
+#| echo: true  
+#| warning: false  
+#| message: false  
 # Generate PPC plots (density overlay is often informative)
 ppc_plots_list <- map2(
   results_brms_valid$mod_brms,
@@ -434,99 +480,174 @@ ppc_plots_list <- map2(
 
 # Remove NULLs and combine
 valid_ppc_plots <- ppc_plots_list[!sapply(ppc_plots_list, is.null)]
-  plot_grid(plotlist = valid_ppc_plots, ncol = 3) 
+plot_grid(plotlist = valid_ppc_plots, ncol = 3) 
 
 
 ```
 
 As shown in Figure @ref(fig:ppc-plot), the models generally demonstrated good fit, capturing the central tendency, spread, and overall shape of the observed data distributions well. The Negative Binomial models effectively captured the skewness of the count data (N. of authors, N. of pages). The Zero-One Inflated Beta model adequately represented the distribution of Recency of references, including the boundaries at 0 and 1, although a minor discrepancy in density shape near the value of 1 was observed. The Gaussian models provided excellent fits for Diversity of references and Relative title length (ln).
 
-## Estimated Temporal Trends
-
-The estimated non-linear effect of publication year on each response variable is visualized below, showing the contribution of the smooth term `s(year)` to the model's linear predictor (on the respective link scale).
-
-```{r smooth_plots, fig.cap="Estimated conditional effect of year (s(year)) on each response variable from the Bayesian GAMs. The blue line represents the posterior mean effect, and the grey ribbon represents the 95% credible interval. Y-axis scales differ and correspond to the link function of each model (identity, log, or logit)."}
-# Generate conditional smooth plots
-conditional_smooths_plots_list <- map2(
-  results_brms_valid$mod_brms,
-  results_brms_valid$variable,
-  ~{
-    model <- .x
-    var_name <- .y
-    tryCatch({
-      # Generate plot data first
-      cs_data <- conditional_smooths(model, plot = FALSE)[[1]] # Get data for the first smooth
-      # Create ggplot manually for more control if needed, or use plot() method
-      plot_object_list <- plot(conditional_smooths(model), plot = TRUE)
-
-      if (length(plot_object_list) >= 1 && inherits(plot_object_list[[1]], "ggplot")) {
-         # Add title and potentially customize axes
-         y_axis_label <- case_when(
-             var_name %in% c("N. of authors", "N. of pages") ~ "s(year) Contribution (log scale)",
-             var_name == "Recency of references" ~ "s(year) Contribution (logit scale)",
-             TRUE ~ "s(year) Contribution" # Gaussian models
-         )
-         p <- plot_object_list[[1]] +
-           ggtitle(var_name) +
-           ylab(y_axis_label) +
-           theme(plot.title = element_text(hjust = 0.5, size = 10))
-         return(p)
-      } else {
-         warning(paste("Could not extract ggplot object for:", var_name))
-         return(NULL)
-      }
-    }, error = function(e) {
-       warning("Conditional smooths plot failed for: ", var_name, " Error: ", e$message)
-       return(NULL)
-    })
-  }
-)
-
-# Remove NULLs and combine
-valid_smooth_plots <- conditional_smooths_plots_list[!sapply(conditional_smooths_plots_list, is.null)]
-plot_grid(plotlist = valid_smooth_plots, ncol = 3) 
-
-```
-
-
 ## Parameter Estimates
 
 Posterior summaries (mean, standard error, 95% credible intervals) for key model parameters are provided in Table @ref(tab:param-summary). This includes intercepts, standard deviations of smooth terms (`sds`), and relevant distributional parameters (`shape`, `sigma`, `phi`, `zoi`, `coi`).
 
-```{r param_summary, echo=FALSE}
-# Extract tidy summaries for relevant parameters
-tidy_summaries <- map_dfr(
+
+```{r}
+#| label: tab:param-summary
+#| echo: false
+#| message: false
+#| warning: false
+#---------------------------------------------------------------------
+# Load necessary libraries
+#---------------------------------------------------------------------
+library(brms)
+library(purrr)
+library(dplyr)
+library(tibble) # For rownames_to_column
+library(knitr)
+library(kableExtra)
+#---------------------------------------------------------------------
+
+#---------------------------------------------------------------------
+# Extract posterior summaries using brms::posterior_summary
+#---------------------------------------------------------------------
+# Apply posterior_summary to each model, keep results in a list
+posterior_summaries_list <- map(
   results_brms_valid$mod_brms,
-  ~ tidy(.x, effects = c("fixed", "ran_pars"), conf.int = TRUE, conf.level = 0.95),
-  .id = "model_index" # Add an index to link back to variable name
+  ~ posterior_summary(.x, probs = c(0.025, 0.975)) # Get mean, sd, and 95% CrI
 )
 
-# Join with variable names
-tidy_summaries <- tidy_summaries %>%
-  mutate(model_index = as.integer(model_index)) %>%
-  left_join(results_brms_valid %>% select(variable) %>% mutate(model_index = row_number()), by = "model_index") %>%
-  select(variable, everything(), -model_index) %>%
-  # Optional: Filter specific terms if the table gets too long
-  filter(component != "zi") %>% # Often not directly estimated for NB/ZOIB in tidy
-  # Rename for clarity
-  rename(
-    Parameter = term,
-    Estimate = estimate,
-    Est.Error = std.error,
-    `Lower 95% CI` = conf.low,
-    `Upper 95% CI` = conf.high
-  ) %>%
-  select(variable, Parameter, Estimate, Est.Error, `Lower 95% CI`, `Upper 95% CI`, component, group)
+# --- Define the key parameters to keep in the final table ---
+# Verify these names against your actual model output if needed
+params_to_keep <- c(
+    "b_Intercept",      # Intercept
+    "sigma",            # Residual SD for Gaussian
+    "shape",            # Shape parameter for Negative Binomial
+    "phi",              # Precision for Beta/ZOIB
+    "zoi",              # Zero-inflation probability for ZOIB
+    "coi",              # One-inflation probability for ZOIB
+    "sds_syear_1"       # SD for the smooth term s(year)
+)
 
-# Display using kable
-kable(
-  tidy_summaries,
-  caption = "Posterior summary statistics for key model parameters. 'fixed' component includes intercepts, 'ran_pars' includes smooth term standard deviations (sds), 'dist' includes distributional parameters (sigma, shape, phi, zoi, coi).",
-  digits = 2,
-  booktabs = TRUE
-) %>%
- kableExtra::kable_styling(latex_options = c("striped", "scale_down"))
+#---------------------------------------------------------------------
+# Process the list into a final data frame
+#---------------------------------------------------------------------
+tidy_summaries_final <- map2_dfr(
+  posterior_summaries_list,
+  results_brms_valid$variable,
+  ~{
+    # Convert matrix output to tibble
+    summary_df <- as_tibble(.x, rownames = "Parameter")
 
+    # Filter for desired parameters
+    summary_filtered <- summary_df %>%
+      filter(Parameter %in% params_to_keep)
+
+    # Add variable name and parameter type classification
+    summary_filtered %>%
+      mutate(
+        variable = .y, # Add variable name
+        `Parameter Type` = case_when(
+            Parameter == "b_Intercept" ~ "Intercept",
+            Parameter %in% c("sigma", "shape", "phi", "zoi", "coi") ~ "Distributional",
+            startsWith(Parameter, "sds_") ~ "Smooth SD",
+            TRUE ~ "Other"
+        ),
+        # Rename parameters for better readability
+        Parameter = case_when(
+            Parameter == "b_Intercept" ~ "(Intercept)",
+            Parameter == "sds_syear_1" ~ "sds(s(year))",
+            TRUE ~ Parameter
+        )
+      )
+  }
+)
+
+# --- Select and order columns for the final table ---
+tidy_summaries_final <- tidy_summaries_final %>%
+    rename(
+        Estimate = Estimate,
+        Est.Error = Est.Error,
+        `Lower 95% CI` = Q2.5, # Rename quantile column
+        `Upper 95% CI` = Q97.5 # Rename quantile column
+    ) %>%
+    select(
+        variable, Parameter, `Parameter Type`,
+        Estimate, Est.Error,
+        `Lower 95% CI`, `Upper 95% CI`
+    ) %>%
+    arrange(variable, `Parameter Type`, Parameter)
+
+#---------------------------------------------------------------------
+# Create and Display the Formatted Table
+#---------------------------------------------------------------------
+# Check if the final tibble is empty
+if(nrow(tidy_summaries_final) == 0) {
+    warning("Final parameter summary table is empty. Check parameter names in 'params_to_keep'.")
+} else {
+    kable(
+      tidy_summaries_final,
+      caption = "Posterior summary statistics for key model parameters.",
+      digits = 2,
+      booktabs = TRUE,
+      linesep = ""
+    ) %>%
+     kableExtra::kable_styling(
+        bootstrap_options = c("striped", "hover", "condensed"),
+        latex_options = c("striped", "scale_down"),
+        full_width = FALSE
+        ) %>%
+     kableExtra::column_spec(1, bold = TRUE) # Make variable name bold
+}
+```
+
+
+## Estimated Temporal Trends
+
+The estimated non-linear effect of publication year on each response variable is visualized below (@fig-smooth-plots), showing the contribution of the smooth term `s(year)` to the model's linear predictor (on the respective link scale).
+
+```{r}
+#| label: fig-smooth-plots
+#| fig-cap: "Estimated conditional effect of year (s(year)) on each response variable from the Bayesian GAMs. The blue line represents the posterior mean effect, and the grey ribbon represents the 95% credible interval. Y-axis scales differ and correspond to the link function of each model (identity, log, or logit)."
+
+# Load necessary libraries
+library(brms)
+library(purrr)
+library(dplyr)
+library(ggplot2)
+library(cowplot)
+
+# Generate conditional smooth plots within map2
+conditional_smooths_plots_list <- map2(
+  results_brms_valid$mod_brms,
+  results_brms_valid$variable,
+  ~{
+    # Assign model and variable name
+    model <- .x
+    var_name <- .y
+
+    # Generate the plot object list directly
+    plot_object_list <- plot(conditional_smooths(model), plot = TRUE)
+
+    # Define the y-axis label based on variable name (link function)
+    y_axis_label <- case_when(
+        var_name %in% c("N. of authors", "N. of pages") ~ "s(year) Contribution (log scale)",
+        var_name == "Recency of references" ~ "s(year) Contribution (logit scale)",
+        TRUE ~ "s(year) Contribution" # Default for Gaussian models
+    )
+
+    # Extract the first plot, add title, label, and theme
+    plot_object_list[[1]] +
+      ggtitle(var_name) +
+      ylab(y_axis_label) +
+      theme(plot.title = element_text(hjust = 0.5, size = 10)) # Center title
+  }
+)
+
+# Combine the plots into a grid (adjust ncol as desired)
+# The plot_grid call itself will display the combined plot
+plot_grid(plotlist = conditional_smooths_plots_list, ncol = 3)
 
 ```
+
 
