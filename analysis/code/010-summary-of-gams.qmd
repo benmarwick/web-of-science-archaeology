@@ -1,15 +1,11 @@
 ---
-title: "Analysis of Temporal Trends using Bayesian Generalized Additive Models"
-author: "Your Name"
+title: "Supplementary Materials on Bayesian Generalized Additive Models used to Analyse Temporal Trends in Job Ads"
+author: "Ben Marwick"
 date: "`r Sys.Date()`"
+bibliography: ../analysis/paper/references.bib
+csl:          ../analysis/paper/templates/journal-of-archaeological-science.csl # Insert path for the bib-style
 output:
-  html_document:
-    toc: yes
-    toc_float: yes
-    number_sections: yes
-    code_folding: hide
-  pdf_document:
-    toc: yes
+  html_document 
 ---
 
 ```{r setup, include=FALSE}
@@ -19,7 +15,6 @@ library(tidyverse)
 library(broom.mixed) # Provides tidy methods for brmsfit objects
 library(cowplot)     # For plot_grid
 library(knitr)       # For kable
-library(gt)          # For potentially nicer tables (optional alternative to kable)
 ```
 
 # Introduction
@@ -28,7 +23,7 @@ This supplementary document provides further details on the General Additive Mod
 
 ## Modeling Approach
 
-Temporal trends for five variables related to scientific publications were analyzed using Bayesian Generalized Additive Models (GAMs) implemented via the `brms` package (version `r packageVersion("brms")`) in R (version `r getRversion()`) [@brms_package; @R_core]. `brms` utilizes Stan (version `r rstan::stan_version()`) for posterior sampling via dynamic Hamiltonian Monte Carlo (specifically, the No-U-Turn Sampler, NUTS) [@stan_dev].
+Temporal trends for five variables related to scientific publications were analyzed using Bayesian Generalized Additive Models (GAMs) implemented via the `brms` package (version `r packageVersion("brms")`) in R (version `r getRversion()`) [@brms_package; @rcoreteamLanguageEnvironmentStatistical2024]. `brms` utilizes Stan (version `r rstan::stan_version()`) for posterior sampling via dynamic Hamiltonian Monte Carlo (specifically, the No-U-Turn Sampler, NUTS) [@stan_dev].
 
 ## Model Specification
 
@@ -172,7 +167,7 @@ library(brms)
 library(dplyr)
 library(purrr)
 
-# --- Set options for brms (optional, can help speed up) ---
+# --- Set options for brms 
 options(mc.cores = parallel::detectCores()) # Use all available CPU cores
 
 # --- the nested df is 'over_time_long_colour_gams_testing_nested_df' 
@@ -262,20 +257,33 @@ results_brms <- readRDS(here::here("analysis/data/results_brms.RData"))
 results_brms_valid <- results_brms %>%
   filter(!sapply(mod_brms, is.null)) %>%
   filter(sapply(mod_brms, inherits, "brmsfit"))
+
+pretty_num <- function(x) format(x, big.mark = ",", scientific = FALSE)
+
+n_chains <- pretty_num(brms::nchains(results_brms_valid$mod_brms[[1]]))
+n_total_iter <- pretty_num(results_brms_valid$mod_brms[[1]]$fit@sim$iter)
+n_warmup <- pretty_num(results_brms_valid$mod_brms[[1]]$fit@sim$warmup)
+n_pos_samples <- 
+  pretty_num(
+  (results_brms_valid$mod_brms[[1]]$fit@sim$iter - results_brms_valid$mod_brms[[1]]$fit@sim$warmup) * brms::nchains(results_brms_valid$mod_brms[[1]])
+  )
+
+
 ```
 
 ## MCMC Sampling
 
-Models were fitted using `r brms::nchains(results_brms_valid$mod_brms[[1]])` Markov chains. Each chain consisted of `r results_brms_valid$mod_brms[[1]]$fit@sim$iter` total iterations, with the first `r results_brms_valid$mod_brms[[1]]$fit@sim$warmup` iterations discarded as warmup, leaving `r (results_brms_valid$mod_brms[[1]]$fit@sim$iter - results_brms_valid$mod_brms[[1]]$fit@sim$warmup) * brms::nchains(results_brms_valid$mod_brms[[1]])` posterior samples per model for inference. No thinning was applied (thin = 1).
+Models were fitted using `r n_chains` Markov chains. Each chain consisted of `r n_total_iter` total iterations, with the first `r n_warmup` iterations discarded as warmup, leaving `r n_pos_samples` posterior samples per model for inference. No thinning was applied (thin = 1).
 
 # Results
 
 ## MCMC Convergence Diagnostics
 
-Convergence of the MCMC chains to the target posterior distribution was assessed rigorously.
+Convergence of the MCMC chains to the target posterior distribution was assessed rigorously (@tbl-convergence-summary-table).
 
 
-```{r convergence_summary_table, echo=FALSE}
+```{r , echo=FALSE}
+#| label: tbl-convergence-summary-table
 #| tbl-cap: "Summary of MCMC Convergence Diagnostics. Max R-hat should be close to 1.0 (e.g., < 1.01). Min ESS values indicate the minimum effective sample size across all parameters. N Divergences should be 0 for reliable results."
 
 # Function to extract diagnostics from a single model
@@ -327,7 +335,7 @@ kable(
 
 
 ```{r fig.height=3 * length(results_brms_valid$mod_brms)}
-#| label: fig-trace-plots-mcmc-trace,
+#| label: fig-trace-plots-mcmc-trace
 #| echo: false
 #| message: false
 #| warning: false
@@ -485,15 +493,15 @@ plot_grid(plotlist = valid_ppc_plots, ncol = 3)
 
 ```
 
-As shown in Figure @ref(fig:ppc-plot), the models generally demonstrated good fit, capturing the central tendency, spread, and overall shape of the observed data distributions well. The Negative Binomial models effectively captured the skewness of the count data (N. of authors, N. of pages). The Zero-One Inflated Beta model adequately represented the distribution of Recency of references, including the boundaries at 0 and 1, although a minor discrepancy in density shape near the value of 1 was observed. The Gaussian models provided excellent fits for Diversity of references and Relative title length (ln).
+As shown in @fig-ppc-plot, the models generally demonstrated good fit, capturing the central tendency, spread, and overall shape of the observed data distributions well. The Negative Binomial models effectively captured the skewness of the count data (N. of authors, N. of pages). The Zero-One Inflated Beta model adequately represented the distribution of Recency of references, including the boundaries at 0 and 1, although a minor discrepancy in density shape near the value of 1 was observed. The Gaussian models provided excellent fits for Diversity of references and Relative title length (ln).
 
 ## Parameter Estimates
 
-Posterior summaries (mean, standard error, 95% credible intervals) for key model parameters are provided in Table @ref(tab:param-summary). This includes intercepts, standard deviations of smooth terms (`sds`), and relevant distributional parameters (`shape`, `sigma`, `phi`, `zoi`, `coi`).
+Posterior summaries (mean, standard error, 95% credible intervals) for key model parameters are provided in @tbl-param-summary. This includes intercepts, standard deviations of smooth terms (`sds`), and relevant distributional parameters (`shape`, `sigma`, `phi`, `zoi`, `coi`).
 
 
 ```{r}
-#| label: tab:param-summary
+#| label: tbl-param-summary
 #| echo: false
 #| message: false
 #| warning: false
@@ -607,8 +615,7 @@ if(nrow(tidy_summaries_final) == 0) {
 The estimated non-linear effect of publication year on each response variable is visualized below (@fig-smooth-plots), showing the contribution of the smooth term `s(year)` to the model's linear predictor (on the respective link scale).
 
 ```{r}
-#| label: fig-smooth-plots
-#| fig-cap: "Estimated conditional effect of year (s(year)) on each response variable from the Bayesian GAMs. The blue line represents the posterior mean effect, and the grey ribbon represents the 95% credible interval. Y-axis scales differ and correspond to the link function of each model (identity, log, or logit)."
+#| results: "hide"
 
 # Load necessary libraries
 library(brms)
@@ -643,6 +650,11 @@ conditional_smooths_plots_list <- map2(
       theme(plot.title = element_text(hjust = 0.5, size = 10)) # Center title
   }
 )
+```
+
+```{r}
+#| label: fig-smooth-plots
+#| fig-cap: "Estimated conditional effect of year (s(year)) on each response variable from the Bayesian GAMs. The blue line represents the posterior mean effect, and the grey ribbon represents the 95% credible interval. Y-axis scales differ and correspond to the link function of each model (identity, log, or logit)."
 
 # Combine the plots into a grid (adjust ncol as desired)
 # The plot_grid call itself will display the combined plot
