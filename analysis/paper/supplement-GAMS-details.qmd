@@ -2,8 +2,8 @@
 title: "Supplementary Materials on Bayesian Generalized Additive Models used to Analyse Temporal Trends in Job Ads"
 author: "Ben Marwick"
 date: "`r Sys.Date()`"
-bibliography: ../analysis/paper/references.bib
-csl:          ../analysis/paper/templates/journal-of-archaeological-science.csl # Insert path for the bib-style
+bibliography: references.bib
+csl:          templates/journal-of-archaeological-science.csl # Insert path for the bib-style
 output:
   html_document 
 ---
@@ -15,6 +15,9 @@ library(tidyverse)
 library(broom.mixed) # Provides tidy methods for brmsfit objects
 library(cowplot)     # For plot_grid
 library(knitr)       # For kable
+library(kableExtra)
+library(posterior) # For as_draws_array
+library(bayesplot) # For mcmc_trace and nuts_params
 ```
 
 # Introduction
@@ -28,6 +31,7 @@ Temporal trends for five variables related to scientific publications were analy
 ## Model Specification
 
 Separate GAMs were fitted for each response variable against publication year (`year`). The specific model structure for each variable was chosen based on the nature of the response data. @fig-brms-distros shows the distributions of the five variables related to scientific publications. The shape of these distributions informed our decisions about model specification. 
+
 Recency of references: This variable, bounded between 0 and 1, exhibited a right-skewed distribution with notable occurrences at the boundaries (0 and 1). Consequently, a Zero-One Inflated Beta (zero_one_inflated_beta()) distribution family was selected. The associated logit link function is standard for modeling the mean (mu) of proportions, transforming the (0, 1) interval to the real line (-∞, +∞) and modeling the log-odds of the mean recency score for values strictly between 0 and 1.
 
 Diversity of references & Relative title length (ln): Both variables displayed approximately symmetric, bell-shaped (normal) distributions. For these continuous variables, the Gaussian (gaussian()) family was employed with the canonical identity link function, meaning the linear predictor directly models the expected value (mean) of the response variable.
@@ -162,10 +166,6 @@ For all models, the effect of `year` was modeled using a cubic  regression splin
 
 # ---  fit models with brms -------------------------------
 # this takes a few hours
-
-library(brms)
-library(dplyr)
-library(purrr)
 
 # --- Set options for brms 
 options(mc.cores = parallel::detectCores()) # Use all available CPU cores
@@ -319,7 +319,6 @@ library(kableExtra)
 
 kable(
   diagnostics_table,
-  caption = "Summary of MCMC Convergence Diagnostics. Max R-hat should be close to 1.0. Min ESS values indicate the minimum effective sample size across all parameters. N Divergences should be 0.",
   digits = c(NA, 0, 3, 0, 0, 0), # Chains/ESS/Div as integers, Rhat to 3 decimals
   booktabs = TRUE,
   linesep = ""
@@ -341,18 +340,7 @@ kable(
 #| warning: false
 #| fig-width: 10
 #| fig-cap: "Trace plots for key parameters (Intercept and smooth term standard deviation) with divergence markers for each model. Well-mixing chains should resemble stationary 'fuzzy caterpillars' with chains overlapping."
-#---------------------------------------------------------------------
-# Load necessary libraries
-#---------------------------------------------------------------------
-library(brms)
-library(purrr)     # For map2
-library(dplyr)     # For tibble etc.
-library(posterior) # For as_draws_array
-library(bayesplot) # For mcmc_trace and nuts_params
-library(ggplot2)   # For ggtitle and theme adjustments
-library(cowplot)   # For plot_grid
-#---------------------------------------------------------------------
-
+ 
 #---------------------------------------------------------------------
 # Generate Trace Plots using mcmc_trace for each model
 #---------------------------------------------------------------------
@@ -430,9 +418,7 @@ trace_plots_list <- map2(
     return(p)
   }
 )
-#---------------------------------------------------------------------
 
-#---------------------------------------------------------------------
 # Combine and Display Plots
 #---------------------------------------------------------------------
 # Remove any NULL elements from the list
@@ -448,7 +434,7 @@ if (length(valid_trace_plots) > 0) {
                               )
 
   # Display the combined plot
-  print(combined_trace_plots)
+  combined_trace_plots
 } else {
   message("No valid trace plots were generated.")
 }
@@ -502,19 +488,8 @@ Posterior summaries (mean, standard error, 95% credible intervals) for key model
 
 ```{r}
 #| label: tbl-param-summary
-#| echo: false
 #| message: false
 #| warning: false
-#---------------------------------------------------------------------
-# Load necessary libraries
-#---------------------------------------------------------------------
-library(brms)
-library(purrr)
-library(dplyr)
-library(tibble) # For rownames_to_column
-library(knitr)
-library(kableExtra)
-#---------------------------------------------------------------------
 
 #---------------------------------------------------------------------
 # Extract posterior summaries using brms::posterior_summary
@@ -609,20 +584,70 @@ if(nrow(tidy_summaries_final) == 0) {
 }
 ```
 
+# R-squared Equivalent for Model Fit
+
+Standard R-squared isn't directly applicable to many GAM families (especially non-Gaussian ones). The recommended metric for brms models is the Bayesian R-squared. Calculated using brms::bayes_R2(model), this metric represents the variance of the predicted values divided by the sum of the variance of the predicted values and the expected variance of the residuals. It estimates the proportion of outcome variance that can be explained by the model's predictors. The results are shown below in @tbl-r-sq. 
+
+```{r}
+#| label: tbl-r-sq
+#| tbl-cap: "Bayesian R-squared estimates for each model."
+#| message: false
+#| warning: false
+
+
+# Calculate Bayesian R-squared for each model
+# Use map to apply to each model, map_dfr to combine
+bayes_r2_summary <- map2_dfr(
+  results_brms_valid$mod_brms,
+  results_brms_valid$variable,
+  ~{
+    model <- .x
+    var_name <- .y
+    r2_est <- NA_real_
+    r2_lower <- NA_real_
+    r2_upper <- NA_real_
+
+           # Calculate Bayesian R2 (returns matrix with Estimate, Est.Error, Q2.5, Q97.5)
+           r2_obj <- brms::bayes_R2(model, ndraws = 10000)
+           # Extract the point estimate and CI bounds
+           r2_est <- r2_obj[1, "Estimate"]
+           r2_lower <- r2_obj[1, "Q2.5"]
+           r2_upper <- r2_obj[1, "Q97.5"]
+           
+    tibble(
+        Variable = var_name,
+        `Bayes R2` = r2_est,
+        `Lower 95% CI` = r2_lower,
+        `Upper 95% CI` = r2_upper
+        )
+  }
+)
+
+kable(bayes_r2_summary, 
+      digits = 2, 
+      booktabs = TRUE) %>%
+kable_styling(latex_options = "scale_down")
+```
+
 
 ## Estimated Temporal Trends
 
-The estimated non-linear effect of publication year on each response variable is visualized below (@fig-smooth-plots), showing the contribution of the smooth term `s(year)` to the model's linear predictor (on the respective link scale).
+The estimated non-linear effect of publication year on each response variable is visualized below (@fig-smooth-plots), showing the contribution of the smooth term `s(year)` to the model's linear predictor (on the respective link scale). This allows us to visually assess the significance of the model. 
+
+Recency of references: There is strong evidence for a significant temporal trend. The 95% CI falls convincingly below zero from approximately the early 1990s onwards, indicating a significant decrease in the contribution of year to recency (on the logit scale) during the later decades of the study period. Evidence for an effect differing from zero in the earliest years is less conclusive as the CI approaches the zero line.
+
+Diversity of references: The effect of year on reference diversity shows strong evidence of being non-zero across most of the timeframe. The 95% CI is clearly separated from zero, initially below and later rising significantly above it, particularly after 2010, indicating substantial temporal variation not attributable to chance.
+
+Relative title length (ln): The evidence suggests a significant effect of year primarily concentrated around 1990, where the 95% CI lies entirely below the zero line. During the initial years and from roughly 2000 onwards, the CI overlaps zero, indicating that the evidence for an effect of year being different from zero is weak or uncertain in these periods.
+
+N. of authors: Strong evidence supports a significant positive effect of year on the number of authors (on the log scale). The 95% CI is consistently above the zero line from the late 1980s onwards, demonstrating a significant increasing trend over the majority of the period examined.
+
+N. of pages: The temporal effect on the number of pages appears significant during specific periods. The 95% CI is clearly above zero during the peak in the 1990s, providing strong evidence for an increased effect during that time. However, the CI overlaps zero during the trough in the mid-2000s and potentially near the end of the period, suggesting uncertainty about whether the effect differs significantly from zero during these phases. There is also evidence for a negative effect relative to the intercept in the earliest years.
+
 
 ```{r}
-#| results: "hide"
-
-# Load necessary libraries
-library(brms)
-library(purrr)
-library(dplyr)
-library(ggplot2)
-library(cowplot)
+#| label: fig-smooth-plots
+#| fig-cap: "Estimated conditional effect of year (s(year)) on each response variable from the Bayesian GAMs. The blue line represents the posterior mean effect, and the grey ribbon represents the 95% credible interval. Y-axis scales differ and correspond to the link function of each model (identity, log, or logit). The red line is y=0 to visually assess the significance of the  (i.e., whether the credible interval excludes zero)."
 
 # Generate conditional smooth plots within map2
 conditional_smooths_plots_list <- map2(
@@ -634,7 +659,7 @@ conditional_smooths_plots_list <- map2(
     var_name <- .y
 
     # Generate the plot object list directly
-    plot_object_list <- plot(conditional_smooths(model), plot = TRUE)
+    plot_object_list <- plot(conditional_smooths(model), plot = FALSE)
 
     # Define the y-axis label based on variable name (link function)
     y_axis_label <- case_when(
@@ -644,20 +669,114 @@ conditional_smooths_plots_list <- map2(
     )
 
     # Extract the first plot, add title, label, and theme
-    plot_object_list[[1]] +
+    plot_object_list[[1]] + 
+      geom_hline(yintercept = 0, 
+                 color = "red", 
+                 linetype = "dashed", 
+                 linewidth = 0.8) +
       ggtitle(var_name) +
       ylab(y_axis_label) +
+      theme_minimal() +
       theme(plot.title = element_text(hjust = 0.5, size = 10)) # Center title
   }
 )
+
+# plot a panel of all the plots
+plot_grid(plotlist = conditional_smooths_plots_list, ncol = 3)
 ```
 
-```{r}
-#| label: fig-smooth-plots
-#| fig-cap: "Estimated conditional effect of year (s(year)) on each response variable from the Bayesian GAMs. The blue line represents the posterior mean effect, and the grey ribbon represents the 95% credible interval. Y-axis scales differ and correspond to the link function of each model (identity, log, or logit)."
 
-# Combine the plots into a grid (adjust ncol as desired)
-# The plot_grid call itself will display the combined plot
+```{r}
+# plot for manuscript
+# Generate conditional smooth plots within pmap
+
+input_list <-   list(
+    model = results_brms_valid$mod_brms,
+    var_name = results_brms_valid$variable,
+    raw_data = results_brms_valid$data,
+    r_sq = bayes_r2_summary$`Bayes R2`
+  )
+
+conditional_smooths_plots_fn <- function(model, var_name, raw_data, r_sq){
+    
+# Generate the plot object list 
+     smooth_data <- conditional_smooths(model, plot = FALSE)[[1]]
+     intercept_est <- fixef(model)["Intercept", "Estimate"]
+     
+# --- Determine inverse link function and response label ---
+     
+        inv_link <- identity # Default for Gaussian
+        response_label <- var_name # Default label
+
+        if (var_name %in% c("N. of authors", "N. of pages")) {
+          inv_link <- exp # Inverse of log link
+          response_label <- paste("Estimated", var_name)
+        } else if (var_name == "Recency of references") {
+          inv_link <- plogis # Inverse of logit link
+          response_label <- "Estimated Recency of references (Price Index)"
+        } else if (var_name == "Diversity of references") {
+           response_label <- "Estimated Diversity of references"
+        } else if (var_name == "Relative title length (ln)") {
+           response_label <- "Estimated Rel. Title Length (ln)"
+        }
+        
+# --- Add intercept and apply inverse link function so we can plot on the scale of the raw data
+        smooth_data <- 
+          smooth_data %>%
+          mutate(
+            # Calculate estimates on response scale
+            response_est = inv_link(intercept_est + estimate__),
+            response_lower = inv_link(intercept_est + lower__),
+            response_upper = inv_link(intercept_est + upper__)
+          ) 
+        
+    ggplot(smooth_data, 
+           aes(x = year, 
+               y = response_est)) +
+            geom_point(data = raw_data %>% 
+                         mutate(colour_hex = case_when(
+                           becoming_more_scientific == "TRUE" ~ "#1b9e77",
+                           .default = "#d95f02"
+                         )),
+                 aes(x = year,
+                     y = value,
+                     colour = colour_hex),
+                 alpha = 0.7) +
+      scale_color_identity() +
+      # Add the line 
+      geom_line(color = "#7570b3", 
+                linewidth = 2) +
+      geom_text(data = raw_data  %>% 
+                  mutate(`Bayes R2` = r_sq) %>% 
+                  mutate(max_value = max(value)) %>% 
+                  distinct(`Bayes R2`, 
+                           max_value),
+           aes(
+           x = 1980, 
+           y = max_value, 
+           label = paste("Pseudo R² = ", 
+                         signif(`Bayes R2`, 
+                                digits = 3))),
+           hjust = 0, 
+           vjust = 1.5,
+           size = 2) +
+    theme_bw(base_size = 6) +
+      labs( 
+           y = response_label, 
+           x = "")
+}
+
+conditional_smooths_plots_list <- 
+  pmap(input_list,
+       conditional_smooths_plots_fn)
+```
+
+Here is the figure that appears in the main manuscript:
+
+```{r}
+#| label: fig-smooth-plots-paper
+#| fig-cap: "Distribution of article characteristics for archaeology articles over time and estimated conditional effect of year (purple lines). Data points represent individual articles. The colour of the points indicates if the overall temporal trend is toward archaeology become a softer (orange) or harder (green) field. Bayesian Generalized Additive Models were computed to fit the lines summarising the relationships between the variables and the time series. For recency of references, a Zero-One Inflated Beta distribution family was used with a logit link function. For diversity of references and relative title length (ln), the Gaussian family was used with the canonical identity link function. For the number of authors pages the Negative Binomial family was used with a standard log link function. Further details about the model specifications and diagnostics are presented in the supplementary materials." 
+
 plot_grid(plotlist = conditional_smooths_plots_list, ncol = 3)
 
 ```

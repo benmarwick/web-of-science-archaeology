@@ -31,7 +31,7 @@ filters:
 bibliography: references.bib
 csl: "templates/journal-of-archaeological-science.csl" # Insert path for the bib-style
 abstract: |
-  Computational reproducibility is increasingly essential for advancing archaeological science, yet its implementation remains inconsistent across the discipline. This study presents a bibliometric assessment of archaeology’s status relative to other fields alongside a systematic review of computational reproducibility in published archaeological research. Analyzing nearly 10,000 articles, I identify trends in authorship, citation practices, and related metrics that position archaeology between the natural and social sciences. A review of reproducibility assessments for the Journal of Archaeological Science reveals persistent challenges, including missing data, unspecified dependencies, and inadequate documentation. To address these issues, I recommend to authors basic practical steps such as standardized project organization and explicit dependency documentation. Strengthening reproducibility will enhance archaeology’s scientific rigor and ensure the verifiability of research findings. This study underscores the urgent need for cultural and technical shifts to establish reproducibility as a cornerstone of rigorous, accountable, and impactful archaeological science.
+  The status of archaeology as a science has been debated for decades. This study presents a bibliometric assessment of archaeology’s status relative to other fields, alongside a systematic review of computational reproducibility in published archaeological research. Reproducibility is a factor in the hardness/softness of a field because of it importance in establishing consensus. Analyzing nearly 10,000 articles, I identify trends in authorship, citation practices, and related metrics that position archaeology between the natural and social sciences. A review of reproducibility assessments for the Journal of Archaeological Science reveals persistent challenges, including missing data, unspecified dependencies, and inadequate documentation. To address these issues, I recommend to authors basic practical steps such as standardized project organization and explicit dependency documentation. Strengthening reproducibility will enhance archaeology’s scientific rigor and ensure the verifiability of research findings. This study underscores the urgent need for cultural and technical shifts to establish reproducibility as a cornerstone of rigorous, accountable, and impactful archaeological science.
 keywords: |
   Computational reproducibility; Archaeological science; Bibliometric analysis; Open science
 highlights: |
@@ -62,6 +62,7 @@ The age of works cited has long been used as a measure of a field's hardness [@m
 ```{r}
 library(tidyverse)
 
+# these data were prepared using the code in 000-import-raw-data.R
 items_df <- 
   read_rds(here::here("analysis/data/wos-data-df.rds"))
 
@@ -100,7 +101,7 @@ The entire R code [@rcoreteamLanguageEnvironmentStatistical2024] used for all th
 ```{r}
 library(ggrepel)
 
-source(here::here("analysis/code/008-redraw-Fanelli-and-Glanzel-Fig-2.R"))
+source(here::here("analysis/code/001-redraw-Fanelli-and-Glanzel-Fig-2.R"))
 
 base_size <- 6
 color <- c('#d95f02', '#7570b3',  '#1b9e77')
@@ -499,73 +500,16 @@ over_time_long_colour <-
 
 ```{r}
 #| label: fig-change-over-time
-#| fig-cap: Distribution of article characteristics for archaeology articles over time. Data points represent individual articles. The colour of the points indicates if the overall trend is toward softer (orange) or harder (green) Generalized Additive Models were computed to fit the lines summarising the relationships between the variables and the time series. 
+#| fig-cap: Distribution of article characteristics for archaeology articles over time. Data points represent individual articles. The colour of the points indicates if the overall trend is toward softer (orange) or harder (green). Bayesian Generalized Additive Models were computed to fit the lines summarising the relationships between the variables and the time series. For recency of references a Zero-One Inflated Beta distribution family was used with a logit link function. For diversity of references and relative title length (ln) the Gaussian family was used with the canonical identity link function. For the number of authors pages the Negative Binomial family was used with a standard log link function. Further details about the model specifications and diagnostics are presented in the supplementary materials. 
 #| fig-height: 4
 
-library(ggpmisc)
-library(mgcv)
-formula <-  y ~ x
-
-over_time_long_colour_gams <- 
-over_time_long_colour %>% 
-  nest(.by = variable) %>% 
-  mutate(mod_gam = lapply(data, 
-                          function(df) gam(value ~ s(year, bs = "cr"), 
-                                           data = df)))
-
-over_time_long_colour_gams_summary <- 
-over_time_long_colour %>% 
-  nest(.by = variable) %>% 
-  mutate(fit = map(data, ~mgcv::gam(value ~ s(year, bs = "cs"), data = .)),
-         results = map(fit, glance),
-         R.square = map_dbl(fit, ~ summary(.)$r.sq)) %>%
-  unnest(results) %>%
-  select(-data, -fit) %>% 
-  select(variable, adj.r.squared)
-
-over_time_long_colour_gams_summary_df <- 
-over_time_long_colour %>% 
-  left_join(over_time_long_colour_gams_summary)
-
-ggplot() + 
-  geom_point(data = over_time_long_colour_gams_summary_df, 
-       aes(year,  
-           value, 
-           colour = becoming_more_scientific),
-       alpha = 0.5) + 
-  geom_smooth(data = over_time_long_colour_gams_summary_df,
-              aes(year, value),
-              method="gam", 
-              formula = y ~ s(x, bs = "cs"),
-              se = FALSE,  
-              size = 2, 
-              colour = "#7570b3") +
-  facet_wrap( ~ variable,
-              scales = "free_y") + 
-  theme_bw(base_size = base_size) +
-  scale_color_manual(values = c("#d95f02",
-                                "#1b9e77" )) +
-  guides(colour = "none") +
-  ylab("") +
-  geom_text(data = over_time_long_colour_gams_summary_df %>% 
-              group_by(variable) %>% 
-              summarise(max_value = max(value),
-                        adj.r.squared = unique(adj.r.squared)),
-           aes(
-           x = 1980, 
-           y = max_value, 
-           label = paste("Pseudo R² = ", 
-                         signif(adj.r.squared, 
-                                digits = 3))),
-           hjust = 0, 
-           vjust = 1.5,
-           size = 2)
+# get this from the supplement 
  
 ```
 
 @fig-change-over-time shows how the bibliometric indicators of field hardness have changed of time for archaeology articles. By two measures, the number of authors and relative title length, archaeology has become increasingly harder over time. On the other hand, three metrics indicate that archaeology has become softer (diversity of references, article length and recently of references). Although all the relationships are statistically significant, generally these temporal trends are very weak with low slope values, indicating very slow change over time. Similarly the r-squared values are very low, demonstrating that much of the variability in these metrics is independent of time.
 
-The most striking change over time is in the increase in the number of authors, which has the highest r-squared value of these metrics. One interesting detail evident in @fig-change-over-time is the increase in the range of diversity of references after about 2010. This may be due to some broader changes in academic publishing around this time, such as moves to digital-first continuous publishing, new journals appearing (e.g. *Archaeological and Anthropological Sciences* in 2009 and *Journal of Island & Coastal Archaeology* in 2010), and non-archaeology journals becoming more relevant to archaeologists. For example, *PLOS ONE* received its first impact factor in 2010 and in 2011 Nature's *Scientific Reports* began publishing [@malashichev2017open]. The appearance of Google Scholar in 2004, increasing the discoverability of many works for many researchers, may have also contributed to this increase in range and diversity of references. 
+The most striking change over time is in the increase in the number of authors, which has the highest r-squared value of these metrics. One interesting detail evident in @fig-change-over-time is the increase in the range of diversity of references after about 2010. This may be due to some broader changes in academic publishing around this time, such as moves to digital-first continuous publishing, new journals appearing (e.g. *Archaeological and Anthropological Sciences* in 2009 and *Journal of Island & Coastal Archaeology* in 2010), and non-archaeology journals becoming more relevant to archaeologists. For example, *PLOS ONE* received its first impact factor in 2010 and in 2011 Nature's *Scientific Reports* began publishing [@malashichev2017open]. The appearance of Google Scholar in 2004, increasing the discoverability of many works for many researchers, may have also contributed to this increase in diversity of references. 
 
 ### How do archaeology journals vary in hardness?
 
@@ -647,13 +591,19 @@ ggplot() +
                aes(.fittedPC1,
                    .fittedPC2),
              size = 1) +
-  geom_text_repel(data = pca_scores_means,
+  geom_text_repel(data = pca_scores_means %>% 
+                    mutate(label = str_replace(journal, 
+                                               "JOURNAL", 
+                                               "J.")) %>% 
+                    mutate(label = str_remove(label, 
+                                               "-AN\nINTERNATIONAL\nJ.")),
             aes(.fittedPC1,
                 .fittedPC2,
-                label = journal),
+                label = label),
             lineheight = 0.8,
             segment.color = NA,
-            size = 1,
+            force_pull = 10,
+            size = 2.5,
             bg.color = "white",  # Color of the halo
             bg.r = 0.2) +
      geom_segment(data = pca_loadings_means, 
@@ -667,15 +617,22 @@ ggplot() +
             aes(PC1,
                 PC2,
                 label = column),
-            size = 1,
-            lineheight = 0.7,
-            force = 0,
+            size = 2,
+            lineheight = 0.8,
+            force = 10,
+            force_pull = 0,
             segment.color = NA,
             color = "grey40",
            bg.color = "white",  # Color of the halo
           bg.r = 0.2) +
   theme_minimal(base_size = base_size) +
-  coord_equal()
+  coord_fixed(xlim = c(-6, 2.5),
+              ylim = c(-3, 2))
+
+# tricky to get the label spacing right, let's save an SVG, edit
+# by hand, then export to PNG and read that file later. 
+ggsave(plot_pca_means,
+       filename = here::here("analysis/figures/plot_pca_means.svg"))
 
 ```
 
@@ -840,12 +797,11 @@ journal_metrics_for_plotting %>%
 
 ```{r}
 #| label: fig-variation-by-journal
-#| fig-cap: "Panels A-E: Variation in bibliometric indicators of hardness for 20 archaeological journals. The journals are ordered for each indicator so that within each plot, the harder journals are at the top of the plot and the softer journals are at the base. Panel F shows a bar plot that is the single consensus ranking computed from all five variables, using the Borda Count ranking algorithm. Panel G is a biplot of the first and second principal components of a PCA computed on the journal means of the five bibliometric variables."
-#| fig-height: 6
+#| fig-cap: "Panels A-E: Variation in bibliometric indicators of hardness for 20 archaeological journals. The journals are ordered for each indicator so that within each plot, the harder journals are at the top of the plot and the softer journals are at the base. Panel F shows a bar plot that is the single consensus ranking computed from all five variables, using the Borda Count ranking algorithm."
+#| fig-height: 5
 
 library(cowplot)
 
-plot_grid(
   plot_grid(plot_journals_authors, 
            plot_journals_article_length,
            plot_journals_title_length,
@@ -854,14 +810,19 @@ plot_grid(
            plot_borda_scores,
            nrow = 2,
            labels = LETTERS[1:6],
-           label_size = 6),
-  plot_pca_means,
-  nrow = 2,
-  labels = c("", LETTERS[7]),
-  rel_heights = c(1, 0.5),
-  label_size = 6)
+           label_size = 6)
 
 ```
+
+
+```{r}
+#| label: fig-pca
+#| fig-cap: "Biplot of the first and second principal components of a PCA computed on the means of the five bibliometric variables for each journal in the sample.  The arrows represent the correlation between each original variable and the principal components. The direction and length of the arrows indicate how strongly each variable contributes to each component. "
+#| fig-height: 4
+
+knitr::include_graphics(here::here("analysis/figures/plot_pca_means.png"))
+```
+
 
 @fig-variation-by-journal shows the distribution of our bibliometric variables of hardness for each of the `r n_journals` journals in the sample. Overall agreement between these bibliometric variables in ranking these journals on a hard-soft spectrum is moderate to strong, with a Kendall's coefficient of concordance (Wt) value of `r round(journal_summary_metrics_ranks_test$value, 2)` (in a 0-1 range, where 1 is perfect agreement) and a p-value of `r pretty_print_sci(journal_summary_metrics_ranks_test$p.value)`. Panel F of @fig-variation-by-journal shows an overall consensus ranking of all journals in the sample. In this consensus ranking the *Journal of Archaeological Science* among the top five archaeology journals for hardness. It is placed at the harder end of the hard-soft spectrum especially by the number of pages and relative title length, and to lesser degrees by the number of authors and recency of references. However, according to the diversity of references, the *Journal of Archaeological Science* is at the middle of the spectrum.
 
@@ -869,13 +830,13 @@ The *Journal of Cultural Heritage* is the only journal that consistently ranks a
 
 The *Journal of Archaeological Research* is notable because it consistently ranks as soft, ranking as the softest journal for four of our five bibliometric variables. This is a predicable result for a review journal, which is a distinct type of journal dedicated to summarizing, analyzing, and synthesizing existing research in a particular field. The stated aim of the *Journal of Archaeological Research* is to 'bring together the most recent international research summaries on a broad range of topics and geographical areas' [@feinmanAimsScopeJournal2024]. A typical article is a long single-authored synthesis of archaeology in a region or on a topic. As the only review journal in this sample, this is a stark contrast to the other journals here that present original research findings, and like the *Journal of Cultural Heritage*, may be considered an outlier in this sample.
 
-The PCA results in panel G show of @fig-variation-by-journal that PC1 captures most of the variance in the metrics (`r variance_explained[1]`%) and is reasonable proxy for the hard-soft spectrum, with *Journal of Cultural Heritage* representing the hard extreme on the right and *Journal of Archaeological Research* representing the soft extreme on the left. The distribution of PC1 values is skewed left, with most of the journals concentrated at the harder end of the spectrum. The distribution of PC2 values reveals additional structure to the data and can be roughly separated into generalist journals in the negative range (e.g. *American Antiquity*, *Antiquity*, *Advances in Archaeological Practice*), and more specialised journals in the positive range (e.g. *Environmental Archaeology*, *Geoarchaeology*, *Archaeologial Research in Asia*, *Journal of Island and Coastal Archaeology*). The *Journal of Archaeological Science* sits about midway between these two groups, reflecting its relevance to specialised communities of practice in archaeology, as well as generalist communities of practice.
+The PCA results in @fig-pca shows that PC1 captures most of the variance in the metrics (`r variance_explained[1]`%) and is reasonable proxy for the hard-soft spectrum, with *Journal of Cultural Heritage* representing the hard extreme on the right and *Journal of Archaeological Research* representing the soft extreme on the left. PC1 is explained by title length, number of pages, and the diversity of references. Journals with higher PC1 values have articles with longer titles, fewer pages, and less diverse reference lists. The distribution of PC1 values is skewed left, with most of the journals concentrated at the harder end of the spectrum. PC2 is explained by number of authors and recency of references. The distribution of PC2 values reveals additional structure to the data and can be roughly separated into generalist journals in the negative range (e.g. *American Antiquity*, *Antiquity*, *Advances in Archaeological Practice*), characterised by fewer authors and more recent references. In the positive range of PC2 are more specialised journals, characterised by higher numbers of authors and less recent references cited (e.g. *Environmental Archaeology*, *Geoarchaeology*, *Archaeologial Research in Asia*, *Journal of Island and Coastal Archaeology*). The *Journal of Archaeological Science* sits about midway between these two groups, reflecting its relevance to specialised communities of practice in archaeology, as well as generalist communities of practice.
 
 ## Reproducibility: A key measure of how scientific a field is
 
 This macroscopic perspective derived from an analysis of the ways thousands of archaeologists communicate their research has produced a complex picture of archaeology as a science. In the context of a broad spectrum of other research areas, archaeologists behave like social scientists. We are harder than typical social scientists in tending to form larger groups of collaborators more often, and softer in sometimes writing longer articles than more resemble humanities scholarship. The outlook for the future of archaeology is also complex, with three out of five of the bibliometric variables trending towards more humanistic styles of working, but the discipline showing more extreme values in some metrics towards both hard and soft sciences after about 2010. Among archaeology journals, we see distinct communities of practice reflected in the PCA results that are very close together on the hard-soft spectrum, but have minor differences in their communication styles, perhaps due to differences in writing traditions inherited from parent disciplines such as geology and biology.
 
-While these bibliometric variables provide several interesting insights into the status of archaeology as a science, via measurement of consensus, and are important for moving the debate beyond discussions of a small number of case studies, they miss a crucial factor that separates scientific practice from non-science. This is reproducibility, which, according to a report by the US National Science Foundation [@cacioppo2015social], "refers to the ability of a researcher to duplicate the results of a prior study using the same materials as were used by the original investigator. That is, a second researcher might use the same raw data to build the same analysis files and implement the same statistical analysis in an attempt to yield the same results... Reproducibility is a minimum necessary condition for a finding to be believable and informative." Scientific reproducibility is linked to consensus because if more researchers provide sufficient detail for others to reproduce their results, then consensus on new knowledge can more often and more rapidly established. The importance of this factor can be traced to Irish chemist Robert Boyle (1627-1691), best known for his experiments with vacuum pumps [@shapin2011leviathan]. Boyle was concerned about the secrecy common among experimentalists in the 17th century and aimed to shift the culture from valuing direct in-person witnessing of scientific demonstrations towards meticulous written communications that were detailed enough to enable a reader to successfully undertake the experiment themselves, independent of the original author.
+While these bibliometric variables provide several interesting insights into the status of archaeology as a science, via measurement of consensus, and are important for moving the debate beyond discussions of a small number of case studies, they miss a crucial factor that separates scientific practice from non-science. This is reproducibility, which, according to a report by the US National Science Foundation [@cacioppo2015social], "refers to the ability of a researcher to duplicate the results of a prior study using the same materials as were used by the original investigator. That is, a second researcher might use the same raw data to build the same analysis files and implement the same statistical analysis in an attempt to yield the same results... Reproducibility is a minimum necessary condition for a finding to be believable and informative." Scientific reproducibility is a factor contributing to the hardness of a field. Specifically, reproducibility is linked to to concept of consensus in a field because if more researchers provide sufficient detail for others to reproduce their results, then consensus on new knowledge can more often, and more, rapidly be established. The importance of this factor can be traced to Irish chemist Robert Boyle (1627-1691), best known for his experiments with vacuum pumps [@shapin2011leviathan]. Boyle was concerned about the secrecy common among experimentalists in the 17th century and aimed to shift the culture from valuing direct in-person witnessing of scientific demonstrations towards meticulous written communications that were detailed enough to enable a reader to successfully undertake the experiment themselves, independent of the original author.
 
 With many disciplines making increasing use of computationally intensive analyses in recent years there has been renewed interest in reproducibility [@levequeReproducibleResearchScientific2012]. In part, this is because computationally intensive research is difficult to communicate within the constraints of the methods section of a traditional journal article — the reader also needs the computer code written by the original authors, not just the article text. There is also the broader context of rising pressure to publish in prestigious journals and intense competition for funds that create strong incentives for malpractice in research [@edwards2017academic]. These two factors have led to widespread concerns of a reproducibility crisis in many fields [@Baker2016]. Estimates of scientific reproducibility in several fields confirm the extent of this problem. Empirical replications of 100 studies published in three psychology journals found that 36% of replications had statistically significant results, compared to 96% of the original studies [@OpenScienceCollaboration2015]. Similar empirical replications of large numbers of social science studies and experiemental economics studies successfully replicated 61% and 62% of their target studies respectively [@camererEvaluatingReplicabilitySocial2018; @camererEvaluatingReplicabilityLaboratory2016].
 
