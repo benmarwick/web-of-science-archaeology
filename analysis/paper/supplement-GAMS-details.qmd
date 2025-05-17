@@ -760,7 +760,7 @@ conditional_smooths_plots_fn <- function(model, var_name, raw_data, r_sq){
            hjust = 0, 
            vjust = 1.5,
            size = 2) +
-    theme_bw(base_size = 6) +
+    theme_bw(base_size = 4) +
       labs( 
            y = response_label, 
            x = "")
@@ -777,7 +777,16 @@ Here is the figure that appears in the main manuscript:
 #| label: fig-smooth-plots-paper
 #| fig-cap: "Distribution of article characteristics for archaeology articles over time and estimated conditional effect of year (purple lines). Data points represent individual articles. The colour of the points indicates if the overall temporal trend is toward archaeology become a softer (orange) or harder (green) field. Bayesian Generalized Additive Models were computed to fit the lines summarising the relationships between the variables and the time series. For recency of references, a Zero-One Inflated Beta distribution family was used with a logit link function. For diversity of references and relative title length (ln), the Gaussian family was used with the canonical identity link function. For the number of authors pages the Negative Binomial family was used with a standard log link function. Further details about the model specifications and diagnostics are presented in the supplementary materials." 
 
-plot_grid(plotlist = conditional_smooths_plots_list, ncol = 3)
+plot_grid(plotlist = conditional_smooths_plots_list, 
+          ncol = 3,
+          align = "hv",
+          axis ="tblr")
+
+ggsave(here::here("analysis/figures/fig-smooth-plots-paper.png"),
+      dpi = 1000,
+      bg = "white",
+      h = 3,
+      w = 5)
 
 ```
 
