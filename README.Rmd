@@ -43,9 +43,9 @@ This research compendium includes a [Dockerfile](Dockerfile) that specifies the 
 4. Run in your terminal `docker run --rm -it -e ROOT=TRUE -e PASSWORD=rstudio -dp 8787:8787 wos` to start the container on your computer
 5. Go to http://localhost:8787/ with your browser and enter `rstudio` in both fields to start RStudio in your browser, running in the Docker container with all the required depedencies installed
 6. In RStudio, run `rstudioapi::openProject("/home/rstudio/web-of-science-archaeology")` to open the compendium's project. This project uses [`renv`](https://rstudio.github.io/renv/) to document and manage dependencies, this will be activated when the project is first opened in RStudio. 
-7. Run ` rmarkdown::render("analysis/paper/paper.qmd", output_dir='/tmp')` to render the Quarto document that is the manuscript submitted for publication
-8. After the code has executed, view the rendered output document by running `browseURL("/tmp/paper.html")`
-8. When finished, to delete the Docker container from your computer, run this in the terminal `docker ps -aq | xargs docker stop | xargs docker rm`
+7. In RStudio, run `rmarkdown::render("analysis/paper/paper.qmd", output_dir='/tmp')` to render the Quarto document that is the manuscript submitted for publication
+8. After the code has executed, view the rendered output document by running in RStudio, `browseURL("/tmp/paper.html")`
+9. When finished, to delete the Docker container from your computer, run this in the terminal `docker ps -aq | xargs docker stop | xargs docker rm`
 
 ### Licenses
 
