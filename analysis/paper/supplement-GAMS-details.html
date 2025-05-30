@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Ben Marwick">
-<meta name="dcterms.date" content="2025-04-30">
+<meta name="dcterms.date" content="2025-05-30">
 
 <title>Supplementary Materials on Bayesian Generalized Additive Models used to Analyse Temporal Trends in Job Ads</title>
 <style>
@@ -120,7 +120,7 @@ div.csl-indent {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">April 30, 2025</p>
+      <p class="date">May 30, 2025</p>
     </div>
   </div>
   
@@ -134,10 +134,10 @@ div.csl-indent {
 
 <section id="introduction" class="level1">
 <h1>Introduction</h1>
-<p>This supplementary document provides further details on the General Additive Models (GAMs) used to model change in the bibliometric variables over time. GAMs are useful because they can be fit to complex, nonlinear relationships and make good predictions, while still being able to provide inferential statistics and understand and explain the underlying structure of our models.</p>
+<p>This supplementary document provides further details on the General Additive Models (GAMs) used to model change in the bibliometric variables over time. GAMs are useful because they can be fit to complex, nonlinear relationships and make good predictions, while still being able to provide inferential statistics and understand and explain the underlying structure of our models. This document and the supporting data files are archived at http://doi.org/10.5281/zenodo.14897253</p>
 <section id="modeling-approach" class="level2">
 <h2 class="anchored" data-anchor-id="modeling-approach">Modeling Approach</h2>
-<p>Temporal trends for five variables related to scientific publications were analyzed using Bayesian Generalized Additive Models (GAMs) implemented via the <code>brms</code> package (version 2.22.0) in R (version 4.4.1) <span class="citation" data-cites="brms_package rcoreteamLanguageEnvironmentStatistical2024">(<a href="#ref-brms_package" role="doc-biblioref">Bürkner, 2017</a>; <a href="#ref-rcoreteamLanguageEnvironmentStatistical2024" role="doc-biblioref">R Core Team, 2024</a>)</span>. <code>brms</code> utilizes Stan (version 2.32.2) for posterior sampling via dynamic Hamiltonian Monte Carlo (specifically, the No-U-Turn Sampler, NUTS) <span class="citation" data-cites="stan_dev">(<a href="#ref-stan_dev" role="doc-biblioref"><strong>stan_dev?</strong></a>)</span>.</p>
+<p>Temporal trends for five variables related to scientific publications were analyzed using Bayesian Generalized Additive Models (GAMs) implemented via the <code>brms</code> package (version 2.22.0) in R (version 4.5.0) <span class="citation" data-cites="brms_package rcoreteamLanguageEnvironmentStatistical2024">(<a href="#ref-brms_package" role="doc-biblioref">Bürkner, 2017</a>; <a href="#ref-rcoreteamLanguageEnvironmentStatistical2024" role="doc-biblioref">R Core Team, 2024</a>)</span>. <code>brms</code> utilizes Stan (version 2.32.2) for posterior sampling via dynamic Hamiltonian Monte Carlo (specifically, the No-U-Turn Sampler, NUTS) <span class="citation" data-cites="stan_dev">(<a href="#ref-stan_dev" role="doc-biblioref"><strong>stan_dev?</strong></a>)</span>.</p>
 </section>
 <section id="model-specification" class="level2">
 <h2 class="anchored" data-anchor-id="model-specification">Model Specification</h2>
@@ -569,6 +569,97 @@ Figure&nbsp;3: Posterior predictive checks (density overlays) for each model. Th
 <h2 class="anchored" data-anchor-id="parameter-estimates">Parameter Estimates</h2>
 <p>Posterior summaries (mean, standard error, 95% credible intervals) for key model parameters are provided in <a href="#tbl-param-summary" class="quarto-xref">Table&nbsp;2</a>. This includes intercepts, standard deviations of smooth terms (<code>sds</code>), and relevant distributional parameters (<code>shape</code>, <code>sigma</code>, <code>phi</code>, <code>zoi</code>, <code>coi</code>).</p>
 <div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co">#---------------------------------------------------------------------</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Extract posterior summaries using brms::posterior_summary</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="co">#---------------------------------------------------------------------</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Apply posterior_summary to each model, keep results in a list</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>posterior_summaries_list <span class="ot">&lt;-</span> <span class="fu">map</span>(</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>  results_brms_valid<span class="sc">$</span>mod_brms,</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>  <span class="sc">~</span> <span class="fu">posterior_summary</span>(.x, <span class="at">probs =</span> <span class="fu">c</span>(<span class="fl">0.025</span>, <span class="fl">0.975</span>)) <span class="co"># Get mean, sd, and 95% CrI</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a><span class="co"># --- Define the key parameters to keep in the final table ---</span></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Verify these names against your actual model output if needed</span></span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>params_to_keep <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>    <span class="st">"b_Intercept"</span>,      <span class="co"># Intercept</span></span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>    <span class="st">"sigma"</span>,            <span class="co"># Residual SD for Gaussian</span></span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>    <span class="st">"shape"</span>,            <span class="co"># Shape parameter for Negative Binomial</span></span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>    <span class="st">"phi"</span>,              <span class="co"># Precision for Beta/ZOIB</span></span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>    <span class="st">"zoi"</span>,              <span class="co"># Zero-inflation probability for ZOIB</span></span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>    <span class="st">"coi"</span>,              <span class="co"># One-inflation probability for ZOIB</span></span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>    <span class="st">"sds_syear_1"</span>       <span class="co"># SD for the smooth term s(year)</span></span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a><span class="co">#---------------------------------------------------------------------</span></span>
+<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a><span class="co"># Process the list into a final data frame</span></span>
+<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a><span class="co">#---------------------------------------------------------------------</span></span>
+<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a>tidy_summaries_final <span class="ot">&lt;-</span> <span class="fu">map2_dfr</span>(</span>
+<span id="cb5-26"><a href="#cb5-26" aria-hidden="true" tabindex="-1"></a>  posterior_summaries_list,</span>
+<span id="cb5-27"><a href="#cb5-27" aria-hidden="true" tabindex="-1"></a>  results_brms_valid<span class="sc">$</span>variable,</span>
+<span id="cb5-28"><a href="#cb5-28" aria-hidden="true" tabindex="-1"></a>  <span class="sc">~</span>{</span>
+<span id="cb5-29"><a href="#cb5-29" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Convert matrix output to tibble</span></span>
+<span id="cb5-30"><a href="#cb5-30" aria-hidden="true" tabindex="-1"></a>    summary_df <span class="ot">&lt;-</span> <span class="fu">as_tibble</span>(.x, <span class="at">rownames =</span> <span class="st">"Parameter"</span>)</span>
+<span id="cb5-31"><a href="#cb5-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-32"><a href="#cb5-32" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Filter for desired parameters</span></span>
+<span id="cb5-33"><a href="#cb5-33" aria-hidden="true" tabindex="-1"></a>    summary_filtered <span class="ot">&lt;-</span> summary_df <span class="sc">%&gt;%</span></span>
+<span id="cb5-34"><a href="#cb5-34" aria-hidden="true" tabindex="-1"></a>      <span class="fu">filter</span>(Parameter <span class="sc">%in%</span> params_to_keep)</span>
+<span id="cb5-35"><a href="#cb5-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-36"><a href="#cb5-36" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Add variable name and parameter type classification</span></span>
+<span id="cb5-37"><a href="#cb5-37" aria-hidden="true" tabindex="-1"></a>    summary_filtered <span class="sc">%&gt;%</span></span>
+<span id="cb5-38"><a href="#cb5-38" aria-hidden="true" tabindex="-1"></a>      <span class="fu">mutate</span>(</span>
+<span id="cb5-39"><a href="#cb5-39" aria-hidden="true" tabindex="-1"></a>        <span class="at">variable =</span> .y, <span class="co"># Add variable name</span></span>
+<span id="cb5-40"><a href="#cb5-40" aria-hidden="true" tabindex="-1"></a>        <span class="st">`</span><span class="at">Parameter Type</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">case_when</span>(</span>
+<span id="cb5-41"><a href="#cb5-41" aria-hidden="true" tabindex="-1"></a>            Parameter <span class="sc">==</span> <span class="st">"b_Intercept"</span> <span class="sc">~</span> <span class="st">"Intercept"</span>,</span>
+<span id="cb5-42"><a href="#cb5-42" aria-hidden="true" tabindex="-1"></a>            Parameter <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"sigma"</span>, <span class="st">"shape"</span>, <span class="st">"phi"</span>, <span class="st">"zoi"</span>, <span class="st">"coi"</span>) <span class="sc">~</span> <span class="st">"Distributional"</span>,</span>
+<span id="cb5-43"><a href="#cb5-43" aria-hidden="true" tabindex="-1"></a>            <span class="fu">startsWith</span>(Parameter, <span class="st">"sds_"</span>) <span class="sc">~</span> <span class="st">"Smooth SD"</span>,</span>
+<span id="cb5-44"><a href="#cb5-44" aria-hidden="true" tabindex="-1"></a>            <span class="cn">TRUE</span> <span class="sc">~</span> <span class="st">"Other"</span></span>
+<span id="cb5-45"><a href="#cb5-45" aria-hidden="true" tabindex="-1"></a>        ),</span>
+<span id="cb5-46"><a href="#cb5-46" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Rename parameters for better readability</span></span>
+<span id="cb5-47"><a href="#cb5-47" aria-hidden="true" tabindex="-1"></a>        <span class="at">Parameter =</span> <span class="fu">case_when</span>(</span>
+<span id="cb5-48"><a href="#cb5-48" aria-hidden="true" tabindex="-1"></a>            Parameter <span class="sc">==</span> <span class="st">"b_Intercept"</span> <span class="sc">~</span> <span class="st">"(Intercept)"</span>,</span>
+<span id="cb5-49"><a href="#cb5-49" aria-hidden="true" tabindex="-1"></a>            Parameter <span class="sc">==</span> <span class="st">"sds_syear_1"</span> <span class="sc">~</span> <span class="st">"sds(s(year))"</span>,</span>
+<span id="cb5-50"><a href="#cb5-50" aria-hidden="true" tabindex="-1"></a>            <span class="cn">TRUE</span> <span class="sc">~</span> Parameter</span>
+<span id="cb5-51"><a href="#cb5-51" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb5-52"><a href="#cb5-52" aria-hidden="true" tabindex="-1"></a>      )</span>
+<span id="cb5-53"><a href="#cb5-53" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb5-54"><a href="#cb5-54" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb5-55"><a href="#cb5-55" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-56"><a href="#cb5-56" aria-hidden="true" tabindex="-1"></a><span class="co"># --- Select and order columns for the final table ---</span></span>
+<span id="cb5-57"><a href="#cb5-57" aria-hidden="true" tabindex="-1"></a>tidy_summaries_final <span class="ot">&lt;-</span> tidy_summaries_final <span class="sc">%&gt;%</span></span>
+<span id="cb5-58"><a href="#cb5-58" aria-hidden="true" tabindex="-1"></a>    <span class="fu">rename</span>(</span>
+<span id="cb5-59"><a href="#cb5-59" aria-hidden="true" tabindex="-1"></a>        <span class="at">Estimate =</span> Estimate,</span>
+<span id="cb5-60"><a href="#cb5-60" aria-hidden="true" tabindex="-1"></a>        <span class="at">Est.Error =</span> Est.Error,</span>
+<span id="cb5-61"><a href="#cb5-61" aria-hidden="true" tabindex="-1"></a>        <span class="st">`</span><span class="at">Lower 95% CI</span><span class="st">`</span> <span class="ot">=</span> Q2<span class="fl">.5</span>, <span class="co"># Rename quantile column</span></span>
+<span id="cb5-62"><a href="#cb5-62" aria-hidden="true" tabindex="-1"></a>        <span class="st">`</span><span class="at">Upper 95% CI</span><span class="st">`</span> <span class="ot">=</span> Q97<span class="fl">.5</span> <span class="co"># Rename quantile column</span></span>
+<span id="cb5-63"><a href="#cb5-63" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">%&gt;%</span></span>
+<span id="cb5-64"><a href="#cb5-64" aria-hidden="true" tabindex="-1"></a>    <span class="fu">select</span>(</span>
+<span id="cb5-65"><a href="#cb5-65" aria-hidden="true" tabindex="-1"></a>        variable, Parameter, <span class="st">`</span><span class="at">Parameter Type</span><span class="st">`</span>,</span>
+<span id="cb5-66"><a href="#cb5-66" aria-hidden="true" tabindex="-1"></a>        Estimate, Est.Error,</span>
+<span id="cb5-67"><a href="#cb5-67" aria-hidden="true" tabindex="-1"></a>        <span class="st">`</span><span class="at">Lower 95% CI</span><span class="st">`</span>, <span class="st">`</span><span class="at">Upper 95% CI</span><span class="st">`</span></span>
+<span id="cb5-68"><a href="#cb5-68" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">%&gt;%</span></span>
+<span id="cb5-69"><a href="#cb5-69" aria-hidden="true" tabindex="-1"></a>    <span class="fu">arrange</span>(variable, <span class="st">`</span><span class="at">Parameter Type</span><span class="st">`</span>, Parameter)</span>
+<span id="cb5-70"><a href="#cb5-70" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-71"><a href="#cb5-71" aria-hidden="true" tabindex="-1"></a><span class="co">#---------------------------------------------------------------------</span></span>
+<span id="cb5-72"><a href="#cb5-72" aria-hidden="true" tabindex="-1"></a><span class="co"># Create and Display the Formatted Table</span></span>
+<span id="cb5-73"><a href="#cb5-73" aria-hidden="true" tabindex="-1"></a><span class="co">#---------------------------------------------------------------------</span></span>
+<span id="cb5-74"><a href="#cb5-74" aria-hidden="true" tabindex="-1"></a><span class="co"># Check if the final tibble is empty</span></span>
+<span id="cb5-75"><a href="#cb5-75" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span>(<span class="fu">nrow</span>(tidy_summaries_final) <span class="sc">==</span> <span class="dv">0</span>) {</span>
+<span id="cb5-76"><a href="#cb5-76" aria-hidden="true" tabindex="-1"></a>    <span class="fu">warning</span>(<span class="st">"Final parameter summary table is empty. Check parameter names in 'params_to_keep'."</span>)</span>
+<span id="cb5-77"><a href="#cb5-77" aria-hidden="true" tabindex="-1"></a>} <span class="cf">else</span> {</span>
+<span id="cb5-78"><a href="#cb5-78" aria-hidden="true" tabindex="-1"></a>    <span class="fu">kable</span>(</span>
+<span id="cb5-79"><a href="#cb5-79" aria-hidden="true" tabindex="-1"></a>      tidy_summaries_final,</span>
+<span id="cb5-80"><a href="#cb5-80" aria-hidden="true" tabindex="-1"></a>      <span class="at">caption =</span> <span class="st">"Posterior summary statistics for key model parameters."</span>,</span>
+<span id="cb5-81"><a href="#cb5-81" aria-hidden="true" tabindex="-1"></a>      <span class="at">digits =</span> <span class="dv">2</span>,</span>
+<span id="cb5-82"><a href="#cb5-82" aria-hidden="true" tabindex="-1"></a>      <span class="at">booktabs =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb5-83"><a href="#cb5-83" aria-hidden="true" tabindex="-1"></a>      <span class="at">linesep =</span> <span class="st">""</span></span>
+<span id="cb5-84"><a href="#cb5-84" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">%&gt;%</span></span>
+<span id="cb5-85"><a href="#cb5-85" aria-hidden="true" tabindex="-1"></a>     kableExtra<span class="sc">::</span><span class="fu">kable_styling</span>(</span>
+<span id="cb5-86"><a href="#cb5-86" aria-hidden="true" tabindex="-1"></a>        <span class="at">bootstrap_options =</span> <span class="fu">c</span>(<span class="st">"striped"</span>, <span class="st">"hover"</span>, <span class="st">"condensed"</span>),</span>
+<span id="cb5-87"><a href="#cb5-87" aria-hidden="true" tabindex="-1"></a>        <span class="at">latex_options =</span> <span class="fu">c</span>(<span class="st">"striped"</span>, <span class="st">"scale_down"</span>),</span>
+<span id="cb5-88"><a href="#cb5-88" aria-hidden="true" tabindex="-1"></a>        <span class="at">full_width =</span> <span class="cn">FALSE</span></span>
+<span id="cb5-89"><a href="#cb5-89" aria-hidden="true" tabindex="-1"></a>        ) <span class="sc">%&gt;%</span></span>
+<span id="cb5-90"><a href="#cb5-90" aria-hidden="true" tabindex="-1"></a>     kableExtra<span class="sc">::</span><span class="fu">column_spec</span>(<span class="dv">1</span>, <span class="at">bold =</span> <span class="cn">TRUE</span>) <span class="co"># Make variable name bold</span></span>
+<span id="cb5-91"><a href="#cb5-91" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div id="tbl-param-summary" class="cell anchored" data-layout-align="center">
 <figure class="quarto-float quarto-float-tbl figure">
 <figcaption class="table quarto-float-caption quarto-float-tbl" id="tbl-param-summary-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
@@ -752,41 +843,142 @@ Table&nbsp;2: Posterior summary statistics for key model parameters.
 </div>
 </div>
 </section>
+</section>
+<section id="r-squared-equivalent-for-model-fit" class="level1">
+<h1>R-squared Equivalent for Model Fit</h1>
+<p>Standard R-squared isn’t directly applicable to many GAM families (especially non-Gaussian ones). The recommended metric for brms models is the Bayesian R-squared. Calculated using brms::bayes_R2(model), this metric represents the variance of the predicted values divided by the sum of the variance of the predicted values and the expected variance of the residuals. It estimates the proportion of outcome variance that can be explained by the model’s predictors. The results are shown below in <a href="#tbl-r-sq" class="quarto-xref">Table&nbsp;3</a>.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate Bayesian R-squared for each model</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Use map to apply to each model, map_dfr to combine</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>bayes_r2_summary <span class="ot">&lt;-</span> <span class="fu">map2_dfr</span>(</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  results_brms_valid<span class="sc">$</span>mod_brms,</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>  results_brms_valid<span class="sc">$</span>variable,</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>  <span class="sc">~</span>{</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>    model <span class="ot">&lt;-</span> .x</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>    var_name <span class="ot">&lt;-</span> .y</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>    r2_est <span class="ot">&lt;-</span> <span class="cn">NA_real_</span></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>    r2_lower <span class="ot">&lt;-</span> <span class="cn">NA_real_</span></span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>    r2_upper <span class="ot">&lt;-</span> <span class="cn">NA_real_</span></span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>           <span class="co"># Calculate Bayesian R2 (returns matrix with Estimate, Est.Error, Q2.5, Q97.5)</span></span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>           r2_obj <span class="ot">&lt;-</span> brms<span class="sc">::</span><span class="fu">bayes_R2</span>(model, <span class="at">ndraws =</span> <span class="dv">10000</span>)</span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>           <span class="co"># Extract the point estimate and CI bounds</span></span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>           r2_est <span class="ot">&lt;-</span> r2_obj[<span class="dv">1</span>, <span class="st">"Estimate"</span>]</span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>           r2_lower <span class="ot">&lt;-</span> r2_obj[<span class="dv">1</span>, <span class="st">"Q2.5"</span>]</span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>           r2_upper <span class="ot">&lt;-</span> r2_obj[<span class="dv">1</span>, <span class="st">"Q97.5"</span>]</span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>           </span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a>    <span class="fu">tibble</span>(</span>
+<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a>        <span class="at">Variable =</span> var_name,</span>
+<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a>        <span class="st">`</span><span class="at">Bayes R2</span><span class="st">`</span> <span class="ot">=</span> r2_est,</span>
+<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a>        <span class="st">`</span><span class="at">Lower 95% CI</span><span class="st">`</span> <span class="ot">=</span> r2_lower,</span>
+<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a>        <span class="st">`</span><span class="at">Upper 95% CI</span><span class="st">`</span> <span class="ot">=</span> r2_upper</span>
+<span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb6-26"><a href="#cb6-26" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb6-27"><a href="#cb6-27" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb6-28"><a href="#cb6-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-29"><a href="#cb6-29" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(bayes_r2_summary, </span>
+<span id="cb6-30"><a href="#cb6-30" aria-hidden="true" tabindex="-1"></a>      <span class="at">digits =</span> <span class="dv">2</span>, </span>
+<span id="cb6-31"><a href="#cb6-31" aria-hidden="true" tabindex="-1"></a>      <span class="at">booktabs =</span> <span class="cn">TRUE</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb6-32"><a href="#cb6-32" aria-hidden="true" tabindex="-1"></a><span class="fu">kable_styling</span>(<span class="at">latex_options =</span> <span class="st">"scale_down"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div id="tbl-r-sq" class="cell anchored" data-layout-align="center">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="table quarto-float-caption quarto-float-tbl" id="tbl-r-sq-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;3: Bayesian R-squared estimates for each model.
+</figcaption>
+<div aria-describedby="tbl-r-sq-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell-output-display">
+<table class="table cell table-sm table-striped small" data-quarto-postprocess="true">
+<thead>
+<tr class="header">
+<th style="text-align: left;" data-quarto-table-cell-role="th">Variable</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Bayes R2</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Lower 95% CI</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Upper 95% CI</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Recency of references</td>
+<td style="text-align: right;">0.01</td>
+<td style="text-align: right;">0.01</td>
+<td style="text-align: right;">0.02</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Diversity of references</td>
+<td style="text-align: right;">0.05</td>
+<td style="text-align: right;">0.04</td>
+<td style="text-align: right;">0.05</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Relative title length (ln)</td>
+<td style="text-align: right;">0.03</td>
+<td style="text-align: right;">0.03</td>
+<td style="text-align: right;">0.04</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">N. of authors</td>
+<td style="text-align: right;">0.08</td>
+<td style="text-align: right;">0.07</td>
+<td style="text-align: right;">0.09</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">N. of pages</td>
+<td style="text-align: right;">0.01</td>
+<td style="text-align: right;">0.01</td>
+<td style="text-align: right;">0.01</td>
+</tr>
+</tbody>
+</table>
+
+
+</div>
+</div>
+</figure>
+</div>
+</div>
 <section id="estimated-temporal-trends" class="level2">
 <h2 class="anchored" data-anchor-id="estimated-temporal-trends">Estimated Temporal Trends</h2>
-<p>The estimated non-linear effect of publication year on each response variable is visualized below (<a href="#fig-smooth-plots" class="quarto-xref">Figure&nbsp;4</a>), showing the contribution of the smooth term <code>s(year)</code> to the model’s linear predictor (on the respective link scale).</p>
+<p>The estimated non-linear effect of publication year on each response variable is visualized below (<a href="#fig-smooth-plots" class="quarto-xref">Figure&nbsp;4</a>), showing the contribution of the smooth term <code>s(year)</code> to the model’s linear predictor (on the respective link scale). This allows us to visually assess the significance of the model.</p>
+<p>Recency of references: There is strong evidence for a significant temporal trend. The 95% CI falls convincingly below zero from approximately the early 1990s onwards, indicating a significant decrease in the contribution of year to recency (on the logit scale) during the later decades of the study period. Evidence for an effect differing from zero in the earliest years is less conclusive as the CI approaches the zero line.</p>
+<p>Diversity of references: The effect of year on reference diversity shows strong evidence of being non-zero across most of the timeframe. The 95% CI is clearly separated from zero, initially below and later rising significantly above it, particularly after 2010, indicating substantial temporal variation not attributable to chance.</p>
+<p>Relative title length (ln): The evidence suggests a significant effect of year primarily concentrated around 1990, where the 95% CI lies entirely below the zero line. During the initial years and from roughly 2000 onwards, the CI overlaps zero, indicating that the evidence for an effect of year being different from zero is weak or uncertain in these periods.</p>
+<p>N. of authors: Strong evidence supports a significant positive effect of year on the number of authors (on the log scale). The 95% CI is consistently above the zero line from the late 1980s onwards, demonstrating a significant increasing trend over the majority of the period examined.</p>
+<p>N. of pages: The temporal effect on the number of pages appears significant during specific periods. The 95% CI is clearly above zero during the peak in the 1990s, providing strong evidence for an increased effect during that time. However, the CI overlaps zero during the trough in the mid-2000s and potentially near the end of the period, suggesting uncertainty about whether the effect differs significantly from zero during these phases. There is also evidence for a negative effect relative to the intercept in the earliest years.</p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Generate conditional smooth plots within map2</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>conditional_smooths_plots_list <span class="ot">&lt;-</span> <span class="fu">map2</span>(</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  results_brms_valid<span class="sc">$</span>mod_brms,</span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  results_brms_valid<span class="sc">$</span>variable,</span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>  <span class="sc">~</span>{</span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Assign model and variable name</span></span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>    model <span class="ot">&lt;-</span> .x</span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>    var_name <span class="ot">&lt;-</span> .y</span>
-<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Generate the plot object list directly</span></span>
-<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>    plot_object_list <span class="ot">&lt;-</span> <span class="fu">plot</span>(<span class="fu">conditional_smooths</span>(model), <span class="at">plot =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Define the y-axis label based on variable name (link function)</span></span>
-<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>    y_axis_label <span class="ot">&lt;-</span> <span class="fu">case_when</span>(</span>
-<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>        var_name <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"N. of authors"</span>, <span class="st">"N. of pages"</span>) <span class="sc">~</span> <span class="st">"s(year) Contribution (log scale)"</span>,</span>
-<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>        var_name <span class="sc">==</span> <span class="st">"Recency of references"</span> <span class="sc">~</span> <span class="st">"s(year) Contribution (logit scale)"</span>,</span>
-<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>        <span class="cn">TRUE</span> <span class="sc">~</span> <span class="st">"s(year) Contribution"</span> <span class="co"># Default for Gaussian models</span></span>
-<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Extract the first plot, add title, label, and theme</span></span>
-<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a>    plot_object_list[[<span class="dv">1</span>]] <span class="sc">+</span></span>
-<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a>      <span class="fu">ggtitle</span>(var_name) <span class="sc">+</span></span>
-<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a>      <span class="fu">ylab</span>(y_axis_label) <span class="sc">+</span></span>
-<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a>      <span class="fu">theme</span>(<span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="fl">0.5</span>, <span class="at">size =</span> <span class="dv">10</span>)) <span class="co"># Center title</span></span>
-<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb5-26"><a href="#cb5-26" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Combine the plots into a grid (adjust ncol as desired)</span></span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="co"># The plot_grid call itself will display the combined plot</span></span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_grid</span>(<span class="at">plotlist =</span> conditional_smooths_plots_list, <span class="at">ncol =</span> <span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Generate conditional smooth plots within map2</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>conditional_smooths_plots_list <span class="ot">&lt;-</span> <span class="fu">map2</span>(</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  results_brms_valid<span class="sc">$</span>mod_brms,</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>  results_brms_valid<span class="sc">$</span>variable,</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>  <span class="sc">~</span>{</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Assign model and variable name</span></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>    model <span class="ot">&lt;-</span> .x</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>    var_name <span class="ot">&lt;-</span> .y</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Generate the plot object list directly</span></span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>    plot_object_list <span class="ot">&lt;-</span> <span class="fu">plot</span>(<span class="fu">conditional_smooths</span>(model), <span class="at">plot =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Define the y-axis label based on variable name (link function)</span></span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>    y_axis_label <span class="ot">&lt;-</span> <span class="fu">case_when</span>(</span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>        var_name <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"N. of authors"</span>, <span class="st">"N. of pages"</span>) <span class="sc">~</span> <span class="st">"s(year) Contribution (log scale)"</span>,</span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>        var_name <span class="sc">==</span> <span class="st">"Recency of references"</span> <span class="sc">~</span> <span class="st">"s(year) Contribution (logit scale)"</span>,</span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>        <span class="cn">TRUE</span> <span class="sc">~</span> <span class="st">"s(year) Contribution"</span> <span class="co"># Default for Gaussian models</span></span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Extract the first plot, add title, label, and theme</span></span>
+<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a>    plot_object_list[[<span class="dv">1</span>]] <span class="sc">+</span> </span>
+<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a>      <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="dv">0</span>, </span>
+<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a>                 <span class="at">color =</span> <span class="st">"red"</span>, </span>
+<span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a>                 <span class="at">linetype =</span> <span class="st">"dashed"</span>, </span>
+<span id="cb7-25"><a href="#cb7-25" aria-hidden="true" tabindex="-1"></a>                 <span class="at">linewidth =</span> <span class="fl">0.8</span>) <span class="sc">+</span></span>
+<span id="cb7-26"><a href="#cb7-26" aria-hidden="true" tabindex="-1"></a>      <span class="fu">ggtitle</span>(var_name) <span class="sc">+</span></span>
+<span id="cb7-27"><a href="#cb7-27" aria-hidden="true" tabindex="-1"></a>      <span class="fu">ylab</span>(y_axis_label) <span class="sc">+</span></span>
+<span id="cb7-28"><a href="#cb7-28" aria-hidden="true" tabindex="-1"></a>      <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb7-29"><a href="#cb7-29" aria-hidden="true" tabindex="-1"></a>      <span class="fu">theme</span>(<span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="fl">0.5</span>, <span class="at">size =</span> <span class="dv">10</span>)) <span class="co"># Center title</span></span>
+<span id="cb7-30"><a href="#cb7-30" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb7-31"><a href="#cb7-31" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb7-32"><a href="#cb7-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-33"><a href="#cb7-33" aria-hidden="true" tabindex="-1"></a><span class="co"># plot a panel of all the plots</span></span>
+<span id="cb7-34"><a href="#cb7-34" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_grid</span>(<span class="at">plotlist =</span> conditional_smooths_plots_list, <span class="at">ncol =</span> <span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div id="fig-smooth-plots" class="quarto-figure quarto-figure-center anchored" data-fig-align="center" width="672">
 <figure class="quarto-float quarto-float-fig figure">
@@ -794,13 +986,121 @@ Table&nbsp;2: Posterior summary statistics for key model parameters.
 <img src="supplement-GAMS-details_files/figure-html/fig-smooth-plots-1.png" class="img-fluid quarto-figure-center figure-img" width="672">
 </div>
 <figcaption class="figure quarto-float-caption quarto-float-fig" id="fig-smooth-plots-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;4: Estimated conditional effect of year (s(year)) on each response variable from the Bayesian GAMs. The blue line represents the posterior mean effect, and the grey ribbon represents the 95% credible interval. Y-axis scales differ and correspond to the link function of each model (identity, log, or logit).
+Figure&nbsp;4: Estimated conditional effect of year (s(year)) on each response variable from the Bayesian GAMs. The blue line represents the posterior mean effect, and the grey ribbon represents the 95% credible interval. Y-axis scales differ and correspond to the link function of each model (identity, log, or logit). The red line is y=0 to visually assess the significance of the (i.e., whether the credible interval excludes zero).
 </figcaption>
 </figure>
 </div>
 </div>
 </div>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># plot for manuscript</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Generate conditional smooth plots within pmap</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>input_list <span class="ot">&lt;-</span>   <span class="fu">list</span>(</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">model =</span> results_brms_valid<span class="sc">$</span>mod_brms,</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">var_name =</span> results_brms_valid<span class="sc">$</span>variable,</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">raw_data =</span> results_brms_valid<span class="sc">$</span>data,</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">r_sq =</span> bayes_r2_summary<span class="sc">$</span><span class="st">`</span><span class="at">Bayes R2</span><span class="st">`</span></span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>conditional_smooths_plots_fn <span class="ot">&lt;-</span> <span class="cf">function</span>(model, var_name, raw_data, r_sq){</span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Generate the plot object list </span></span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>     smooth_data <span class="ot">&lt;-</span> <span class="fu">conditional_smooths</span>(model, <span class="at">plot =</span> <span class="cn">FALSE</span>)[[<span class="dv">1</span>]]</span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>     intercept_est <span class="ot">&lt;-</span> <span class="fu">fixef</span>(model)[<span class="st">"Intercept"</span>, <span class="st">"Estimate"</span>]</span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>     </span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a><span class="co"># --- Determine inverse link function and response label ---</span></span>
+<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a>     </span>
+<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a>        inv_link <span class="ot">&lt;-</span> identity <span class="co"># Default for Gaussian</span></span>
+<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a>        response_label <span class="ot">&lt;-</span> var_name <span class="co"># Default label</span></span>
+<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> (var_name <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"N. of authors"</span>, <span class="st">"N. of pages"</span>)) {</span>
+<span id="cb8-23"><a href="#cb8-23" aria-hidden="true" tabindex="-1"></a>          inv_link <span class="ot">&lt;-</span> exp <span class="co"># Inverse of log link</span></span>
+<span id="cb8-24"><a href="#cb8-24" aria-hidden="true" tabindex="-1"></a>          response_label <span class="ot">&lt;-</span> <span class="fu">paste</span>(<span class="st">"Estimated"</span>, var_name)</span>
+<span id="cb8-25"><a href="#cb8-25" aria-hidden="true" tabindex="-1"></a>        } <span class="cf">else</span> <span class="cf">if</span> (var_name <span class="sc">==</span> <span class="st">"Recency of references"</span>) {</span>
+<span id="cb8-26"><a href="#cb8-26" aria-hidden="true" tabindex="-1"></a>          inv_link <span class="ot">&lt;-</span> plogis <span class="co"># Inverse of logit link</span></span>
+<span id="cb8-27"><a href="#cb8-27" aria-hidden="true" tabindex="-1"></a>          response_label <span class="ot">&lt;-</span> <span class="st">"Estimated Recency of references (Price Index)"</span></span>
+<span id="cb8-28"><a href="#cb8-28" aria-hidden="true" tabindex="-1"></a>        } <span class="cf">else</span> <span class="cf">if</span> (var_name <span class="sc">==</span> <span class="st">"Diversity of references"</span>) {</span>
+<span id="cb8-29"><a href="#cb8-29" aria-hidden="true" tabindex="-1"></a>           response_label <span class="ot">&lt;-</span> <span class="st">"Estimated Diversity of references"</span></span>
+<span id="cb8-30"><a href="#cb8-30" aria-hidden="true" tabindex="-1"></a>        } <span class="cf">else</span> <span class="cf">if</span> (var_name <span class="sc">==</span> <span class="st">"Relative title length (ln)"</span>) {</span>
+<span id="cb8-31"><a href="#cb8-31" aria-hidden="true" tabindex="-1"></a>           response_label <span class="ot">&lt;-</span> <span class="st">"Estimated Rel. Title Length (ln)"</span></span>
+<span id="cb8-32"><a href="#cb8-32" aria-hidden="true" tabindex="-1"></a>        }</span>
+<span id="cb8-33"><a href="#cb8-33" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb8-34"><a href="#cb8-34" aria-hidden="true" tabindex="-1"></a><span class="co"># --- Add intercept and apply inverse link function so we can plot on the scale of the raw data</span></span>
+<span id="cb8-35"><a href="#cb8-35" aria-hidden="true" tabindex="-1"></a>        smooth_data <span class="ot">&lt;-</span> </span>
+<span id="cb8-36"><a href="#cb8-36" aria-hidden="true" tabindex="-1"></a>          smooth_data <span class="sc">%&gt;%</span></span>
+<span id="cb8-37"><a href="#cb8-37" aria-hidden="true" tabindex="-1"></a>          <span class="fu">mutate</span>(</span>
+<span id="cb8-38"><a href="#cb8-38" aria-hidden="true" tabindex="-1"></a>            <span class="co"># Calculate estimates on response scale</span></span>
+<span id="cb8-39"><a href="#cb8-39" aria-hidden="true" tabindex="-1"></a>            <span class="at">response_est =</span> <span class="fu">inv_link</span>(intercept_est <span class="sc">+</span> estimate__),</span>
+<span id="cb8-40"><a href="#cb8-40" aria-hidden="true" tabindex="-1"></a>            <span class="at">response_lower =</span> <span class="fu">inv_link</span>(intercept_est <span class="sc">+</span> lower__),</span>
+<span id="cb8-41"><a href="#cb8-41" aria-hidden="true" tabindex="-1"></a>            <span class="at">response_upper =</span> <span class="fu">inv_link</span>(intercept_est <span class="sc">+</span> upper__)</span>
+<span id="cb8-42"><a href="#cb8-42" aria-hidden="true" tabindex="-1"></a>          ) </span>
+<span id="cb8-43"><a href="#cb8-43" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb8-44"><a href="#cb8-44" aria-hidden="true" tabindex="-1"></a>    <span class="fu">ggplot</span>(smooth_data, </span>
+<span id="cb8-45"><a href="#cb8-45" aria-hidden="true" tabindex="-1"></a>           <span class="fu">aes</span>(<span class="at">x =</span> year, </span>
+<span id="cb8-46"><a href="#cb8-46" aria-hidden="true" tabindex="-1"></a>               <span class="at">y =</span> response_est)) <span class="sc">+</span></span>
+<span id="cb8-47"><a href="#cb8-47" aria-hidden="true" tabindex="-1"></a>            <span class="fu">geom_point</span>(<span class="at">data =</span> raw_data <span class="sc">%&gt;%</span> </span>
+<span id="cb8-48"><a href="#cb8-48" aria-hidden="true" tabindex="-1"></a>                         <span class="fu">mutate</span>(<span class="at">colour_hex =</span> <span class="fu">case_when</span>(</span>
+<span id="cb8-49"><a href="#cb8-49" aria-hidden="true" tabindex="-1"></a>                           becoming_more_scientific <span class="sc">==</span> <span class="st">"TRUE"</span> <span class="sc">~</span> <span class="st">"#1b9e77"</span>,</span>
+<span id="cb8-50"><a href="#cb8-50" aria-hidden="true" tabindex="-1"></a>                           <span class="at">.default =</span> <span class="st">"#d95f02"</span></span>
+<span id="cb8-51"><a href="#cb8-51" aria-hidden="true" tabindex="-1"></a>                         )),</span>
+<span id="cb8-52"><a href="#cb8-52" aria-hidden="true" tabindex="-1"></a>                 <span class="fu">aes</span>(<span class="at">x =</span> year,</span>
+<span id="cb8-53"><a href="#cb8-53" aria-hidden="true" tabindex="-1"></a>                     <span class="at">y =</span> value,</span>
+<span id="cb8-54"><a href="#cb8-54" aria-hidden="true" tabindex="-1"></a>                     <span class="at">colour =</span> colour_hex),</span>
+<span id="cb8-55"><a href="#cb8-55" aria-hidden="true" tabindex="-1"></a>                 <span class="at">alpha =</span> <span class="fl">0.7</span>) <span class="sc">+</span></span>
+<span id="cb8-56"><a href="#cb8-56" aria-hidden="true" tabindex="-1"></a>      <span class="fu">scale_color_identity</span>() <span class="sc">+</span></span>
+<span id="cb8-57"><a href="#cb8-57" aria-hidden="true" tabindex="-1"></a>      <span class="co"># Add the line </span></span>
+<span id="cb8-58"><a href="#cb8-58" aria-hidden="true" tabindex="-1"></a>      <span class="fu">geom_line</span>(<span class="at">color =</span> <span class="st">"#7570b3"</span>, </span>
+<span id="cb8-59"><a href="#cb8-59" aria-hidden="true" tabindex="-1"></a>                <span class="at">linewidth =</span> <span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb8-60"><a href="#cb8-60" aria-hidden="true" tabindex="-1"></a>      <span class="fu">geom_text</span>(<span class="at">data =</span> raw_data  <span class="sc">%&gt;%</span> </span>
+<span id="cb8-61"><a href="#cb8-61" aria-hidden="true" tabindex="-1"></a>                  <span class="fu">mutate</span>(<span class="st">`</span><span class="at">Bayes R2</span><span class="st">`</span> <span class="ot">=</span> r_sq) <span class="sc">%&gt;%</span> </span>
+<span id="cb8-62"><a href="#cb8-62" aria-hidden="true" tabindex="-1"></a>                  <span class="fu">mutate</span>(<span class="at">max_value =</span> <span class="fu">max</span>(value)) <span class="sc">%&gt;%</span> </span>
+<span id="cb8-63"><a href="#cb8-63" aria-hidden="true" tabindex="-1"></a>                  <span class="fu">distinct</span>(<span class="st">`</span><span class="at">Bayes R2</span><span class="st">`</span>, </span>
+<span id="cb8-64"><a href="#cb8-64" aria-hidden="true" tabindex="-1"></a>                           max_value),</span>
+<span id="cb8-65"><a href="#cb8-65" aria-hidden="true" tabindex="-1"></a>           <span class="fu">aes</span>(</span>
+<span id="cb8-66"><a href="#cb8-66" aria-hidden="true" tabindex="-1"></a>           <span class="at">x =</span> <span class="dv">1980</span>, </span>
+<span id="cb8-67"><a href="#cb8-67" aria-hidden="true" tabindex="-1"></a>           <span class="at">y =</span> max_value, </span>
+<span id="cb8-68"><a href="#cb8-68" aria-hidden="true" tabindex="-1"></a>           <span class="at">label =</span> <span class="fu">paste</span>(<span class="st">"Pseudo R² = "</span>, </span>
+<span id="cb8-69"><a href="#cb8-69" aria-hidden="true" tabindex="-1"></a>                         <span class="fu">signif</span>(<span class="st">`</span><span class="at">Bayes R2</span><span class="st">`</span>, </span>
+<span id="cb8-70"><a href="#cb8-70" aria-hidden="true" tabindex="-1"></a>                                <span class="at">digits =</span> <span class="dv">3</span>))),</span>
+<span id="cb8-71"><a href="#cb8-71" aria-hidden="true" tabindex="-1"></a>           <span class="at">hjust =</span> <span class="dv">0</span>, </span>
+<span id="cb8-72"><a href="#cb8-72" aria-hidden="true" tabindex="-1"></a>           <span class="at">vjust =</span> <span class="fl">1.5</span>,</span>
+<span id="cb8-73"><a href="#cb8-73" aria-hidden="true" tabindex="-1"></a>           <span class="at">size =</span> <span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb8-74"><a href="#cb8-74" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme_bw</span>(<span class="at">base_size =</span> <span class="dv">4</span>) <span class="sc">+</span></span>
+<span id="cb8-75"><a href="#cb8-75" aria-hidden="true" tabindex="-1"></a>      <span class="fu">labs</span>( </span>
+<span id="cb8-76"><a href="#cb8-76" aria-hidden="true" tabindex="-1"></a>           <span class="at">y =</span> response_label, </span>
+<span id="cb8-77"><a href="#cb8-77" aria-hidden="true" tabindex="-1"></a>           <span class="at">x =</span> <span class="st">""</span>)</span>
+<span id="cb8-78"><a href="#cb8-78" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb8-79"><a href="#cb8-79" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-80"><a href="#cb8-80" aria-hidden="true" tabindex="-1"></a>conditional_smooths_plots_list <span class="ot">&lt;-</span> </span>
+<span id="cb8-81"><a href="#cb8-81" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pmap</span>(input_list,</span>
+<span id="cb8-82"><a href="#cb8-82" aria-hidden="true" tabindex="-1"></a>       conditional_smooths_plots_fn)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
 <p>Here is the figure that appears in the main manuscript:</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_grid</span>(<span class="at">plotlist =</span> conditional_smooths_plots_list, </span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>          <span class="at">ncol =</span> <span class="dv">3</span>,</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>          <span class="at">align =</span> <span class="st">"hv"</span>,</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>          <span class="at">axis =</span><span class="st">"tblr"</span>)</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a><span class="fu">ggsave</span>(here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"analysis/figures/fig-smooth-plots-paper.png"</span>),</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>      <span class="at">dpi =</span> <span class="dv">1000</span>,</span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>      <span class="at">bg =</span> <span class="st">"white"</span>,</span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>      <span class="at">h =</span> <span class="dv">3</span>,</span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>      <span class="at">w =</span> <span class="dv">5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div id="fig-smooth-plots-paper" class="quarto-figure quarto-figure-center anchored" data-fig-align="center" width="672">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-smooth-plots-paper-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="supplement-GAMS-details_files/figure-html/fig-smooth-plots-paper-1.png" class="img-fluid quarto-figure-center figure-img" width="672">
+</div>
+<figcaption class="figure quarto-float-caption quarto-float-fig" id="fig-smooth-plots-paper-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;5: Distribution of article characteristics for archaeology articles over time and estimated conditional effect of year (purple lines). Data points represent individual articles. The colour of the points indicates if the overall temporal trend is toward archaeology become a softer (orange) or harder (green) field. Bayesian Generalized Additive Models were computed to fit the lines summarising the relationships between the variables and the time series. For recency of references, a Zero-One Inflated Beta distribution family was used with a logit link function. For diversity of references and relative title length (ln), the Gaussian family was used with the canonical identity link function. For the number of authors pages the Negative Binomial family was used with a standard log link function. Further details about the model specifications and diagnostics are presented in the supplementary materials.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
 
 </section>
 </section>

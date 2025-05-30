@@ -22,7 +22,7 @@ library(bayesplot) # For mcmc_trace and nuts_params
 
 # Introduction
 
-This supplementary document provides further details on the General Additive Models (GAMs) used to model change in the bibliometric variables over time.  GAMs are useful because they can be fit to complex, nonlinear relationships and make good predictions, while still being able to provide inferential statistics and understand and explain the underlying structure of our models.
+This supplementary document provides further details on the General Additive Models (GAMs) used to model change in the bibliometric variables over time.  GAMs are useful because they can be fit to complex, nonlinear relationships and make good predictions, while still being able to provide inferential statistics and understand and explain the underlying structure of our models. This document and the supporting data files are archived at http://doi.org/10.5281/zenodo.14897253
 
 ## Modeling Approach
 
