@@ -92,7 +92,7 @@ n_journals <- n_distinct(items_df$journal)
 
 While Fanelli and Glänzel (2013) analysed papers published in a single year (2012), I found only `r n_items_df_2012` papers for that same year, and `r round(prop_pub_after2012*100, 0)`% of papers in the sample published after that date. To make efficient use of the available data and ensure robust representation from different areas of archaeology, including those with lower frequencies of journal article publication, I analysed 9697 papers published during 1975-2025. This sample was collected from Clarivate’s Web of Science database by first selecting the Web of Science category ‘Archaeology’ and the Document type ‘article’ (n = 28,871). To focus on journals of broad relevance to most archaeologists, and that are representative of substantial communities of practice, I then filtered the results to keep only articles published in the top-ranking 25 journals according to their h-indices as reported by Clarivate’s Journal Citation Indicator. Finally, I excluded journals with less than 100 articles in the database, resulting in `r n_journals` journals.
 
-The entire R code [@rcoreteamLanguageEnvironmentStatistical2024] used for all the analysis and visualizations contained in this paper is at https://doi.org/10.5281/zenodo.14897253 to enable re-use of materials and improve reproducibility and transparency [@marwickComputationalReproducibilityArchaeological2017]. All the figures, tables, and statistical test results presented here can be independently reproduced with the code and data in this compendium [@doi:10.1080/00031305.2017.1375986]. The R code is released under the MIT license, the data as CC-0, and figures as CC-BY, to enable maximum re-use.
+The entire R code [@rcoreteamLanguageEnvironmentStatistical2024] used for all the analysis and visualizations contained in this paper is at https://doi.org/10.5281/zenodo.14897252 to enable re-use of materials and improve reproducibility and transparency [@marwickComputationalReproducibilityArchaeological2017]. All the figures, tables, and statistical test results presented here can be independently reproduced with the code and data in this compendium [@doi:10.1080/00031305.2017.1375986]. The R code is released under the MIT license, the data as CC-0, and figures as CC-BY, to enable maximum re-use.
 
 ## Results
 
@@ -500,7 +500,7 @@ over_time_long_colour <-
 
 ```{r}
 #| label: fig-change-over-time
-#| fig-cap: Distribution of article characteristics for archaeology articles over time. Data points represent individual articles. The colour of the points indicates if the overall trend is toward softer (orange) or harder (green). Bayesian Generalized Additive Models were computed to fit the lines summarising the relationships between the variables and the time series. For recency of references a Zero-One Inflated Beta distribution family was used with a logit link function. For diversity of references and relative title length (ln) the Gaussian family was used with the canonical identity link function. For the number of authors pages the Negative Binomial family was used with a standard log link function. Further details about the model specifications and diagnostics are presented in the supplementary materials. 
+#| fig-cap: Distribution of article characteristics for archaeology articles over time. Data points represent individual articles. The colour of the points indicates if the overall trend is toward softer (orange) or harder (green). Bayesian Generalized Additive Models were computed to fit the lines summarising the relationships between the variables and the time series. For recency of references a Zero-One Inflated Beta distribution family was used with a logit link function. For diversity of references and relative title length (ln) the Gaussian family was used with the canonical identity link function. For the number of authors pages the Negative Binomial family was used with a standard log link function. Further details about the model specifications and diagnostics are available at https://doi.org/10.5281/zenodo.14897252  
 #| fig-height: 6
 
 # get this from the supplement on GAMS
@@ -1026,7 +1026,7 @@ Versions of this paper were presented at the Summer School on Reproducible Resea
 
 # Data Availability Statement
 
-The data that support the findings of this study are openly available in Zenodo at http://doi.org/10.5281/zenodo.14897253
+The data that support the findings of this study are openly available in Zenodo at https://doi.org/10.5281/zenodo.14897252
 
 # References
 
