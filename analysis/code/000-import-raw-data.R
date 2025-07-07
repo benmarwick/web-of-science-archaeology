@@ -1,5 +1,5 @@
 # read in the data, Jan 2012 data for comparison with Fanelli?
-wos_files <- dir("data",  full.names = TRUE)
+wos_files <- dir("analysis/data",  full.names = TRUE)
 
 library(tidyverse)
 text <- map(wos_files, 
@@ -78,7 +78,7 @@ items_df <- map_df(items, ~extractor(.x)) %>%
 
 library(tidyverse)
 
-jci <- read_csv("data/BenMarwick_JCR_JournalResults_12_2024.csv")
+jci <- read_csv("analysis/data/BenMarwick_JCR_JournalResults_12_2024.csv")
 
 jci_top_25 <- 
   jci %>% 
