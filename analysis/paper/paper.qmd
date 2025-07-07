@@ -90,7 +90,7 @@ prop_pub_after2012 <-  n_items_df_after_2012  / n_articles
 n_journals <- n_distinct(items_df$journal)
 ```
 
-While Fanelli and Glänzel (2013) analysed papers published in a single year (2012), I found only `r n_items_df_2012` papers for that same year, and `r round(prop_pub_after2012*100, 0)`% of papers in the sample published after that date. To make efficient use of the available data and ensure robust representation from different areas of archaeology, including those with lower frequencies of journal article publication, I analysed 9697 papers published during 1975-2025. This sample was collected from Clarivate’s Web of Science database by first selecting the Web of Science category ‘Archaeology’ and the Document type ‘article’ (n = 28,871). To focus on journals of broad relevance to most archaeologists, and that are representative of substantial communities of practice, I then filtered the results to keep only articles published in the top-ranking 25 journals according to their h-indices as reported by Clarivate’s Journal Citation Indicator. Finally, I excluded journals with less than 100 articles in the database, resulting in `r n_journals` journals.
+While Fanelli and Glänzel (2013) analysed papers published in a single year (2012), I found only `r n_items_df_2012` papers for that same year, and `r round(prop_pub_after2012*100, 0)`% of papers in the sample published after that date. To make efficient use of the available data and ensure robust representation from different areas of archaeology, including those with lower frequencies of journal article publication, I analysed 9697 papers published during 1975-2025. This sample was collected from Clarivate’s Web of Science database by first selecting the Web of Science category ‘Archaeology’ and the Document type ‘article’ (n = 28,871). To focus on journals of broad relevance to most archaeologists, and that are representative of substantial communities of practice, I then filtered the results to keep only articles published in the top-ranking 25 journals according to their 2022 Impact Factor as reported by Clarivate’s Journal Citation Indicator. Finally, I excluded journals with less than 100 articles in the database, resulting in `r n_journals` journals.
 
 The entire R code [@rcoreteamLanguageEnvironmentStatistical2024] used for all the analysis and visualizations contained in this paper is at https://doi.org/10.5281/zenodo.14897252 to enable re-use of materials and improve reproducibility and transparency [@marwickComputationalReproducibilityArchaeological2017]. All the figures, tables, and statistical test results presented here can be independently reproduced with the code and data in this compendium [@doi:10.1080/00031305.2017.1375986]. The R code is released under the MIT license, the data as CC-0, and figures as CC-BY, to enable maximum re-use.
 
@@ -318,7 +318,7 @@ ref_list1 <- map(items_df$refs, ~tolower(.x))
 ref_list2 <- map(ref_list1, ~str_replace_all(.x, "\\.|,| ", ""))
 ref_list3 <- map(ref_list2, ~str_split(.x, "\n"))
 ref_list4 <- map(ref_list3, ~data_frame(x = .x))
-ref_list5 <- bind_rows(ref_list4, .id = "id") 
+ref_list5 <- bind_rows(ref_list4, .id = "id")
 ref_list6 <- unnest(ref_list5)
 
 # get the journal names out of the refs
@@ -339,7 +339,7 @@ all_cited_items <-
   select(x) %>% 
   group_by(x) %>% 
   tally() %>% 
-  arrange(desc(n)) 
+  arrange(desc(n))
 
 # get a list of the top journals
 top_journals <- 
@@ -355,11 +355,9 @@ top_journals <-
 # compute diversity of all citations for each article (habitat)
 shannon_per_item <- 
   ref_list7 %>% 
-  group_by(id, x) %>% 
+  group_by(id, journal_name) %>% 
   tally() %>% 
-  mutate(n_in_article = n) %>% 
-  select(-n) %>% 
-  left_join(all_cited_items) %>% 
+  group_by(id) %>% 
   mutate(p_i = n / sum(n, na.rm = TRUE)) %>% 
   mutate(p_i_ln = log(p_i)) %>% 
   group_by(id) %>% 
@@ -413,6 +411,11 @@ shannon_per_item %>%
 #| label: fig-compare-other-fields
 #| fig-cap: Distributions of article characteristics hypothesised to reflect the level of consensus. The boxplot shows the distribution of values of archaeology articles. The thick black line in the middle of the boxplot is the median value, the box represents the inter-quartile range (the range between the 25th and 75th percentiles, where 50% of the data are located), and individual points represent outliers. The smaller coloured boxplots indicate the values computed by Fanelli and Glanzel (2013), where p = physics, s = social sciences, h = humanities. ln denotes the natural logarithm, or logarithm to the base e. 
 #| fig-height: 4
+
+library(ggplot2)
+library(tools)
+library(stringr)
+library(purrr)
 
 library(cowplot)
 
@@ -496,6 +499,72 @@ over_time_long_colour <-
   over_time_long %>% 
   left_join(over_time_long_models)
  
+```
+
+```{r}
+#| label: fig-change-over-time_from_V1_1
+#| fig-cap: Distribution of article characteristics for archaeology articles over time. Data points represent individual articles. The colour of the points indicates if the overall trend is toward softer (orange) or harder (green) Generalized Additive Models were computed to fit the lines summarising the relationships between the variables and the time series. 
+#| fig-height: 4
+
+library(ggpmisc)
+library(mgcv)
+formula <-  y ~ x
+
+over_time_long_colour_gams <- 
+over_time_long_colour %>% 
+  nest(.by = variable) %>% 
+  mutate(mod_gam = lapply(data, 
+                          function(df) gam(year ~ s(value, bs = "cr"), 
+                                           data = df)))
+
+over_time_long_colour_gams_summary <- 
+over_time_long_colour %>% 
+  nest(.by = variable) %>% 
+  mutate(fit = map(data, ~mgcv::gam(year ~ s(value, bs = "cs"), data = .)),
+         results = map(fit, glance),
+         R.square = map_dbl(fit, ~ summary(.)$r.sq)) %>%
+  unnest(results) %>%
+  select(-data, -fit) %>% 
+  select(variable, adj.r.squared)
+
+over_time_long_colour_gams_summary_df <- 
+over_time_long_colour %>% 
+  left_join(over_time_long_colour_gams_summary)
+
+plot = ggplot() + 
+  geom_point(data = over_time_long_colour_gams_summary_df, 
+       aes(year,  
+           value, 
+           colour = becoming_more_scientific),
+       alpha = 0.5) + 
+  geom_smooth(data = over_time_long_colour_gams_summary_df,
+              aes(year, value),
+              method="gam", 
+              formula = y ~ s(x, bs = "cs"),
+              se = FALSE,  
+              size = 2, 
+              colour = "#7570b3") +
+  facet_wrap( ~ variable,
+              scales = "free_y") + 
+  theme_bw(base_size = base_size) +
+  scale_color_manual(values = c("#d95f02",
+                                "#1b9e77" )) +
+  guides(colour = "none") +
+  ylab("") +
+  geom_text(data = over_time_long_colour_gams_summary_df %>% 
+              group_by(variable) %>% 
+              summarise(max_value = max(value),
+                        adj.r.squared = unique(adj.r.squared)),
+           aes(
+           x = 1980, 
+           y = max_value, 
+           label = paste("Pseudo R² = ", 
+                         signif(adj.r.squared, 
+                                digits = 3))),
+           hjust = 0, 
+           vjust = 1.5,
+           size = 2)
+
 ```
 
 ```{r}
